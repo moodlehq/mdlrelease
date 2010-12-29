@@ -7,7 +7,7 @@
 # create dir, it most probably already exists and contains this script, but anyway
 git clone git://git.moodle.org/integration.git gitmirror
 cd gitmirror
-git remote add moodle skodak@git.moodle.com:/git/moodle.git
+git remote add moodle skodak@git.moodle.org:/git/moodle.git
 git remote add github git@github.com:moodle/moodle.git
 git remote add gitorious git@gitorious.org:moodle/moodle.git
 cd ..
