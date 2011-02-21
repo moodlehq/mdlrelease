@@ -1,6 +1,15 @@
+0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
+   (this only needs to be done the 1st time)
+
 1/ update version.php of all changed branches and push to integration
 2/ push integration.git to moodle.git using the ./gitmirror.sh
-3/ sync CVS using the cvssync PHP scripts
+3/ sync CVS using the cvsmirror.sh PHP scripts
 4/ verify prepared CVS commits
-5/ commit to CVS
-6/ close all issues in PULL tracker
+5/ commit to CVS, with commit message being:
+    - weekly cvs snapshot (on normal weeklies)
+    - emergency cvs snapshot (on emergency changes)
+    - X.Y.Z cvs snapshot (on release)
+6/ tag each cvs branch with corresponding:
+    - MOODLE_XY_WEEKLY (on weekly, emergency & release)
+    - MOODLE_XYZ (on release)
+7/ close all issues in PULL tracker if needed
