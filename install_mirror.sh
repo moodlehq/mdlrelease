@@ -4,7 +4,6 @@
 # Please note you need to have public ssh key in all 3 remotes bellow
 # and moodlerobot CVS too
 
-# create dir, it most probably already exists and contains this script, but anyway
 git clone git://git.moodle.org/integration.git gitmirror
 cd gitmirror
 git remote add moodle skodak@git.moodle.org:/git/moodle.git
