@@ -1,6 +1,7 @@
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
+0.5/ fix all permission using the fixpermissions.php in integration
 1/ update version.php of all changed branches and push to integration
 2/ push integration.git to moodle.git using the ./gitmirror.sh
 3/ sync CVS using the cvsmirror.sh PHP scripts
