@@ -76,9 +76,9 @@ $gitignore    = array('.gitignore', '.cvsignore', '.settings', '.buildpath', '.p
 $executables = array(
     'filter/tex/mimetex.linux',
     'filter/tex/mimetex.freebsd',
-    'filter/tex/mimetex.exe',
     'filter/tex/mimetex.darwin',
-    //'lib/editor/tinymce/extra/tools/download_langs.sh',
+    // do not include 'filter/tex/mimetex.exe' here because Windows is using just the extension
+    // do not include 'lib/editor/tinymce/extra/tools/download_langs.sh' here because it is used by devs only
 
 );
 
