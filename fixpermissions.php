@@ -44,10 +44,7 @@ if (empty($_SERVER['argc']) or $_SERVER['argc'] !== 2) {
     echo "Expected one parameter - git checkout location";
 }
 
-//$sourcedir = $_SERVER['argv'][1];
-
-
-$sourcedir = '/Users/skodak/server/workspace/moodle20';
+$sourcedir = $_SERVER['argv'][1];
 
 define('VERBOSE', false);
 define('PARSEGITIGNORE', true);
