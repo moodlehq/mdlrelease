@@ -64,6 +64,10 @@ if (!is_dir("$sourcedir/.git")) {
     echo "Source directory $sourcedir is not git repository\n";
     exit(1);
 }
+if (!is_file("$sourcedir/config-dist.php")) {
+    echo "Source directory $sourcedir is not moodle repository\n";
+    exit(1);
+}
 
 
 if (!is_dir($targetdir)) {
