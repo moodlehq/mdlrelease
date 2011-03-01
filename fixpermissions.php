@@ -78,7 +78,8 @@ $executables = array(
     'filter/tex/mimetex.freebsd',
     'filter/tex/mimetex.exe',
     'filter/tex/mimetex.darwin',
-    'lib/editor/tinymce/extra/tools/download_langs.sh'
+    //'lib/editor/tinymce/extra/tools/download_langs.sh',
+
 );
 
 // find out full names of the executables
