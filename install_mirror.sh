@@ -17,6 +17,7 @@ cd gitmirror
 git remote add moodle $username@git.moodle.org:/git/moodle.git
 git remote add github git@github.com:moodle/moodle.git
 git remote add gitorious git@gitorious.org:moodle/moodle.git
+git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
 git branch --track MOODLE_19_STABLE refs/remotes/origin/MOODLE_19_STABLE
 git branch --track MOODLE_18_STABLE refs/remotes/origin/MOODLE_18_STABLE
 git branch --track MOODLE_17_STABLE refs/remotes/origin/MOODLE_17_STABLE
