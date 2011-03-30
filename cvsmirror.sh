@@ -9,6 +9,13 @@ git merge refs/remotes/origin/master
 cd ..
 /opt/local/bin/php git_to_cvs_mirror.php gitmirror/ cvsmoodle/
 
+#20 branch
+cd gitmirror
+git checkout MOODLE_20_STABLE
+git merge refs/remotes/origin/MOODLE_20_STABLE
+cd ..
+/opt/local/bin/php git_to_cvs_mirror.php gitmirror/ cvsmoodle20/
+
 #19 branch
 cd gitmirror
 git checkout MOODLE_19_STABLE

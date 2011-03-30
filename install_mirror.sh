@@ -32,6 +32,11 @@ cd cvsmoodle
 cvs -q update -dP
 cd ..
 
+cp -R cvsmoodle cvsmoodle20
+cd cvsmoodle20
+cvs -q update -dP -r MOODLE_20_STABLE
+cd ..
+
 cp -R cvsmoodle cvsmoodle19
 cd cvsmoodle19
 cvs -q update -dP -r MOODLE_19_STABLE
