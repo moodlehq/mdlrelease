@@ -2,7 +2,7 @@
    (this only needs to be done the 1st time)
 
 0.5/ fix all permission using the fixpermissions.php in integration
-1/ update version.php of all changed branches and push to integration
+1/ update version.php of all changed branches, creating tags - on release, pointing to the version.php commit with git tag -a vX.Y.Z -m MOODLE_XYZ <COMMITID> - and push to integration (also pushing tags when created with git push --tags)
 2/ push integration.git to moodle.git using the ./gitmirror.sh
 3/ be sure that all cvsmoodleXX dirs are updated (cvs -q update -dP)
 4/ sync CVS using the cvsmirror.sh PHP scripts
