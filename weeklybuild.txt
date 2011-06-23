@@ -1,7 +1,7 @@
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
-1/ for all the branches >= 20_STABLE && master, pull changes from: git://github.com/amosbot/moodle.git (instal_xxxxx branches match) and push them to integration. Some day we'll automate this.
+1/ for all the branches >= 20_STABLE && master, pull changes from: git://github.com/amosbot/moodle.git (install_xxxxx branches match) and push them to integration. Some day we'll automate this.
 2/ fix all permission using the fixpermissions.php in integration
 3/ update version.php of all changed branches, creating tags - on release, pointing to the version.php commit with git tag -a vX.Y.Z -m MOODLE_XYZ <COMMITID> - and push to integration (also pushing tags when created with git push --tags)
 4/ push integration.git to moodle.git using the ./gitmirror.sh
@@ -15,4 +15,4 @@
 9/ tag each cvs branch (no HEAD) with corresponding:
     - MOODLE_XY_WEEKLY (on weekly, emergency & release)
     - MOODLE_XYZ (on release)
-10/ close all issues in PULL tracker if needed
+10/ close all issues in PULL tracker (reseting linked MDLQA ones if existing)
