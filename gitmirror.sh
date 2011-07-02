@@ -9,6 +9,7 @@ cd gitmirror
 git fetch origin
 
 git push --tags moodle refs/remotes/origin/master:refs/heads/master
+git push --tags moodle refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_18_STABLE:refs/heads/MOODLE_18_STABLE
@@ -16,6 +17,7 @@ git push --tags moodle refs/remotes/origin/MOODLE_17_STABLE:refs/heads/MOODLE_17
 git push --tags moodle refs/remotes/origin/MOODLE_16_STABLE:refs/heads/MOODLE_16_STABLE
 
 git push --tags github refs/remotes/origin/master:refs/heads/master
+git push --tags github refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 git push --tags github refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags github refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
 git push --tags github refs/remotes/origin/MOODLE_18_STABLE:refs/heads/MOODLE_18_STABLE
@@ -23,6 +25,7 @@ git push --tags github refs/remotes/origin/MOODLE_17_STABLE:refs/heads/MOODLE_17
 git push --tags github refs/remotes/origin/MOODLE_16_STABLE:refs/heads/MOODLE_16_STABLE
 
 git push --tags gitorious refs/remotes/origin/master:refs/heads/master
+git push --tags gitorious refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_18_STABLE:refs/heads/MOODLE_18_STABLE
