@@ -7,6 +7,13 @@ git merge refs/remotes/origin/master
 cd ..
 diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle
 
+# 2.1 branch
+cd gitmirror
+git checkout MOODLE_21_STABLE
+git merge refs/remotes/origin/MOODLE_21_STABLE
+cd ..
+diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle21
+
 # 2.0 branch
 cd gitmirror
 git checkout MOODLE_20_STABLE
