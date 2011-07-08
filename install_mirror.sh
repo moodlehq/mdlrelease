@@ -17,6 +17,7 @@ cd gitmirror
 git remote add moodle $username@git.moodle.org:/git/moodle.git
 git remote add github git@github.com:moodle/moodle.git
 git remote add gitorious git@gitorious.org:moodle/moodle.git
+git branch --track MOODLE_21_STABLE refs/remotes/origin/MOODLE_21_STABLE
 git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
 git branch --track MOODLE_19_STABLE refs/remotes/origin/MOODLE_19_STABLE
 git branch --track MOODLE_18_STABLE refs/remotes/origin/MOODLE_18_STABLE
@@ -30,6 +31,11 @@ cvs -z3 -d:ext:moodlerobot@cvs.moodle.org:/cvsroot/moodle co -P moodle
 mv moodle cvsmoodle
 cd cvsmoodle
 cvs -q update -dP
+cd ..
+
+cp -R cvsmoodle cvsmoodle21
+cd cvsmoodle21
+cvs -q update -dP -r MOODLE_21_STABLE
 cd ..
 
 cp -R cvsmoodle cvsmoodle20
