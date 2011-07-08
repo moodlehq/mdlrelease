@@ -15,7 +15,7 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
-A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
+B) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
 5/ be sure that all cvsmoodleXX dirs are updated (cvs -q update -dP)
 
@@ -33,4 +33,4 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
     - MOODLE_XYZ (on minor release)
     - MOODLE_XY (on major release)
 
-10/ close all issues in PULL tracker (reseting linked MDLQA ones if existing)
+10/ close all issues in Tracker (reseting linked MDLQA ones if existing)
