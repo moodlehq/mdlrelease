@@ -38,7 +38,8 @@ $maturity = MATURITY_ALPHA;
 
 7) git push [integration_remote] MOODLE_XY_STABLE && git push [integration_remote] --tags
 
-8) Add support for the new branch in all the scripts used by weeklybuild.txt:
+8) Add support for the new branch in all the mdlrelease scripts used (master branch only):
+    - install_mirror.sh
     - gitmirror.sh
     - cvsmirror.sh
     - checkcvsmirror.sh
