@@ -9,9 +9,11 @@
 
 A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
-3/ update version.php of all changed branches, creating tags - on minor release,
+3/ update version.php of all changed branches, NOTE: Surely tagging can be done
+   the release day, not the integration day, to avoid problems if some emergency
+   build is done between both days. To create tags - on minor release,
    pointing to the version.php commit with git tag -a vX.Y.Z -m MOODLE_XYZ <COMMITID> -
-   and push to integration (pushing tags too)
+   and push to integration (pushing tags too).
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
