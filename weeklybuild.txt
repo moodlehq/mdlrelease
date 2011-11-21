@@ -1,3 +1,6 @@
+NOTE: For continuous integration periods where only master is
+      built, see the on-demand-master-only branch in this repository
+
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
@@ -11,9 +14,13 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
 3/ update version.php of all changed branches, NOTE: Surely tagging can be done
    the release day, not the integration day, to avoid problems if some emergency
-   build is done between both days. To create tags - on minor release,
-   pointing to the version.php commit with git tag -a vX.Y.Z -m MOODLE_XYZ <COMMITID> -
-   and push to integration (pushing tags too).
+   build is done between both days. To create tags - on minor release, betas and rcs,
+   pointing to the version.php commit with git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
+   and push to integration (pushing tags too). Messages use to be:
+      - weekly release x.y[.z+|dev] (on normal weeklies)
+      - on-demand release x.y[beta|rc1…] (for continuous integration periods - master only)
+      - emergency release x.y[.z+|dev|beta|rc1…] (for any emergency release)
+      - Moodle release x.y[.z|beta|rc1|..] (for any major/minor/beta/rc release)
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
@@ -27,12 +34,20 @@ B) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
 8/ commit to CVS, with commit message being:
     - weekly cvs snapshot (on normal weeklies)
+    - on-demand cvs snapshot (on continuous integration periods
     - emergency cvs snapshot (on emergency changes)
     - X.Y.Z cvs snapshot (on minor release)
     - X.Y cvs snapshot (on major release)
-9/ tag each cvs branch (no HEAD) with corresponding:
-    - MOODLE_XY_WEEKLY (on weekly, emergency & releases)
+    - X.Ybeta cvs snapshot (on beta release)
+    - X.YrcZ cvs snapshot (on rc release)
+9/ tag each cvs branch with corresponding:
+    - MOODLE_XY_WEEKLY (on weekly, emergency & major/minor releases, not in HEAD!)
     - MOODLE_XYZ (on minor release)
     - MOODLE_XY (on major release)
+    - MOODLE_XY_BETA (on beta releases)
+    - MOODLE_XY_RCZ (on release candidate releases)
 
 10/ close all issues in Tracker (reseting linked MDLQA ones if existing)
+
+11/ add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting
+    about numbers, major ones, special thanks...
