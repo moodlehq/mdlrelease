@@ -18,19 +18,21 @@ A) STEPS FOR MAJOR RELEASE
 
 1) Change master version.php to:
 
-$version  = YYYYMMDD00.00;
+$version  = YYYYMMDD00.00; // CHANGEMETORELEASEDATE = branching date YYYYMMDD - do not modify!
 $release  = 'X.Y (Build: YYYYMMDD)';
 $maturity = MATURITY_STABLE;
 
-2) Commit it with message "release X.Y"
+2) Commit it with message "Moodle release X.Y"
 
-3) git tag -a vX.Y.0 -m MOODLE_XY
+3) git tag -a vX.Y.0 -m MOODLE_XY <COMMITID> (we don't delay
+   tagging. If there is need to repackage, next minor release
+   X.Y.1 will be done - agreed @ HQ chat).
 
 4) git branch MOODLE_XY_STABLE
 
 5) Change master version.php to:
 
-$version  = YYYYMMDD00.00;
+$version  = YYYYMMDD00.00; // YYYYMMDD = weekly release date of this DEV branch
 $release  = 'X.Y+1dev (Build: YYYYMMDD)';
 $maturity = MATURITY_ALPHA;
 
@@ -38,15 +40,17 @@ $maturity = MATURITY_ALPHA;
 
 7) git push [integration_remote] MOODLE_XY_STABLE && git push [integration_remote] --tags
 
-8) Add support for the new branch in all the mdlrelease scripts used (master branch only):
+8) git push [integration_remote] master
+
+9) Add support for the new branch in all the mdlrelease scripts used (master branch only):
     - install_mirror.sh
     - gitmirror.sh
     - cvsmirror.sh
     - checkcvsmirror.sh
 
-9) Verify integration.git looks 100% perfect before continue
+10) Verify integration.git looks 100% perfect before continue
 
-10) Done! A) STEPS Ok. Go back to next step in weeklybuild.txt
+11) Done! A) STEPS Ok. Go back to next step in weeklybuild.txt
 
 ========== ========== ========== ==========
 

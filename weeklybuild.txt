@@ -10,7 +10,9 @@ NOTE: For continuous integration periods where only master is
 
 2/ fix all permission using the fixpermissions.php in integration
 
-A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
+A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
+   is not needed in major releases for master, but for the rest of stables that
+   will be a normal weekly builds)
 
 3/ update version.php of all changed branches, NOTE: Surely tagging can be done
    the release day, not the integration day, to avoid problems if some emergency
