@@ -1,8 +1,9 @@
 .DS_Store
+/.idea/
 /gitmirror/
 /cvsmoodle/
 /cvsmoodle19/
 /cvsmoodle18/
-/.idea/
 /cvsmoodle20/
 /cvsmoodle21/
+/cvsmoodle22/
