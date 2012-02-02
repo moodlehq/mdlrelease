@@ -8,21 +8,24 @@ NOTE: For continuous integration periods where only master is
    git://github.com/amosbot/moodle.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
-2/ fix all permission using the fixpermissions.php in integration
+2/ for all the branches >= 20_STABLE && master, fix all permission
+   using the fixpermissions.php in integration
 
 A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
    is not needed in major releases for master, but for the rest of stables that
    will be a normal weekly builds)
 
-3/ update version.php of all changed branches, NOTE: Surely tagging can be done
-   the release day, not the integration day, to avoid problems if some emergency
-   build is done between both days. To create tags - on minor release, betas and rcs,
-   pointing to the version.php commit with git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
-   and push to integration (pushing tags too). Messages use to be:
+3/ update version.php of all changed branches and push to integration
+  (pushing tags too if necessary, see note below). Messages use to be:
       - weekly release x.y[.z+|dev] (on normal weeklies)
       - on-demand release x.y[beta|rc1…] (for continuous integration periods - master only)
       - emergency release x.y[.z+|dev|beta|rc1…] (for any emergency release)
       - Moodle release x.y[.z|beta|rc1|..] (for any major/minor/beta/rc release)
+
+   NOTE: Surely tagging can be done the release day, not the integration day,
+   to avoid problems if some emergency build is done between both days. To
+   create tags - on minor release, betas and rcs, pointing to the version.php
+   commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
