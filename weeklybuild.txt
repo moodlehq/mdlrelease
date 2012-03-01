@@ -27,6 +27,9 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
    create tags - on minor release, betas and rcs, pointing to the version.php
    commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
 
+   NOTE: After version.php changes are pushed, it is worth waiting the CI server
+   to finish executing all the integration checks before continuing with the process.
+
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
 B) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
