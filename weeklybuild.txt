@@ -22,13 +22,16 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
       - emergency release x.y[.z+|dev|beta|rc1…] (for any emergency release)
       - Moodle release x.y[.z|beta|rc1|..] (for any major/minor/beta/rc release)
 
-   NOTE: Surely tagging can be done the release day, not the integration day,
-   to avoid problems if some emergency build is done between both days. To
-   create tags - on minor release, betas and rcs, pointing to the version.php
-   commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
+   NOTE: Since Moodle 2.2.2 (March 2012) we have agreed to tag always on packaging and, if some (rare)
+   emergency build is needed, it's ok to produce a new package with the 3rd digit in the version
+   incremented. Link: http://moodle.org/local/chatlogs/index.php?conversationid=9717#c338379
 
    NOTE: After version.php changes are pushed, it is worth waiting the CI server
    to finish executing all the integration checks before continuing with the process.
+   Tags will be created once the CI tests end ok.
+
+   To create tags - on minor release, betas and rcs, pointing to the version.php
+   commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
