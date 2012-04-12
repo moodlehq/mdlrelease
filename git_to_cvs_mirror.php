@@ -342,6 +342,11 @@ function is_file_binary($filepath) {
     $pathinfo = pathinfo($filepath);
     $extension = (isset($pathinfo['extension']) ? strtolower($pathinfo['extension']) : '');
 
+    if ($filepath == 'lib/dml/tests/fixtures/randombinary') {
+        return true;
+    }
+
+
     if (in_array($extension, $text)) {
         return false;
     }
