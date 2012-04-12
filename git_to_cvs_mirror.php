@@ -337,10 +337,15 @@ function update_file($file, $source, $target) {
 
 function is_file_binary($filepath) {
     //TODO: make this list more configurable
-    $text = array('php', 'html', 'htm', 'txt', 'inc', 'sql', 'js', 'css', 'htaccess', 'moodle', '', 'xsd', 'xml', 'scmt');
+    $text = array('php', 'html', 'htm', 'txt', 'inc', 'sql', 'js', 'css', 'htaccess', 'moodle', '', 'xsd', 'xml', 'scmt', 'csv', 'sh', 'bat');
 
     $pathinfo = pathinfo($filepath);
     $extension = (isset($pathinfo['extension']) ? strtolower($pathinfo['extension']) : '');
+
+    if ($filepath == 'lib/dml/tests/fixtures/randombinary') {
+        return true;
+    }
+
 
     if (in_array($extension, $text)) {
         return false;
