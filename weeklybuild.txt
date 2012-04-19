@@ -15,20 +15,20 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
    is not needed in major releases for master, but for the rest of stables that
    will be a normal weekly builds)
 
-3/ update version.php of all changed branches and push to integration
-  (pushing tags too if necessary, see note below). Messages use to be:
+3/ a) update version.php of all changed branches and push to integration
+    Messages use to be:
       - weekly release x.y[.z+|dev] (on normal weeklies)
       - on-demand release x.y[beta|rc1…] (for continuous integration periods - master only)
       - emergency release x.y[.z+|dev|beta|rc1…] (for any emergency release)
       - Moodle release x.y[.z|beta|rc1|..] (for any major/minor/beta/rc release)
 
+3/ b) Wait for the CI server to finish executing all the integration checks!
+
+3/ c) [If necessary] Tags will be created and pushed to integration.
+
    NOTE: Since Moodle 2.2.2 (March 2012) we have agreed to tag always on packaging and, if some (rare)
    emergency build is needed, it's ok to produce a new package with the 3rd digit in the version
    incremented. Link: http://moodle.org/local/chatlogs/index.php?conversationid=9717#c338379
-
-   NOTE: After version.php changes are pushed, it is worth waiting the CI server
-   to finish executing all the integration checks before continuing with the process.
-   Tags will be created once the CI tests end ok.
 
    To create tags - on minor release, betas and rcs, pointing to the version.php
    commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
