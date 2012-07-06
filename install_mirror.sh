@@ -20,7 +20,7 @@ git remote add gitorious git@gitorious.org:moodle/moodle.git
 git branch --track MOODLE_23_STABLE refs/remotes/origin/MOODLE_23_STABLE
 git branch --track MOODLE_22_STABLE refs/remotes/origin/MOODLE_22_STABLE
 git branch --track MOODLE_21_STABLE refs/remotes/origin/MOODLE_21_STABLE
-git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
+# Discontinued 20120706 - git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
 git branch --track MOODLE_19_STABLE refs/remotes/origin/MOODLE_19_STABLE
 cd ..
 
@@ -47,10 +47,11 @@ cd cvsmoodle21
 cvs -q update -dP -r MOODLE_21_STABLE
 cd ..
 
-cp -R cvsmoodle cvsmoodle20
-cd cvsmoodle20
-cvs -q update -dP -r MOODLE_20_STABLE
-cd ..
+# Discontinued 20120706
+# cp -R cvsmoodle cvsmoodle20
+# cd cvsmoodle20
+# cvs -q update -dP -r MOODLE_20_STABLE
+# cd ..
 
 cp -R cvsmoodle cvsmoodle19
 cd cvsmoodle19

@@ -28,12 +28,12 @@ git merge refs/remotes/origin/MOODLE_21_STABLE
 cd ..
 diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle21
 
-# 2.0 branch
-cd gitmirror
-git checkout MOODLE_20_STABLE
-git merge refs/remotes/origin/MOODLE_20_STABLE
-cd ..
-diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle20
+# 2.0 branch - Discontinued 20120706
+# cd gitmirror
+# git checkout MOODLE_20_STABLE
+# git merge refs/remotes/origin/MOODLE_20_STABLE
+# cd ..
+# diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle20
 
 # 1.9 branch
 cd gitmirror
