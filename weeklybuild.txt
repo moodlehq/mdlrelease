@@ -5,7 +5,7 @@ NOTE: For continuous integration periods where only master is
    (this only needs to be done the 1st time)
 
 1/ for all the branches >= 20_STABLE && master, pull changes from:
-   git://github.com/amosbot/moodle.git (install_xxxxx branches match)
+   git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
 2/ for all the branches >= 20_STABLE && master, fix all permission
