@@ -4,9 +4,19 @@ NOTE: For continuous integration periods where only master is
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
-1/ for all the branches >= 20_STABLE && master, pull changes from:
+1a/ for all the branches >= 20_STABLE && master, pull changes from:
    git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
+
+1b/ for all the branches >= 2.4 && master, execute the CLI script:
+     php theme/base/cli/svgtool.php --ie9fix
+     (you will need to specify also --path= if it's not a moodle configured site)
+
+   It will add some tags to all svgs missing them in order to bring svg
+   compatibility with IE9. Verify changes (preserveAspectRatio="xMinYMid meet" added)
+   and commit. If for some reason some svg in core must not be processed, there is one
+   blacklist in the cli script. Amend & commit it to exclude that svg for next executions.
+   More info: http://tracker.moodle.org/browse/MDL-36436
 
 2/ for all the branches >= 20_STABLE && master, fix all permission
    using the fixpermissions.php in integration
