@@ -7,6 +7,8 @@ git merge refs/remotes/origin/master
 cd ..
 diff -ru -I '\$\(Id\|Revision\|RCSfile\|Author\|Date\)[:$]' -x CVS -x .git --strip-trailing-cr gitmirror cvsmoodle
 
+# 2.4 branch - Nah, anymore in CVS, yay!
+
 # 2.3 branch
 cd gitmirror
 git checkout MOODLE_23_STABLE

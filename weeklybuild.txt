@@ -45,7 +45,8 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
-B) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
+NOTE: Steps 5-9 will be out from the process on 20121231 (end of 2012). CVS is death!
+NOTE: There is no MOODLE_24_STABLE branch in CVS since 20121203. So next steps don't apply o it.
 
 5/ be sure that all cvsmoodleXX dirs are updated (cvs -q update -dP)
 
@@ -70,5 +71,8 @@ B) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary)
 
 10/ close all issues in Tracker (reseting linked MDLQA ones if existing)
 
-11/ add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting
+11/ annotate the number of closed issues & the number of reopened ones
+    (Tracker - CI - Count reopened issues) in the sheet.
+
+12/ add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting
     about numbers, major ones, special thanks...
