@@ -9,6 +9,8 @@ git merge refs/remotes/origin/master
 cd ..
 /opt/local/bin/php git_to_cvs_mirror.php gitmirror/ cvsmoodle/
 
+#24 branch - Nah, anymore in CVS, yay!
+
 #23 branch
 cd gitmirror
 git checkout MOODLE_23_STABLE
