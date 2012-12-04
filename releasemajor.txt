@@ -20,6 +20,7 @@ A) STEPS FOR MAJOR RELEASE
 
 $version  = YYYYMMDD00.00; // CHANGEMETORELEASEDATE = branching date YYYYMMDD - do not modify!
 $release  = 'X.Y (Build: YYYYMMDD)';
+$branch   = 'XY';
 $maturity = MATURITY_STABLE;
 
 2) Commit it with message "Moodle release X.Y"
@@ -34,6 +35,7 @@ $maturity = MATURITY_STABLE;
 
 $version  = YYYYMMDD00.00; // YYYYMMDD = weekly release date of this DEV branch
 $release  = 'X.Y+1dev (Build: YYYYMMDD)';
+$branch   = 'XY+1';
 $maturity = MATURITY_ALPHA;
 
 6) Commit it with message "weekly release X.Y+1dev"
@@ -48,29 +50,9 @@ $maturity = MATURITY_ALPHA;
     - cvsmirror.sh
     - checkcvsmirror.sh
 
-10) Verify integration.git looks 100% perfect before continue
+10) Create a new repo, view and jobs (clonig from master) in the Jenkins servers, so the new branch
+    becomes tested by 1st time.
 
-11) Done! A) STEPS Ok. Go back to next step in weeklybuild.txt
+11) Verify integration.git looks 100% perfect before continue
 
-========== ========== ========== ==========
-
-B) STEPS FOR MAJOR RELEASE
-
-
-1) Change to on-demand-master-only mdlrelease branch. Execute
-   all the steps needed to end with CVS HEAD updated (steps 5, 6, 7, 8)
-
-2) Switch back to master mdlrelease branch
-
-3) Duplicate (HEAD) cvsmoodle dir to cvsmoodleXY
-
-4) Ensure you are on HEAD updated: cd cvsmoodleXY ; cvs -q update -dPA
-
-5) Create the MOODLE_XY_STABLE branch: cvs tag -b MOODLE_XY_STABLE
-
-6) cvs update to the new branch: cvs -q update -dPr MOODLE_XY_STABLE
-
-7) Create the new MOODLE_XY_STABLE branch in gitmirror repo:
-    git branch MOODLE_XY_STABLE origin/MOODLE_XY_STABLE
-
-8) Done! B) STEPS Ok. Go back to next step in weeklybuild.txt
+12) Done! A) STEPS Ok. Go back to next step in weeklybuild.txt
