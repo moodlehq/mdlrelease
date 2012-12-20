@@ -27,7 +27,7 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
 
 3/ a) update version.php of all changed branches and push to integration
     Messages use to be:
-      - weekly release x.y[.z+|dev] (on normal weeklies)
+      - weekly [on sync] release x.y[.z+|dev] (on normal weeklies)
       - on-demand release x.y[beta|rc1…] (for continuous integration periods - master only)
       - emergency release x.y[.z+|dev|beta|rc1…] (for any emergency release)
       - Moodle release x.y[.z|beta|rc1|..] (for any major/minor/beta/rc release)
