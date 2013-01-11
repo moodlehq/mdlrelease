@@ -47,8 +47,6 @@ $maturity = MATURITY_ALPHA;
 9) Add support for the new branch in all the mdlrelease scripts used (master branch only):
     - install_mirror.sh
     - gitmirror.sh
-    - cvsmirror.sh
-    - checkcvsmirror.sh
 
 10) Create a new repo, view and jobs (clonig from master) in the Jenkins servers, so the new branch
     becomes tested by 1st time.

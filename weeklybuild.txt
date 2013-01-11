@@ -4,7 +4,7 @@ NOTE: For continuous integration periods where only master is
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
-1a/ for all the branches >= 20_STABLE && master, pull changes from:
+1a/ for all the branches >= 22_STABLE && master, pull changes from:
    git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
@@ -18,7 +18,7 @@ NOTE: For continuous integration periods where only master is
    blacklist in the cli script. Amend & commit it to exclude that svg for next executions.
    More info: http://tracker.moodle.org/browse/MDL-36436
 
-2/ for all the branches >= 20_STABLE && master, fix all permission
+2/ for all the branches >= 22_STABLE && master, fix all permission
    using the fixpermissions.php in integration
 
 A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
@@ -45,34 +45,10 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
 
 4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh
 
-NOTE: Steps 5-9 will be out from the process on 20121231 (end of 2012). CVS is death!
-NOTE: There is no MOODLE_24_STABLE branch in CVS since 20121203. So next steps don't apply o it.
+5/ close all issues in Tracker (reseting linked MDLQA ones if existing)
 
-5/ be sure that all cvsmoodleXX dirs are updated (cvs -q update -dP)
-
-6/ sync CVS using the ./cvsmirror.sh script
-
-7/ verify prepared CVS commits. The ./checkcvsmirror.sh script can be executed to achieve that.
-
-8/ commit to CVS, with commit message being:
-    - weekly cvs snapshot (on normal weeklies)
-    - on-demand cvs snapshot (on continuous integration periods
-    - emergency cvs snapshot (on emergency changes)
-    - X.Y.Z cvs snapshot (on minor release)
-    - X.Y cvs snapshot (on major release)
-    - X.Ybeta cvs snapshot (on beta release)
-    - X.YrcZ cvs snapshot (on rc release)
-9/ tag each cvs branch with corresponding:
-    - MOODLE_XY_WEEKLY (on weekly, emergency & major/minor releases, not in HEAD!)
-    - MOODLE_XYZ (on minor release)
-    - MOODLE_XY (on major release)
-    - MOODLE_XY_BETA (on beta releases)
-    - MOODLE_XY_RCZ (on release candidate releases)
-
-10/ close all issues in Tracker (reseting linked MDLQA ones if existing)
-
-11/ annotate the number of closed issues & the number of reopened ones
+6/ annotate the number of closed issues & the number of reopened ones
     (Tracker - CI - Count reopened issues) in the sheet.
 
-12/ add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting
+7/ add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting
     about numbers, major ones, special thanks...
