@@ -25,6 +25,8 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
    is not needed in major releases for master, but for the rest of stables that
    will be a normal weekly builds)
 
+3/ Tip: Try to do this, first master, and then from older to newer stables, because commit date affects how files are listed here and there.
+
 3/ a) update version.php of all changed branches and push to integration
     Messages use to be:
       - weekly [on sync] release x.y[.z+|dev] (on normal weeklies)
