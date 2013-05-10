@@ -8,7 +8,9 @@ NOTE: For continuous integration periods where only master is
    git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
-1b/ for all the branches >= 2.4 && master, execute the CLI script:
+1b/ if producing releases (major or minor), for all the branches, ensure that the en_fix changes have been integrated in the last cycle.
+
+1c/ for all the branches >= 2.4 && master, execute the CLI script:
      php theme/base/cli/svgtool.php --ie9fix
      (you will need to specify also --path= if it's not a moodle configured site)
 
@@ -27,7 +29,7 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
 
 3/ Tip: Try to do this, first master, and then from older to newer stables, because commit date affects how files are listed here and there.
 
-3/ a) update version.php of all changed branches and push to integration
+3/ a) update version.php of all changed branches and push to integration.git
     Messages use to be:
       - weekly [on sync] release x.y[.z+|dev] (on normal weeklies)
       - on-demand release x.y[beta|rc1…] (for continuous integration periods - master only)
@@ -36,7 +38,7 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
 
 3/ b) Wait for the CI server to finish executing all the integration checks!
 
-3/ c) [If necessary] Tags will be created and pushed to integration.
+3/ c) [If necessary] Tags will be created and pushed to integration.git
 
    NOTE: Since Moodle 2.2.2 (March 2012) we have agreed to tag always on packaging and, if some (rare)
    emergency build is needed, it's ok to produce a new package with the 3rd digit in the version
