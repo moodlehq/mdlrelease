@@ -12,7 +12,7 @@ git push --tags moodle refs/remotes/origin/master:refs/heads/master
 git push --tags moodle refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE
-git push --tags moodle refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
+# Discontinued 20130708 - git push --tags moodle refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
 # Discontinued 20130114 - git push --tags moodle refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 # Discontinued 20120706 - git push --tags moodle refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags moodle refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
@@ -27,7 +27,7 @@ git push --tags github refs/remotes/origin/master:refs/heads/master
 git push --tags github refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE
 git push --tags github refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
 git push --tags github refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE
-git push --tags github refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
+# Discontinued 20130708 - git push --tags github refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
 # Discontinued 20130114 - git push --tags github refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 # Discontinued 20120706 - git push --tags github refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags github refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
@@ -42,7 +42,7 @@ git push --tags gitorious refs/remotes/origin/master:refs/heads/master
 git push --tags gitorious refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE
-git push --tags gitorious refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
+# Discontinued 20130708 - git push --tags gitorious refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
 # Discontinued 20130114 - git push --tags gitorious refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
 # Discontinued 20120706 - git push --tags gitorious refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
 git push --tags gitorious refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
