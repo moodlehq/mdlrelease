@@ -4,13 +4,13 @@ NOTE: For continuous integration periods where only master is
 0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
-1a/ for all the branches >= 22_STABLE && master, pull changes from:
+1a/ for all the branches >= 23_STABLE && master, pull changes from:
    git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
 1b/ if producing releases (major or minor), for all the branches, ensure that the en_fix changes have been integrated in the last cycle.
 
-1c/ for all the branches >= 2.4 && master, execute the CLI script:
+1c/ for all the branches >= 24_STABLE && master, execute the CLI script:
      php theme/base/cli/svgtool.php --ie9fix
      (you will need to specify also --path= if it's not a moodle configured site)
 
@@ -20,7 +20,7 @@ NOTE: For continuous integration periods where only master is
    blacklist in the cli script. Amend & commit it to exclude that svg for next executions.
    More info: http://tracker.moodle.org/browse/MDL-36436
 
-2/ for all the branches >= 22_STABLE && master, fix all permission
+2/ for all the branches >= 23_STABLE && master, fix all permission
    using the fixpermissions.php in integration
 
 A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below

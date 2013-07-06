@@ -19,7 +19,7 @@ git remote add gitorious git@gitorious.org:moodle/moodle.git
 git branch --track MOODLE_25_STABLE refs/remotes/origin/MOODLE_25_STABLE
 git branch --track MOODLE_24_STABLE refs/remotes/origin/MOODLE_24_STABLE
 git branch --track MOODLE_23_STABLE refs/remotes/origin/MOODLE_23_STABLE
-git branch --track MOODLE_22_STABLE refs/remotes/origin/MOODLE_22_STABLE
+# Discontinued 20130708 - git branch --track MOODLE_22_STABLE refs/remotes/origin/MOODLE_22_STABLE
 # Discontinued 20130114 - git branch --track MOODLE_21_STABLE refs/remotes/origin/MOODLE_21_STABLE
 # Discontinued 20120706 - git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
 git branch --track MOODLE_19_STABLE refs/remotes/origin/MOODLE_19_STABLE
