@@ -5,7 +5,7 @@ NOTE: For continuous integration periods where only master is
    (this only needs to be done the 1st time)
 
 1a/ for all the branches >= 23_STABLE && master, pull changes from:
-   git://git.moodle.cz/moodle-install.git (install_xxxxx branches match)
+   git://git.moodle.org/moodle-install.git (install_xxxxx branches match)
    and push them to integration. Some day we'll automate this.
 
 1b/ if producing releases (major or minor), for all the branches, ensure that the en_fix changes have been integrated in the last cycle.
