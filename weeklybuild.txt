@@ -1,7 +1,7 @@
 NOTE: For continuous integration periods where only master is
       built, see the on-demand-master-only branch in this repository
 
-0/ run install_mirror.sh xxxxx (xxxx being your login @ git.moodle.org)
+0/ run install.sh xxxxx (xxxx being your login @ git.moodle.org)
    (this only needs to be done the 1st time)
 
 1a/ for all the branches >= 23_STABLE && master, pull changes from:
@@ -47,7 +47,7 @@ A) STEPS FOR MAJOR RELEASE GO HERE!!! (follow them if necessary, step 3 below
    To create tags - on minor release, betas and rcs, pointing to the version.php
    commit with: git tag -a vX.Y.Z[-beta|-rcN] -m MOODLE_XY[Z|_BETA|_RCN] <COMMITID> -
 
-4/ Spread changes in integration to moodle.git and mirrors using ./gitmirror.sh (you may need, on releases, to comment some branches if not releasing all them together).
+4/ Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
 5/ close all issues in Tracker (reseting linked MDLQA ones if existing)
 

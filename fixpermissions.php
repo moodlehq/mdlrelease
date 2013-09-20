@@ -233,7 +233,7 @@ function verify_file_permissions($file, $executables) {
 
     if (isset($executables[$file])) {
         if ($oldpermissions !== 0755) {
-            echo "0755: $file\n";
+            #echo "0755: $file\n";
             if (!chmod($file, 0755)) {
                 echo "Can not change $file permissions\n";
             }
@@ -241,7 +241,7 @@ function verify_file_permissions($file, $executables) {
 
     } else {
         if ($oldpermissions !== 0644) {
-            echo "0644: $file\n";
+            #echo "0644: $file\n";
             if (!chmod($file, 0644)) {
                 echo "Can not change $file permissions\n";
             }

@@ -45,8 +45,9 @@ $maturity = MATURITY_ALPHA;
 8) git push [integration_remote] master
 
 9) Add support for the new branch in all the mdlrelease scripts used (master branch only):
-    - install_mirror.sh
-    - gitmirror.sh
+    - install.sh
+    - prerelease.sh
+    - release.sh
 
 10) Create a new repo, view and jobs (clonig from master) in the Jenkins servers, so the new branch
     becomes tested by 1st time.

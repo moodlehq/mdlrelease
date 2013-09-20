@@ -1,0 +1,503 @@
+#!/bin/bash
+# This script performs required pre-release processing.
+
+# Reset to normal.
+N="$(tput setaf 9)"
+# Red.
+R="$(tput setaf 1)"
+# Green.
+G="$(tput setaf 2)"
+# Yellow.
+Y="$(tput setaf 3)"
+# Cyan.
+C="$(tput setaf 6)"
+# The branches to push to integration.
+integrationpush=""
+
+# Command line arguments
+_pushup=false # Push to integration when complete
+_verbose=true # Make lots of noise.
+_type='weekly' # The type of release we are making.
+_forcebump=true # If true we make the bump regardless
+_onlybranch='' # Gets set to a single branch if we only want one.
+_rc=0 # Sets the release candidate version
+_types=("weekly" "minor" "major" "beta" "rc");
+localbuffer=""
+
+weeklybranches=("master" "MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
+minorbranches=("MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
+majorbranches=("master");
+betabranches=("master");
+rcbranches=("master");
+
+in_array() {
+    for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+    return 1
+}
+
+git_staged_changes() {
+    if ! git diff-index --quiet --cached --ignore-submodules  HEAD -- ; then
+        return 0
+    fi
+    return 1
+}
+
+git_unstaged_changes() {
+    if ! git diff-files --quiet --ignore-submodules ; then
+        return 0
+    fi
+    return 1
+}
+
+git_last_commit_hash() {
+    echo `git log --pretty=format:'%H' -n 1`
+    return 0
+}
+
+all_clean() {
+    er=false
+    if git_unstaged_changes ; then
+        echo "${R}There are unstaged changes in the gitmirror repository.${N}"
+        er=true
+    fi
+
+    if git_staged_changes ; then
+        echo "${R}There are uncommit changes in the gitmirror repository.${N}"
+        er=true
+    fi
+
+    if $er ; then
+        exit 1
+    fi
+}
+
+# Argument 1: branch
+# Argument 2: type
+# Argument 3: pwd
+# Argument 4: rc
+bump_version() {
+    local release=`php ../bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4"`
+    local outcome=$?
+    local return=0
+    local weekly=false
+
+    if [ "$2" == "weekly" ] ; then
+        # Its a weekly release... easy!
+        weekly=true
+    elif [ "$1" == "master" ] && [ "$2" == "minor" ] ; then
+        # Its the master branch and a minor release - master just gets a weekly.
+        weekly=true
+    fi
+
+    if (( outcome > 0 ))  ; then
+        output "  - ${R}Failed to bump version file [$outcome].${N}"
+        _pushup=false
+    else
+        git add version.php
+        if git_staged_changes ; then
+            if $weekly ; then
+                git commit --quiet -m "weekly release $release"
+            else
+                git commit --quiet -m "Moodle release $release"
+                local tagversion=`get_release_tag_version "$release"` # v2.6.0
+                local tagannotation=`get_release_tag_annotation "$release"` # MOODLE_26
+                local taghash=`git_last_commit_hash` # The full git commit hash for the last commit on the branch
+                if $_pushup ; then
+                    #git tag -a "$tagversion" -m "$tagannotation" $taghash
+                    echo "git tag -a '$tagversion' -m '$tagannotation' $taghash"
+                else
+                    localbuffer="$localbuffer\ngit tag -a '$tagversion' -m '$tagannotation' $taghash"
+                fi
+
+                if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
+                    # Exciting
+                    local newbranch=`get_new_stable_branch "$release"` # MOODLE_26_STABLE
+                    output = "  - Creating new stable branch $newbranch"
+                    git branch "$newbranch"
+                    integrationpush="$integrationpush $newbranch"
+                fi
+
+            fi
+            newcommits=$((newcommits+1))
+        else
+            # Failed bump the version - ensure we don't push up.
+            output "  - ${R}Version file changes unsuccessful.${N}"
+            _pushup=false
+            return=1
+        fi
+    fi
+    return $return;
+}
+
+# Argument 1: Release
+get_release_tag_annotation() {
+    local first=`expr match "$1" '\([0-9]\+\)'`
+    local second=`expr match "$1" '[0-9]\+\.\([0-9]\+\)'`
+    local third=`expr match "$1" '[0-9]\+\.[0-9]\+\.\([0-9]\+\)'`
+    local beta=`expr match "$1" '[0-9\.]\+ \?beta'`
+    local rc=`expr match "$1" '[0-9\.]\+ \?rc\([0-9]\)'`
+    local forth=''
+    if [[ beta -gt 0 ]] ; then
+        forth='_BETA'
+    fi
+    if [[ rc -gt 0 ]] ; then
+        forth="_RC$rc"
+    fi
+    echo "MOODLE_$first$second$third$forth"
+}
+
+# Argument 1: Release
+get_release_tag_version() {
+    local tag=''
+    local release=`expr match "$1" '\([0-9\.]\+\)'`
+    if [ -z `expr match "$release" '[0-9]\+\.[0-9]\+\(\.[0-9]\)'` ] ; then
+        tag="v$release.0"
+    else
+        tag="v$release"
+    fi
+    local beta=`expr match "$1" '[0-9\.]\+ \?beta'`
+    local rc=`expr match "$1" '[0-9\.]\+ \?rc\([0-9]\)'`
+    local sub=''
+    if [[ beta -gt 0 ]] ; then
+        sub='-beta'
+    fi
+    if [[ rc -gt 0 ]] ; then
+        sub="-rc$rc"
+
+    fi
+    echo "$tag$sub"
+}
+
+get_new_stable_branch() {
+    local first=`expr match "$1" '\([0-9]\+\)'`
+    local second=`expr match "$1" '[0-9]\+\.\([0-9]\+\)'`
+    echo "MOODLE_$first$second_STABLE"
+}
+output() {
+    if $_verbose ; then
+        echo "$1"
+    fi
+}
+show_help() {
+    bold=`tput bold`
+    normal=`tput sgr0`
+    echo ""
+    echo "${bold}Moodle release - prerelease.sh script${normal}"
+    echo ""
+    echo "This tool prepares the gitmirror moodle repository for the next release and then"
+    echo "spreads it to the integration server."
+    echo "Before running this tool you must have run the installation script, this needs "
+    echo "to be done only once."
+    echo ""
+    echo "Usage: ./prelease.sh [-b <branch>|--branch <branch>] [-h|--help] [-n|--not-forced]"
+    echo "                     [-p|--pushup] [-q|--quiet] [-t <type>|--type <type>]"
+    echo ""
+    echo "The following options can be used to control how this script runs:"
+    echo "  ${bold}-b${normal}, ${bold}--branch${normal}"
+    echo "      Limits the operation to just the branch that has been given."
+    echo "      By default the appropriate branches for the release type will all be"
+    echo "      operated on."
+    echo "  ${bold}-h${normal}, ${bold}--help${normal}"
+    echo "      Prints this help."
+    echo "  ${bold}-n${normal}, ${bold}--not-forced${normal}"
+    echo "      By default the version file on all branches will be bumped. If this option"
+    echo "      has been specified then the version file will only be bumped if there are"
+    echo "      new commits on the branch"
+    echo "  ${bold}-p${normal}, ${bold}--pushup${normal}"
+    echo "      By default this script prepares everything to be pushed by does not push."
+    echo "      If this option is specified the staged commits and any tags will be pushed "
+    echo "      up to the integration server."
+    echo "  ${bold}-q${normal}, ${bold}--quiet${normal}"
+    echo "      If set this script produces no progress output. It'll let you know when "
+    echo "      its finished however."
+    echo "  ${bold}-t${normal}, ${bold}--type${normal}"
+    echo "      The type of release. Must be one of weekly (default), minor, or major."
+    echo ""
+    echo "If no arguments are provided to this script it prepares a weekly release on all "
+    echo "expected branches."
+    echo "For more information about the release process and how to go about it please "
+    echo "have a look at:    https://github.com/moodlehq/mdlrelease"
+    echo ""
+    echo "Examples:"
+    echo "  ${bold}./prerelease.sh${normal} runs a standard weekly release"
+    echo "  ${bold}./prerelease.sh -b MOODLE_19_STABLE${normal} runs a weekly release for one branch"
+    echo "  ${bold}./prerelease.sh -t minor${normal} runs a minor release"
+    echo "  ${bold}./prerelease.sh -t major${normal} runs a major release"
+    echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release"
+    echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2"
+    exit 0
+}
+
+_showhelp=false
+while test $# -gt 0;
+do
+    case "$1" in
+        -b | --branch)
+            shift # Get rid of the flag.
+            _onlybranch="$1"
+            shift # Get rid of the value.
+            ;;
+        -t | --type)
+            shift # Get rid of the flag.
+            if in_array "$1" "${_types[@]}"; then
+                _type=$1
+            else
+                echo ""
+                echo "${R}* Invalid type specified.${N}"
+                _showhelp=true
+            fi
+            shift # Get rid of the value.
+            if [ "$_type" = "rc" ] ; then
+                _rc=$1
+                shift # Get rid of the RC release value
+            fi
+            ;;
+        -p | --pushup)
+            # _pushup=true
+            echo "${Y}* The pushup option has been disabled until we really trust this script.${N}"
+            shift # Get rid of the flag.
+            ;;
+        -n | --not-forced)
+            _forcebump=false
+            shift # Get rid of the flag.
+            ;;
+        -q | --quiet)
+            _verbose=false
+            shift # Get rid of the flag.
+            ;;
+
+        -h | --help)
+            _showhelp=true
+            shift
+            ;;
+         *)
+            echo "${R}* Invalid option $1 given.${N}"
+            _showhelp=true
+            shift
+    esac
+done
+
+if $_showhelp ; then
+    show_help
+fi
+
+cd gitmirror
+pwd=`pwd`
+
+if [[ $_rc -gt 0 ]] ; then
+    output "${G}Starting pre-release processing for release candidate $_rc release.${N}"
+else
+    output "${G}Starting pre-release processing for $_type release.${N}"
+fi
+
+# Check there are no changes in the repo that would cause us issues.
+all_clean
+output "  - Git repository clean"
+output "  - Fetching remotes"
+
+
+git fetch --all --prune --quiet
+if [[ $? -ge 1 ]] ; then
+    # Drat it failed to fetch updates - we've got to bail.
+    echo "$?"
+    output "Failed to fetch updates from the remote repositories"
+    exit 1
+fi
+
+# Establish the branches array by coping the relevant type array into it.
+branches=()
+case $_type in
+    "weekly" )
+        branches=(${weeklybranches[@]})
+        ;;
+    "minor" )
+        branches=(${minorbranches[@]})
+        ;;
+    "major" )
+        branches=(${majorbranches[@]})
+        ;;
+    "beta" )
+        branches=(${betabranches[@]})
+        ;;
+    "rc" )
+        branches=(${rcbranches[@]})
+        ;;
+esac
+
+if [ ${#branches[@]} = 0 ] ; then
+    # Obviously they didn't provide a valid type, there are no branches.
+    output "Invalid type specified. This should never happen."
+    exit 1
+fi
+
+branchesstr=$(printf ", %s" "${branches[@]}")
+if [[ $_onlybranch != '' ]] ; then
+    if in_array "$_onlybranch" "${branches[@]}"; then
+        # Only one branch requested and its valid. Simplify the branches array.
+        branches=($_onlybranch)
+    else
+        output "${R}The requested branch $_onlybranch is not a valid choice (${branchesstr:2}) for this release type${N}"
+        exit 1
+    fi
+fi
+
+output "  - Operating on $_type branches: ${branchesstr:2}"
+
+# We're going to iterate over all branches, fast-forward them and then merge install strings.
+for branch in ${branches[@]};
+    do
+
+    output "${G}Processing $branch${N}"
+
+    # Change to this branch.
+    git checkout  --quiet $branch
+    if [[ $? -ge 1 ]] ; then
+        output "${Y} failed to checkout $branch, skipping.${N}"
+        continue;
+    fi
+
+    # Reset it.
+    git reset --quiet --hard origin/$branch
+    if [[ $? -ge 1 ]] ; then
+        output "${Y} failed to reset $branch, skipping.${N}"
+        continue;
+    fi
+
+    # Set default operations.
+    fixpermissions=true
+    fixsvg=true
+    mergestrings=true
+
+    # Check that we do actually want to process this branch.
+    if [ "$branch" == "master" ] ; then
+        # master branch is included in everything except a minor release.
+        if [ "$_type" == "minor" ] ; then
+            # Its a minor release so we don't do anything with master.
+            output "${Y}Skipping master as its a minor release.${N}"
+            continue
+        fi
+        mergestringsbranch="install_$branch"
+    else
+        # Must be a stable branch.
+        # Stable branches are not included in major, beta, or rc releases.
+        if [ "$_type" == "major" ] ; then
+            # Its a major release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as its a major release.${N}"
+            continue
+        fi
+        if [ "$_type" == "beta" ] ; then
+            # Its a beta release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as its a beta release.${N}"
+            continue
+        fi
+        if [ "$_type" == "rc" ] ; then
+            # Its a rc release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as its a rc release.${N}"
+            continue
+        fi
+        # Get the segment of the stable branch name to use for merges.
+        stable=`expr "$branch" : 'MOODLE_'`
+        mergestringsbranch="install_${branch:$stable}"
+        version=${branch:$stable:2}
+        if (( "$version" < 24 )) ; then
+            # Version less than Moodle 24
+            fixsvg=false
+        fi
+        if (( "$version" < 23 )) ; then
+            # Version less than Moodle 23
+            mergestrings=false
+            fixpermissions=false
+        fi
+    fi
+
+    # Now merge in install strings.
+    if $mergestrings ; then
+        output "  - Merging install strings..."
+        git fetch --quiet git://git.moodle.org/moodle-install.git $mergestringsbranch && git merge FETCH_HEAD --no-edit --quiet
+    fi
+
+    # Now fix SVG images if need be.
+    if $fixsvg ; then
+        output "  - Fixing SVG permissions..."
+        php ../fixsvgcompatability.php --ie9fix --path=$pwd
+
+        if git_unstaged_changes ; then
+            # Add modifications and deletions.
+            git add -u
+            if git_staged_changes ; then
+                git commit --quiet -m "NOBUG: Fixed SVG browser compatibility"
+            fi
+            # Make sure everything is clean again.
+            all_clean
+            output "    ${Y}Fixes made as required.${N}"
+        fi
+    fi
+
+    if $fixpermissions ; then
+        output "  - Fixing file permissions..."
+        php ../fixpermissions.php $pwd
+        if git_unstaged_changes ; then
+            # Add modifications and deletions.
+            git add -u
+            if git_staged_changes ; then
+                git commit --quiet -m "NOBUG: Fixed file access permissions"
+            fi
+            # Make sure everything is clean again.
+            all_clean
+            output "    ${Y}Permissions fixed as required.${N}"
+        fi
+    fi
+
+    # Determine if we need to push this branch up to the integration server.
+    newcommits=`git rev-list HEAD...origin/$branch --ignore-submodules --count`
+
+    if (( $newcommits > 0 )) || $_forcebump ; then
+        # Bump the version file.
+        output "  - Bumping version."
+        if bump_version "$branch" "$_type" "$pwd" "$_rc" ; then
+            # Yay it worked!
+            if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
+                output "  - Bumping master in prep for next release"
+                # Ahh - its a major release and we've just bumped master to the next major.
+                # Now we need to bump it once more as a weekly to add set it to the next version and add
+                # the dev postfix to the release.
+                bump_version "master" "weekly" "$pwd" "0"
+            fi
+        fi
+    fi
+
+    if (( $newcommits > 0 )) ; then
+        output "  + ${C}$branch done! $newcommits new commits to push.${N}"
+        integrationpush="$integrationpush $branch"
+    else
+        output "  + ${C}$branch done! No new commits to push.${N}"
+    fi
+done;
+
+if $_pushup ; then
+    # We're going to push to integration... man I hope this worked OK.
+    output "${G}Pushing modified branches to the integration server${N}..."
+    git push integration $integrationpush
+    output ""
+    echo "Pre-release processing has been completed and all changes have been propagated to the integration repository"
+
+else
+    # We're not pushing up to integration so instead give the integrator the commands to do so.
+    localbuffer="$localbuffer\ngit push integration$integrationpush"
+    output ""
+    echo "Pre-release processing has been completed."
+    if [ $_type = "weekly" ] ; then
+        echo "Changes have ${R}not${N} been propagated to the integration repository. If you wish to do this run the following:"
+    else
+        echo "Please tag the release branches now and then propogate these changes to the integration repository with the following:"
+    fi
+    printf "$localbuffer\n";
+fi
+echo ""
+
+if [ $_type == "major" ] ; then
+    echo "${Y}Notes${N}: "
+    echo "       As this was a major release you will need to update prerelease.sh to include the new stable branch as an expected branch."
+    echo "       As this was a major release you will need to update release.sh to include the new stable branch when releasing"
+    echo ""
+fi
