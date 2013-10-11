@@ -484,13 +484,13 @@ done;
 if $_pushup ; then
     # We're going to push to integration... man I hope this worked OK.
     output "${G}Pushing modified branches to the integration server${N}..."
-    git push integration $integrationpush
+    git push origin $integrationpush
     output ""
     echo "Pre-release processing has been completed and all changes have been propagated to the integration repository"
 
 else
     # We're not pushing up to integration so instead give the integrator the commands to do so.
-    localbuffer="$localbuffer\ngit push integration$integrationpush"
+    localbuffer="$localbuffer\ngit push origin$integrationpush"
     output ""
     echo "Pre-release processing has been completed."
     if [ $_type = "weekly" ] ; then
