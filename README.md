@@ -37,6 +37,18 @@ Set up is dead easy thanks to a the installation script:
 The installation script prepares a Moodle repository and the necessary branches. As this involves a Moodle checkout the process can take some time to complete.
 Please be patient.
 
+Update
+------
+The old version of this tool required you to manually complete several steps and think things through.
+This tool now does all of that for you but it has changed the remote repository structure of the gitmirror checkout.
+An upgrade script has been included but you must manually run it.
+
+    ./update.sh
+
+Run that once only if you are updating versions of this tool.
+Please note I've not tested it, it should work, if it doesn't please fix it and pass it onto the next person.
+If in doubt delete the checkout you have and re-run install.sh
+
 Weekly release
 --------------
 The following steps must be followed to perform a weekly release.
