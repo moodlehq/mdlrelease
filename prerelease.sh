@@ -26,8 +26,9 @@ _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc");
 localbuffer=""
 
-weeklybranches=("master" "MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
-minorbranches=("MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
+# Try to observe the "master first, then stables from older to newer" rule.
+weeklybranches=("master" "MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
+minorbranches=("MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
 majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");
