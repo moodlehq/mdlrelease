@@ -4,8 +4,11 @@
 # to main repostiory and mirrors
 #
 # Please note you need to have public ssh keys in all remotes except the origin!
+#
+# This script base dir
+mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd gitmirror
+cd ${mydir}/gitmirror
 git fetch origin
 
 # Update public repositories
