@@ -24,6 +24,7 @@ _forcebump=true # If true we make the bump regardless
 _onlybranch='' # Gets set to a single branch if we only want one.
 _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc");
+_nocreate=false
 localbuffer=""
 
 # Try to observe the "master first, then stables from older to newer" rule.
@@ -215,6 +216,10 @@ show_help() {
     echo "      its finished however."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
     echo "      The type of release. Must be one of weekly (default), minor, or major."
+    echo "  ${bold}--no-create${normal}"
+    echo "      If this tool finds that one of the expected branches does not exist then"
+    echo "      by default it creates it. If this option is specified the tool will not"
+    echo "      create the branch but will exit with an error."
     echo ""
     echo "If no arguments are provided to this script it prepares a weekly release on all "
     echo "expected branches."
@@ -271,6 +276,10 @@ do
 
         -h | --help)
             _showhelp=true
+            shift
+            ;;
+        --no-create)
+            _nocreate=true
             shift
             ;;
          *)
@@ -356,18 +365,31 @@ for branch in ${branches[@]};
 
     output "${G}Processing $branch${N}"
 
-    # Change to this branch.
-    git checkout  --quiet $branch
+    # Ensure the branch exists. Useful when there have been major releases
+    # since you last ran this tool.
+    git show-ref --verify --quiet refs/heads/$branch
     if [[ $? -ge 1 ]] ; then
-        output "${Y} failed to checkout $branch, skipping.${N}"
-        continue;
-    fi
+        # New branch.
+        if $_nocreate ; then
+            output "${R} Error: expected branch $branch does not exist.${N}"
+            exit 1
+        fi
+        output "  - Expected branch $branch does not exist, creating it now."
+        git checkout --quiet -b $branch refs/remotes/origin/$branch
+    else
+        # Existing branch - change to it.
+        git checkout --quiet $branch
+        if [[ $? -ge 1 ]] ; then
+            output "${Y}Failed to checkout $branch, skipping.${N}"
+            continue;
+        fi
 
-    # Reset it.
-    git reset --quiet --hard origin/$branch
-    if [[ $? -ge 1 ]] ; then
-        output "${Y} failed to reset $branch, skipping.${N}"
-        continue;
+        # Reset it.
+        git reset --quiet --hard origin/$branch
+        if [[ $? -ge 1 ]] ; then
+            output "${Y}Failed to reset $branch, skipping.${N}"
+            continue;
+        fi
     fi
 
     # Set default operations.
