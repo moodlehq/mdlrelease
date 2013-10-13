@@ -11,6 +11,8 @@ G="$(tput setaf 2)"
 Y="$(tput setaf 3)"
 # Cyan.
 C="$(tput setaf 6)"
+# This script base dir
+mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # The branches to push to integration.
 integrationpush=""
 
@@ -24,8 +26,9 @@ _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc");
 localbuffer=""
 
-weeklybranches=("master" "MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
-minorbranches=("MOODLE_25_STABLE" "MOODLE_24_STABLE" "MOODLE_23_STABLE");
+# Try to observe the "master first, then stables from older to newer" rule.
+weeklybranches=("master" "MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
+minorbranches=("MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
 majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");
@@ -76,7 +79,7 @@ all_clean() {
 # Argument 3: pwd
 # Argument 4: rc
 bump_version() {
-    local release=`php ../bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4"`
+    local release=`php ${mydir}/bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4"`
     local outcome=$?
     local return=0
     local weekly=false
@@ -281,7 +284,11 @@ if $_showhelp ; then
     show_help
 fi
 
-cd gitmirror
+if [[ ! -d ${mydir}/gitmirror ]] ; then
+    output "Directory ${mydir}/gitmirror not found. You may need to create it with install.sh"
+    exit 1
+fi
+cd ${mydir}/gitmirror
 pwd=`pwd`
 
 if [[ $_rc -gt 0 ]] ; then
@@ -419,7 +426,7 @@ for branch in ${branches[@]};
     # Now fix SVG images if need be.
     if $fixsvg ; then
         output "  - Fixing SVG permissions..."
-        php ../fixsvgcompatability.php --ie9fix --path=$pwd
+        php ${mydir}/fixsvgcompatability.php --ie9fix --path=$pwd
 
         if git_unstaged_changes ; then
             # Add modifications and deletions.
@@ -435,7 +442,7 @@ for branch in ${branches[@]};
 
     if $fixpermissions ; then
         output "  - Fixing file permissions..."
-        php ../fixpermissions.php $pwd
+        php ${mydir}/fixpermissions.php $pwd
         if git_unstaged_changes ; then
             # Add modifications and deletions.
             git add -u
@@ -477,13 +484,13 @@ done;
 if $_pushup ; then
     # We're going to push to integration... man I hope this worked OK.
     output "${G}Pushing modified branches to the integration server${N}..."
-    git push integration $integrationpush
+    git push origin $integrationpush
     output ""
     echo "Pre-release processing has been completed and all changes have been propagated to the integration repository"
 
 else
     # We're not pushing up to integration so instead give the integrator the commands to do so.
-    localbuffer="$localbuffer\ngit push integration$integrationpush"
+    localbuffer="$localbuffer\ngit push origin$integrationpush"
     output ""
     echo "Pre-release processing has been completed."
     if [ $_type = "weekly" ] ; then
