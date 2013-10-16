@@ -22,6 +22,7 @@ git remote add public git://git.moodle.org/moodle.git
 git remote set-url --add --push public $username@git.moodle.org:/git/moodle.git
 git remote set-url --add --push public git@github.com:moodle/moodle.git
 git remote set-url --add --push public git@gitorious.org:moodle/moodle.git
+git remote set-url --add --push public git@bitbucket.org:moodle/moodle.git
 
 git branch --track MOODLE_25_STABLE refs/remotes/origin/MOODLE_25_STABLE
 git branch --track MOODLE_24_STABLE refs/remotes/origin/MOODLE_24_STABLE

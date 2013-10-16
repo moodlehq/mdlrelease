@@ -63,6 +63,7 @@ add_public_remote() {
         git remote set-url --add --push public $username@git.moodle.org:/git/moodle.git
         git remote set-url --add --push public git@github.com:moodle/moodle.git
         git remote set-url --add --push public git@gitorious.org:moodle/moodle.git
+        git remote set-url --add --push public git@bitbucket.org:moodle/moodle.git
     fi
 }
 
