@@ -23,7 +23,7 @@ _type='weekly' # The type of release we are making.
 _forcebump=true # If true we make the bump regardless
 _onlybranch='' # Gets set to a single branch if we only want one.
 _rc=0 # Sets the release candidate version
-_types=("weekly" "minor" "major" "beta" "rc");
+_types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync");
 _nocreate=false
 localbuffer=""
 
@@ -84,12 +84,20 @@ bump_version() {
     local outcome=$?
     local return=0
     local weekly=false
+    local ondemand=false
+    local onsync=false
 
     if [ "$2" == "weekly" ] ; then
-        # Its a weekly release... easy!
+        # It's a weekly release... easy!
         weekly=true
+    elif [ "$2" == "on-demand" ] ; then
+        # It's a on-demand relese... easy too!
+        ondemand=true
+    elif [ "$2" == "on-sync" ] ; then
+        # It's a on-sync relese... easy too!
+        onsync=true
     elif [ "$1" == "master" ] && [ "$2" == "minor" ] ; then
-        # Its the master branch and a minor release - master just gets a weekly.
+        # It's the master branch and a minor release - master just gets a weekly.
         weekly=true
     fi
 
@@ -101,6 +109,10 @@ bump_version() {
         if git_staged_changes ; then
             if $weekly ; then
                 git commit --quiet -m "weekly release $release"
+            elif $ondemand ; then
+                git commit --quiet -m "on-demand release $release"
+            elif $onsync ; then
+                git commit --quiet -m "weekly on-sync release $release"
             else
                 git commit --quiet -m "Moodle release $release"
                 local tagversion=`get_release_tag_version "$release"` # v2.6.0
@@ -215,7 +227,9 @@ show_help() {
     echo "      If set this script produces no progress output. It'll let you know when "
     echo "      its finished however."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
-    echo "      The type of release. Must be one of weekly (default), minor, or major."
+    echo "      The type of release. Must be one of weekly (default), minor or major."
+    echo "      (also beta, rc, on-demand and on-sync are supported, they are basically"
+    echo "       weeklies on master with some restrictions)."
     echo "  ${bold}--no-create${normal}"
     echo "      If this tool finds that one of the expected branches does not exist then"
     echo "      by default it creates it. If this option is specified the tool will not"
@@ -230,9 +244,11 @@ show_help() {
     echo "  ${bold}./prerelease.sh${normal} runs a standard weekly release"
     echo "  ${bold}./prerelease.sh -b MOODLE_19_STABLE${normal} runs a weekly release for one branch"
     echo "  ${bold}./prerelease.sh -t minor${normal} runs a minor release"
-    echo "  ${bold}./prerelease.sh -t major${normal} runs a major release"
-    echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release"
-    echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2"
+    echo "  ${bold}./prerelease.sh -t major${normal} runs a major release for master only"
+    echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release for master only"
+    echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for master only"
+    echo "  ${bold}./prerelease.sh -t on-demand 2${normal} runs a weekly on-demand (pre-release) for master only"
+    echo "  ${bold}./prerelease.sh -t on-sync 2${normal} runs a weekly on-sync (post-release) for master only"
     exit 0
 }
 
@@ -338,6 +354,12 @@ case $_type in
     "rc" )
         branches=(${rcbranches[@]})
         ;;
+    "on-demand" )
+        branches=(${rcbranches[@]})
+        ;;
+    "on-sync" )
+        branches=(${rcbranches[@]})
+        ;;
 esac
 
 if [ ${#branches[@]} = 0 ] ; then
@@ -349,7 +371,7 @@ fi
 branchesstr=$(printf ", %s" "${branches[@]}")
 if [[ $_onlybranch != '' ]] ; then
     if in_array "$_onlybranch" "${branches[@]}"; then
-        # Only one branch requested and its valid. Simplify the branches array.
+        # Only one branch requested and it's valid. Simplify the branches array.
         branches=($_onlybranch)
     else
         output "${R}The requested branch $_onlybranch is not a valid choice (${branchesstr:2}) for this release type${N}"
@@ -401,8 +423,8 @@ for branch in ${branches[@]};
     if [ "$branch" == "master" ] ; then
         # master branch is included in everything except a minor release.
         if [ "$_type" == "minor" ] ; then
-            # Its a minor release so we don't do anything with master.
-            output "${Y}Skipping master as its a minor release.${N}"
+            # It's a minor release so we don't do anything with master.
+            output "${Y}Skipping master as it's a minor release.${N}"
             continue
         fi
         mergestringsbranch="install_$branch"
@@ -410,18 +432,28 @@ for branch in ${branches[@]};
         # Must be a stable branch.
         # Stable branches are not included in major, beta, or rc releases.
         if [ "$_type" == "major" ] ; then
-            # Its a major release so we don't do anything with the stable branches.
-            output "${Y}Skipping $branch as its a major release.${N}"
+            # It's a major release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as it's a major release.${N}"
             continue
         fi
         if [ "$_type" == "beta" ] ; then
-            # Its a beta release so we don't do anything with the stable branches.
-            output "${Y}Skipping $branch as its a beta release.${N}"
+            # It's a beta release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as it's a beta release.${N}"
             continue
         fi
         if [ "$_type" == "rc" ] ; then
-            # Its a rc release so we don't do anything with the stable branches.
-            output "${Y}Skipping $branch as its a rc release.${N}"
+            # It's a rc release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as it's a rc release.${N}"
+            continue
+        fi
+        if [ "$_type" == "on-demand" ] ; then
+            # It's a on-demand release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as it's a on-demand release.${N}"
+            continue
+        fi
+        if [ "$_type" == "on-sync" ] ; then
+            # It's a on-sync release so we don't do anything with the stable branches.
+            output "${Y}Skipping $branch as it's a on-sync release.${N}"
             continue
         fi
         # Get the segment of the stable branch name to use for merges.
@@ -487,10 +519,13 @@ for branch in ${branches[@]};
             # Yay it worked!
             if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
                 output "  - Bumping master in prep for next release"
-                # Ahh - its a major release and we've just bumped master to the next major.
+                # Ahh - it's a major release and we've just bumped master to the next major.
                 # Now we need to bump it once more as a weekly to add set it to the next version and add
                 # the dev postfix to the release.
-                bump_version "master" "weekly" "$pwd" "0"
+                # Commenting this out as far as we are entering here in the on-sysc period and we must keep
+                # $version 100% the same with latest stable. Perhaps we need here a new type "move-to-dev"
+                # so only $release, $maturity and $branch are moved, but keeping $version unmodified. Eloy 20131025.
+                # bump_version "master" "weekly" "$pwd" "0"
             fi
         fi
     fi

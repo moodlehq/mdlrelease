@@ -81,9 +81,9 @@ function bump_version($path, $branch, $type, $rc = null) {
     }
 
     if ($isstable) {
-        // Its a stable branch.
+        // It's a stable branch.
         if ($type === 'weekly') {
-            // Its a stable branch. We need to bump the minor version and add a + if this was the first
+            // It's a stable branch. We need to bump the minor version and add a + if this was the first
             // weekly release after a major or minor release.
             if (strpos($releasenew, '+') === false) {
                 // Add the +
@@ -92,7 +92,7 @@ function bump_version($path, $branch, $type, $rc = null) {
             $versionminornew++;
             $maturitynew = 'MATURITY_STABLE';
         } else if ($type === 'minor' || $type === 'major') {
-            // If its minor fine, its if major then stable gets a minor release.
+            // If it's minor fine, it's if major then stable gets a minor release.
             // 2.6+ => 2.6.1
             // 2.6.12+ => 2.6.13
             if (strpos($releasenew, '+') !== false) {
@@ -112,12 +112,12 @@ function bump_version($path, $branch, $type, $rc = null) {
         }
 
     } else {
-        // Ok its the master branch.
+        // Ok it's the master branch.
         if ($type === 'weekly' || $type === 'minor') {
-            // If its weekly fine, if its minor the master branch doesn't get a minor release so really its a weekly anyway.
-            // Its the master branch. We need to bump the version, if the version is already higher than today*100 then we need
+            // If it's weekly fine, if it's minor the master branch doesn't get a minor release so really it's a weekly anyway.
+            // It's the master branch. We need to bump the version, if the version is already higher than today*100 then we need
             // to bump accordingly.
-            // We also need to add "dev" to the end of the version if its not there (first weekly after a major release).
+            // We also need to add "dev" to the end of the version if it's not there (first weekly after a major release).
             if (strpos($releasecurrent, 'dev') === false) {
                 // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
                 $releasenew = (float)$releasenew + 0.1;
@@ -137,6 +137,10 @@ function bump_version($path, $branch, $type, $rc = null) {
             $releasenew .= 'rc'.$rc;
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_RC';
+        } else if ($type === 'on-demand') {
+            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+        } else if ($type === 'on-sync') {
+            $versionminornew++;
         } else {
             // Awesome major release!
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)#', '$1', $releasenew);
@@ -199,7 +203,7 @@ function validate_branch($branch) {
 }
 
 function validate_type($type) {
-    $types = array('weekly', 'minor', 'major', 'beta', 'rc');
+    $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync');
     if (!in_array($type, $types)) {
         throw new Exception('Invalid type given.', __LINE__);
     }
