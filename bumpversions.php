@@ -39,6 +39,7 @@ function bump_version($path, $branch, $type, $rc = null) {
 
     $versionmajorcurrent = null;
     $versionminorcurrent = null;
+    $commentcurrent = null;
     $releasecurrent = null;
     $buildcurrent = null;
     $branchcurrent = null;
@@ -49,16 +50,18 @@ function bump_version($path, $branch, $type, $rc = null) {
 
     $versionmajornew = null;
     $versionminornew = null;
+    $commentnew = null;
     $releasenew = null;
     $buildnew = null;
     $branchnew = null;
     $maturitynew = null;
 
-    if (!preg_match('#^ *\$version *= *(?P<major>\d{10})\.(?P<minor>\d{2})\d?#m', $versionfile, $matches)) {
+    if (!preg_match('#^ *\$version *= *(?P<major>\d{10})\.(?P<minor>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
         throw new Exception('Could not determine version.', __LINE__);
     }
     $versionmajornew = $versionmajorcurrent = $matches['major'];
     $versionminornew = $versionminorcurrent = $matches['minor'];
+    $commentnew = $commentcurrent = $matches['comment'];
 
     if (!preg_match('#^ *\$release *= *(?P<quote>\'|")(?P<release>[^ \+]+\+?) *\(Build: (?P<build>\d{8})\)\1#m', $versionfile, $matches)) {
         throw new Exception('Could not determine the release.', __LINE__);
@@ -117,13 +120,6 @@ function bump_version($path, $branch, $type, $rc = null) {
             // If it's weekly fine, if it's minor the master branch doesn't get a minor release so really it's a weekly anyway.
             // It's the master branch. We need to bump the version, if the version is already higher than today*100 then we need
             // to bump accordingly.
-            // We also need to add "dev" to the end of the version if it's not there (first weekly after a major release).
-            if (strpos($releasecurrent, 'dev') === false) {
-                // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
-                $releasenew = (float)$releasenew + 0.1;
-                $releasenew = (string)$releasenew.'dev';
-                $maturitynew = 'MATURITY_ALPHA';
-            }
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'beta') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev)#', '$1', $releasenew);
@@ -141,12 +137,22 @@ function bump_version($path, $branch, $type, $rc = null) {
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'on-sync') {
             $versionminornew++;
+        } else if ($type === 'back-to-dev') {
+            if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
+                // Must be immediately after a major release. Bump comment, release and maturity.
+                $commentnew = '// YYYYMMDD      = weekly release date of this DEV branch';
+                $releasenew = (float)$releasenew + 0.1;
+                $branchnew = str_replace('.', '', $releasenew);
+                $releasenew = (string)$releasenew.'dev';
+                $maturitynew = 'MATURITY_ALPHA';
+            }
         } else {
             // Awesome major release!
-            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)#', '$1', $releasenew);
+            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_STABLE';
+            $commentnew = '// ' . $buildnew . '      = branching date YYYYMMDD - do not modify!';
         }
     }
 
@@ -160,6 +166,10 @@ function bump_version($path, $branch, $type, $rc = null) {
     // Replace the old release with the new release if they've changed.
     if ($releasecurrent !== $releasenew) {
         $versionfile = str_replace($releasequote.$releasecurrent, $releasequote.$releasenew, $versionfile);
+    }
+    // Replace the old comment with the new one if they've changed
+    if ($commentcurrent !== $commentnew) {
+        $versionfile = str_replace($commentcurrent, $commentnew, $versionfile);
     }
 
     if (!$is19) {
@@ -203,7 +213,7 @@ function validate_branch($branch) {
 }
 
 function validate_type($type) {
-    $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync');
+    $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync', 'back-to-dev');
     if (!in_array($type, $types)) {
         throw new Exception('Invalid type given.', __LINE__);
     }

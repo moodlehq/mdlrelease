@@ -86,6 +86,7 @@ bump_version() {
     local weekly=false
     local ondemand=false
     local onsync=false
+    local backtodev=false
 
     if [ "$2" == "weekly" ] ; then
         # It's a weekly release... easy!
@@ -96,6 +97,9 @@ bump_version() {
     elif [ "$2" == "on-sync" ] ; then
         # It's a on-sync relese... easy too!
         onsync=true
+    elif [ "$2" ==  "back-to-dev" ] ; then
+        # Just returning master to dev after major
+        backtodev=true
     elif [ "$1" == "master" ] && [ "$2" == "minor" ] ; then
         # It's the master branch and a minor release - master just gets a weekly.
         weekly=true
@@ -113,6 +117,8 @@ bump_version() {
                 git commit --quiet -m "on-demand release $release"
             elif $onsync ; then
                 git commit --quiet -m "weekly on-sync release $release"
+            elif $backtodev ; then
+                git commit --quiet -m "weekly release $release"
             else
                 git commit --quiet -m "Moodle release $release"
                 local tagversion=`get_release_tag_version "$release"` # v2.6.0
@@ -129,7 +135,7 @@ bump_version() {
                     # Exciting
                     local newbranch=`get_new_stable_branch "$release"` # MOODLE_26_STABLE
                     output = "  - Creating new stable branch $newbranch"
-                    git branch "$newbranch"
+                    git branch -f "$newbranch" master # create from (or reset to) master
                     integrationpush="$integrationpush $newbranch"
                 fi
 
@@ -187,7 +193,7 @@ get_release_tag_version() {
 get_new_stable_branch() {
     local first=`expr match "$1" '\([0-9]\+\)'`
     local second=`expr match "$1" '[0-9]\+\.\([0-9]\+\)'`
-    echo "MOODLE_$first$second_STABLE"
+    echo "MOODLE_${first}${second}_STABLE"
 }
 output() {
     if $_verbose ; then
@@ -520,12 +526,10 @@ for branch in ${branches[@]};
             if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
                 output "  - Bumping master in prep for next release"
                 # Ahh - it's a major release and we've just bumped master to the next major.
-                # Now we need to bump it once more as a weekly to add set it to the next version and add
-                # the dev postfix to the release.
-                # Commenting this out as far as we are entering here in the on-sysc period and we must keep
-                # $version 100% the same with latest stable. Perhaps we need here a new type "move-to-dev"
-                # so only $release, $maturity and $branch are moved, but keeping $version unmodified. Eloy 20131025.
-                # bump_version "master" "weekly" "$pwd" "0"
+                # Now we need to bump it once more as a 'back-to-dev' to change the comment, the release name
+                # and the maturity. Note we keep the $version unmodified because we are entering in the
+                # on-sync period for some (usually 3) weeks.
+                bump_version "master" "back-to-dev" "$pwd" "0"
             fi
         fi
     fi
@@ -556,6 +560,13 @@ else
         echo "Please tag the release branches now and then propogate these changes to the integration repository with the following:"
     fi
     printf "$localbuffer\n";
+    # If any tag has been added locally, add a comment about CI and pushing the tag.
+    if [[ $localbuffer =~ 'git tag -a' ]]; then
+        echo ""
+        echo "Once CI jobs have ended successfully, you can safely push the release tag(s) to the integration repository:"
+        echo ""
+        echo "git push origin --tags"
+    fi
 fi
 echo ""
 
