@@ -22,6 +22,7 @@ _verbose=true # Make lots of noise.
 _type='weekly' # The type of release we are making.
 _forcebump=true # If true we make the bump regardless
 _onlybranch='' # Gets set to a single branch if we only want one.
+_reset=false # To discard any local change not available @ integration.git
 _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync");
 _nocreate=false
@@ -226,6 +227,9 @@ show_help() {
     echo "  ${bold}-q${normal}, ${bold}--quiet${normal}"
     echo "      If set this script produces no progress output. It'll let you know when "
     echo "      its finished however."
+    echo "  ${bold}-r${normal}, ${bold}--reset${normal}"
+    echo "      Use this (exclusive) option to discard any current change in the local git"
+    echo "      clone (gitmirror dir), reseting it back to origin (integration.git)."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
     echo "      The type of release. Must be one of weekly (default), minor or major."
     echo "      (also beta, rc, on-demand and on-sync are supported, they are basically"
@@ -249,6 +253,19 @@ show_help() {
     echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for master only"
     echo "  ${bold}./prerelease.sh -t on-demand 2${normal} runs a weekly on-demand (pre-release) for master only"
     echo "  ${bold}./prerelease.sh -t on-sync 2${normal} runs a weekly on-sync (post-release) for master only"
+    exit 0
+}
+
+reset_repo() {
+    # Combine all possible branches together without dupes. We'll be reseting those branches.
+    allbranches=(${weeklybranches[@]} ${minorbranches[@]} ${majorbranches[@]} ${betabranches[@]} ${rcbranches[@]})
+    allbranches=$(IFS=$'\n' && echo $(sort -u <<< "${allbranches[*]}"))
+    for branch in ${allbranches}; do
+        echo "  - Reseting ${branch} to origin/${branch}."
+        git checkout --quiet ${branch} && git reset --hard --quiet origin/${branch}
+    done
+    echo "  - Discarding any modification in the worktree."
+    git clean -dfx
     exit 0
 }
 
@@ -289,7 +306,10 @@ do
             _verbose=false
             shift # Get rid of the flag.
             ;;
-
+        -r | --reset)
+            _reset=true
+            shift # Get rid of the flag.
+            ;;
         -h | --help)
             _showhelp=true
             shift
@@ -315,6 +335,12 @@ if [[ ! -d ${mydir}/gitmirror ]] ; then
 fi
 cd ${mydir}/gitmirror
 pwd=`pwd`
+
+# Perform a reset before anything else. It's an exlusive and final option.
+if $_reset ; then
+    output "${G}Reseting all local branches to origin and discarding worktree changes.${N}"
+    reset_repo
+fi
 
 if [[ $_rc -gt 0 ]] ; then
     output "${G}Starting pre-release processing for release candidate $_rc release.${N}"
