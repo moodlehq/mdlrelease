@@ -2,17 +2,18 @@
 
 // We need the branch and the bump type (weekly. minor, major)
 try {
-    $shortoptions = 'b:t:p:r:';
-    $longoptions = array('branch:', 'type:', 'path:', 'rc:');
+    $shortoptions = 'b:t:p:r:d:';
+    $longoptions = array('branch:', 'type:', 'path:', 'rc:', 'date:');
 
     $options = getopt($shortoptions, $longoptions);
     $branch = get_option_from_options_array($options, 'b', 'branch');
     $type = get_option_from_options_array($options, 't', 'type');
     $path = get_option_from_options_array($options, 'p', 'path');
     $rc = get_option_from_options_array($options, 'r', 'rc');
+    $date = get_option_from_options_array($options, 'd', 'date');
     $path = rtrim($path, '/').'/version.php';
 
-    $release = bump_version($path, $branch, $type, $rc);
+    $release = bump_version($path, $branch, $type, $rc, $date);
     $result = 0;
 } catch (Exception $ex) {
     $release = $ex->getMessage();
@@ -23,7 +24,7 @@ exit($result);
 
 
 
-function bump_version($path, $branch, $type, $rc = null) {
+function bump_version($path, $branch, $type, $rc = null, $date = null) {
 
     validate_branch($branch);
     validate_type($type);
@@ -66,7 +67,7 @@ function bump_version($path, $branch, $type, $rc = null) {
     $releasenew = $releasecurrent = $matches['release'];
     $releasequote = $matches['quote'];
     $buildcurrent = $matches['build'];
-    $buildnew = $today;
+    $buildnew = empty($date) ? $today : $date; // Observe forced date.
 
     if (!$is19) {
         if (!preg_match('# *\$branch *= *(?P<quote>\'|")(?P<branch>\d+)\1#m', $versionfile, $matches)) {
@@ -109,6 +110,12 @@ function bump_version($path, $branch, $type, $rc = null) {
             $versionmajornew = (int)$versionmajornew + 1;
             $versionmajornew = (string)$versionmajornew;
             $versionminornew = '00';
+            // Now handle builddate for releases.
+            if (empty($date)) { // If no date has been forced, stable minors always are released on Monday.
+                if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
+                    $buildnew = date('Ymd', strtotime('next monday'));
+                }
+            }
         }
 
     } else {
@@ -147,6 +154,12 @@ function bump_version($path, $branch, $type, $rc = null) {
             $branchnew = str_replace('.', '', $releasenew);
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_STABLE';
+            // Now handle builddate for releases.
+            if (empty($date)) { // If no date has been forced, master majors always are released on Monday.
+                if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
+                    $buildnew = date('Ymd', strtotime('next Monday'));
+                }
+            }
         }
     }
 

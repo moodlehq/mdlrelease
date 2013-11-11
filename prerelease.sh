@@ -22,6 +22,8 @@ _verbose=true # Make lots of noise.
 _type='weekly' # The type of release we are making.
 _forcebump=true # If true we make the bump regardless
 _onlybranch='' # Gets set to a single branch if we only want one.
+_reset=false # To discard any local change not available @ integration.git
+_date='' # To enforce any build date at any moment
 _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync");
 _nocreate=false
@@ -79,8 +81,9 @@ all_clean() {
 # Argument 2: type
 # Argument 3: pwd
 # Argument 4: rc
+# Argument 5: date
 bump_version() {
-    local release=`php ${mydir}/bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4"`
+    local release=`php ${mydir}/bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4" -d "$5"`
     local outcome=$?
     local return=0
     local weekly=false
@@ -213,6 +216,11 @@ show_help() {
     echo "      Limits the operation to just the branch that has been given."
     echo "      By default the appropriate branches for the release type will all be"
     echo "      operated on."
+    echo "  ${bold}-d${normal}, ${bold}--date${normal}"
+    echo "      Enforces a build date for all the branches being processed. The use of"
+    echo "      this option overrides the default behavior, that is the following:"
+    echo "         1) "next monday" is used for major and minor releases."
+    echo "         2) "today" is used for any other release type."
     echo "  ${bold}-h${normal}, ${bold}--help${normal}"
     echo "      Prints this help."
     echo "  ${bold}-n${normal}, ${bold}--not-forced${normal}"
@@ -226,6 +234,9 @@ show_help() {
     echo "  ${bold}-q${normal}, ${bold}--quiet${normal}"
     echo "      If set this script produces no progress output. It'll let you know when "
     echo "      its finished however."
+    echo "  ${bold}-r${normal}, ${bold}--reset${normal}"
+    echo "      Use this (exclusive) option to discard any current change in the local git"
+    echo "      clone (gitmirror dir), reseting it back to origin (integration.git)."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
     echo "      The type of release. Must be one of weekly (default), minor or major."
     echo "      (also beta, rc, on-demand and on-sync are supported, they are basically"
@@ -249,6 +260,19 @@ show_help() {
     echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for master only"
     echo "  ${bold}./prerelease.sh -t on-demand 2${normal} runs a weekly on-demand (pre-release) for master only"
     echo "  ${bold}./prerelease.sh -t on-sync 2${normal} runs a weekly on-sync (post-release) for master only"
+    exit 0
+}
+
+reset_repo() {
+    # Combine all possible branches together without dupes. We'll be reseting those branches.
+    allbranches=(${weeklybranches[@]} ${minorbranches[@]} ${majorbranches[@]} ${betabranches[@]} ${rcbranches[@]})
+    allbranches=$(IFS=$'\n' && echo $(sort -u <<< "${allbranches[*]}"))
+    for branch in ${allbranches}; do
+        echo "  - Reseting ${branch} to origin/${branch}."
+        git checkout --quiet ${branch} && git reset --hard --quiet origin/${branch}
+    done
+    echo "  - Discarding any modification in the worktree."
+    git clean -dfx
     exit 0
 }
 
@@ -289,7 +313,15 @@ do
             _verbose=false
             shift # Get rid of the flag.
             ;;
-
+        -d | --date)
+            shift # Get rid of the flag.
+            _date="$1"
+            shift # Get rid of the value.
+            ;;
+        -r | --reset)
+            _reset=true
+            shift # Get rid of the flag.
+            ;;
         -h | --help)
             _showhelp=true
             shift
@@ -315,6 +347,12 @@ if [[ ! -d ${mydir}/gitmirror ]] ; then
 fi
 cd ${mydir}/gitmirror
 pwd=`pwd`
+
+# Perform a reset before anything else. It's an exlusive and final option.
+if $_reset ; then
+    output "${G}Reseting all local branches to origin and discarding worktree changes.${N}"
+    reset_repo
+fi
 
 if [[ $_rc -gt 0 ]] ; then
     output "${G}Starting pre-release processing for release candidate $_rc release.${N}"
@@ -515,7 +553,7 @@ for branch in ${branches[@]};
     if (( $newcommits > 0 )) || $_forcebump ; then
         # Bump the version file.
         output "  - Bumping version."
-        if bump_version "$branch" "$_type" "$pwd" "$_rc" ; then
+        if bump_version "$branch" "$_type" "$pwd" "$_rc" "$_date"; then
             # Yay it worked!
             if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
                 output "  - Bumping master in prep for next release"
@@ -525,7 +563,7 @@ for branch in ${branches[@]};
                 # Commenting this out as far as we are entering here in the on-sysc period and we must keep
                 # $version 100% the same with latest stable. Perhaps we need here a new type "move-to-dev"
                 # so only $release, $maturity and $branch are moved, but keeping $version unmodified. Eloy 20131025.
-                # bump_version "master" "weekly" "$pwd" "0"
+                # bump_version "master" "weekly" "$pwd" "0" ""
             fi
         fi
     fi
