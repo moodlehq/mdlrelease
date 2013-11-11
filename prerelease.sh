@@ -23,6 +23,7 @@ _type='weekly' # The type of release we are making.
 _forcebump=true # If true we make the bump regardless
 _onlybranch='' # Gets set to a single branch if we only want one.
 _reset=false # To discard any local change not available @ integration.git
+_show=false # To show all the changes performed locally, comparing with integration.git
 _date='' # To enforce any build date at any moment
 _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync");
@@ -237,6 +238,9 @@ show_help() {
     echo "  ${bold}-r${normal}, ${bold}--reset${normal}"
     echo "      Use this (exclusive) option to discard any current change in the local git"
     echo "      clone (gitmirror dir), reseting it back to origin (integration.git)."
+    echo "  ${bold}-s${normal}, ${bold}--show${normal}"
+    echo "      Use this (exclusive) option to display all the current changes applied"
+    echo "      to the local git clone (gitmirror dir), comparing with integration.git."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
     echo "      The type of release. Must be one of weekly (default), minor or major."
     echo "      (also beta, rc, on-demand and on-sync are supported, they are basically"
@@ -273,6 +277,84 @@ reset_repo() {
     done
     echo "  - Discarding any modification in the worktree."
     git clean -dfx
+    exit 0
+}
+
+show_changes() {
+    changedbranches=()
+    counter=1
+    # Combine all possible branches together without dupes. We'll be looking for changes in those branches.
+    allbranches=(${weeklybranches[@]} ${minorbranches[@]} ${majorbranches[@]} ${betabranches[@]} ${rcbranches[@]})
+    allbranches=$(IFS=$'\n' && echo $(sort -u <<< "${allbranches[*]}"))
+    for branch in ${allbranches}; do
+        logs="$( git log origin/${branch}..${branch} --oneline )"
+        if [[ -n "${logs}" ]] ; then
+            count=$(echo "${logs}" | wc -l)
+            echo "  - Changes found in ${R}${branch}${N} (${count} commits). [${counter}]"
+            changedbranches[${counter}]="${branch}"
+            maxfound=${counter}
+            let counter++
+            IFS=$'\n'
+            for line in ${logs} ; do
+                echo "      -> ${line}"
+            done
+        else
+            echo "  - No changes in ${branch}"
+        fi
+    done
+    echo
+    option="L" # Default to list status
+    while [[ "${option}" != "Q" ]]  ; do
+        case "${option}" in
+            L)  # list status.
+                if [ ${#changedbranches[@]} -eq 0 ]; then
+                    echo "There are no local changes. Friendly exiting. Bye!"
+                    exit 0
+                else
+                    echo "These branches have local changes"
+                    for i in "${!changedbranches[@]}"; do
+                        echo "  [${i}] => ${changedbranches[$i]}"
+                    done
+                fi
+                ;;
+
+            A)  # show all branches details.
+                if [ ${#changedbranches[@]} -eq 0 ]; then
+                    echo "There are no local changes. Friendly exiting. Bye!"
+                    exit 0
+                else
+                    for i in "${!changedbranches[@]}"; do
+                        echo "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
+                        read -sn1
+                        LESS=-+F git diff origin/${changedbranches[$i]}..${changedbranches[$i]}
+                    done
+                fi
+                ;;
+
+            [123456789]) # show 1 branch detail.
+                if [[ ${option} -gt ${maxfound} ]]; then
+                    echo "Option out of range, please use a correct alternative [1..${maxfound}]."
+                else
+                    echo "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
+                    read -sn1
+                    LESS=-+F git diff origin/${changedbranches[$option]}..${changedbranches[$option]}
+                fi
+                ;;
+
+            Q)  # bye!
+                exit
+                ;;
+
+            *)
+                echo "Incorrect option, please try again!"
+                ;;
+        esac
+        echo
+        echo "${G}Pick an option ${N}([${R}L${N}]ist status, [[${R}1..${maxfound}${N}] => 1 branch details, [${R}A${N}]ll branches details, [${R}Q${N}]uit):"
+        read -n1 option
+        option=$(echo $option | tr '[:lower:]' '[:upper:]')
+        echo
+    done
     exit 0
 }
 
@@ -322,6 +404,10 @@ do
             _reset=true
             shift # Get rid of the flag.
             ;;
+        -s | --show)
+            _show=true
+            shift # Get rid of the flag.
+            ;;
         -h | --help)
             _showhelp=true
             shift
@@ -352,6 +438,12 @@ pwd=`pwd`
 if $_reset ; then
     output "${G}Reseting all local branches to origin and discarding worktree changes.${N}"
     reset_repo
+fi
+
+# Show all local changes before anything else. It's an exclusive and final option.
+if $_show ; then
+    output "${G}Show changes in all the local branches compared with integration.git.${N}"
+    show_changes
 fi
 
 if [[ $_rc -gt 0 ]] ; then
