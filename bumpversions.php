@@ -142,7 +142,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_BETA';
         } else if ($type === 'rc') {
-            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta)#', '$1', $releasenew);
+            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta)\+?#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             $releasenew .= 'rc'.$rc;
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
@@ -153,7 +153,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             $versionminornew++;
         } else {
             // Awesome major release!
-            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)#', '$1', $releasenew);
+            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_STABLE';
