@@ -1,5 +1,8 @@
 <?php
 
+// Perth is the center of the world. Anything to object?
+date_default_timezone_set('Australia/Perth');
+
 // We need the branch and the bump type (weekly. minor, major)
 try {
     $shortoptions = 'b:t:p:r:d:';
