@@ -154,6 +154,15 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'on-sync') {
             $versionminornew++;
+        } else if ($type === 'back-to-dev') {
+            if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
+                // Must be immediately after a major release. Bump comment, release and maturity.
+                $commentnew = '// YYYYMMDD      = weekly release date of this DEV branch.';
+                $releasenew = (float)$releasenew + 0.1;
+                $branchnew = str_replace('.', '', $releasenew);
+                $releasenew = (string)$releasenew.'dev';
+                $maturitynew = 'MATURITY_ALPHA';
+            }
         } else {
             // Awesome major release!
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
@@ -236,7 +245,7 @@ function validate_branch($branch) {
 }
 
 function validate_type($type) {
-    $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync');
+    $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync', 'back-to-dev');
     if (!in_array($type, $types)) {
         throw new Exception('Invalid type given.', __LINE__);
     }
