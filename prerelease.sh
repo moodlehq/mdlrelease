@@ -133,7 +133,7 @@ bump_version() {
                     # Exciting
                     local newbranch=`get_new_stable_branch "$release"` # MOODLE_26_STABLE
                     output = "  - Creating new stable branch $newbranch"
-                    git branch "$newbranch"
+                    git branch -f "$newbranch" master # create from (or reset to) master
                     integrationpush="$integrationpush $newbranch"
                 fi
 
@@ -191,7 +191,7 @@ get_release_tag_version() {
 get_new_stable_branch() {
     local first=`expr match "$1" '\([0-9]\+\)'`
     local second=`expr match "$1" '[0-9]\+\.\([0-9]\+\)'`
-    echo "MOODLE_$first$second_STABLE"
+    echo "MOODLE_${first}${second}_STABLE"
 }
 output() {
     if $_verbose ; then
@@ -648,14 +648,7 @@ for branch in ${branches[@]};
         if bump_version "$branch" "$_type" "$pwd" "$_rc" "$_date"; then
             # Yay it worked!
             if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
-                output "  - Bumping master in prep for next release"
-                # Ahh - it's a major release and we've just bumped master to the next major.
-                # Now we need to bump it once more as a weekly to add set it to the next version and add
-                # the dev postfix to the release.
-                # Commenting this out as far as we are entering here in the on-sysc period and we must keep
-                # $version 100% the same with latest stable. Perhaps we need here a new type "move-to-dev"
-                # so only $release, $maturity and $branch are moved, but keeping $version unmodified. Eloy 20131025.
-                # bump_version "master" "weekly" "$pwd" "0" ""
+                output "  - Don't forget to read the notes."
             fi
         fi
     fi
@@ -677,21 +670,32 @@ if $_pushup ; then
 
 else
     # We're not pushing up to integration so instead give the integrator the commands to do so.
-    localbuffer="$localbuffer\ngit push origin$integrationpush"
+    localbuffer="\ngit push origin$integrationpush\n$localbuffer"
     output ""
     echo "Pre-release processing has been completed."
+    echo "Changes can be reviewed using the --show option."
     if [ $_type = "weekly" ] ; then
         echo "Changes have ${R}not${N} been propagated to the integration repository. If you wish to do this run the following:"
     else
-        echo "Please tag the release branches now and then propogate these changes to the integration repository with the following:"
+        echo "Please propogate these changes to the integration repository with the following:"
     fi
     printf "$localbuffer\n";
+    # If any tag has been added locally, add a comment about CI and pushing the tag.
+    if [[ $localbuffer =~ 'git tag -a' ]]; then
+        echo ""
+        echo "Once CI jobs have ended successfully, you can safely push the release tag(s) to the integration repository:"
+        echo ""
+        echo "git push origin --tags"
+    fi
 fi
 echo ""
 
-if [ $_type == "major" ] ; then
-    echo "${Y}Notes${N}: "
-    echo "       As this was a major release you will need to update prerelease.sh to include the new stable branch as an expected branch."
-    echo "       As this was a major release you will need to update release.sh to include the new stable branch when releasing"
+if [ $_type == "major" ] || [ $_type == "minor" ]; then
+    if [ $_type == "major" ] ; then
+        echo "${Y}Notes${N}: "
+        echo "       As this was a major release you will need to update prerelease.sh to include the new stable branch as an expected branch."
+        echo "       As this was a major release you will need to update release.sh to include the new stable branch when releasing"
+    fi
+    echo "       Follow the instructions for major and minor releases @ http://docs.moodle.org/dev/Release_process_(Combined)#Packaging."
     echo ""
 fi

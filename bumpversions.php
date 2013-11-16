@@ -43,6 +43,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
 
     $versionmajorcurrent = null;
     $versionminorcurrent = null;
+    $commentcurrent = null;
     $releasecurrent = null;
     $buildcurrent = null;
     $branchcurrent = null;
@@ -53,16 +54,18 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
 
     $versionmajornew = null;
     $versionminornew = null;
+    $commentnew = null;
     $releasenew = null;
     $buildnew = null;
     $branchnew = null;
     $maturitynew = null;
 
-    if (!preg_match('#^ *\$version *= *(?P<major>\d{10})\.(?P<minor>\d{2})\d?#m', $versionfile, $matches)) {
+    if (!preg_match('#^ *\$version *= *(?P<major>\d{10})\.(?P<minor>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
         throw new Exception('Could not determine version.', __LINE__);
     }
     $versionmajornew = $versionmajorcurrent = $matches['major'];
     $versionminornew = $versionminorcurrent = $matches['minor'];
+    $commentnew = $commentcurrent = $matches['comment'];
 
     if (!preg_match('#^ *\$release *= *(?P<quote>\'|")(?P<release>[^ \+]+\+?) *\(Build: (?P<build>\d{8})\)\1#m', $versionfile, $matches)) {
         throw new Exception('Could not determine the release.', __LINE__);
@@ -163,6 +166,16 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
                     $buildnew = date('Ymd', strtotime('next Monday'));
                 }
             }
+            $commentnew = '// ' . $buildnew . '      = branching date YYYYMMDD - do not modify!';
+            // TODO: Move this to bump_master_ensure_higher() to keep thigs clear. Require new params.
+            // Also force version for major releases. Must match "next Monday" or --date (if specified)
+            if (empty($date)) { // If no date has been forced, master majors always are released on Monday.
+                if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
+                    $versionmajornew =  date('Ymd', strtotime('next Monday')) . '00';
+                }
+            } else {
+                $versionmajornew = $date . '00'; // Apply $date also to major versions.
+            }
         }
     }
 
@@ -176,6 +189,10 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
     // Replace the old release with the new release if they've changed.
     if ($releasecurrent !== $releasenew) {
         $versionfile = str_replace($releasequote.$releasecurrent, $releasequote.$releasenew, $versionfile);
+    }
+    // Replace the old comment with the new one if they've changed
+    if ($commentcurrent !== $commentnew) {
+        $versionfile = str_replace($commentcurrent, $commentnew, $versionfile);
     }
 
     if (!$is19) {
