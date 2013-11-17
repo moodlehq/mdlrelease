@@ -31,8 +31,8 @@ _nocreate=false
 localbuffer=""
 
 # Try to observe the "master first, then stables from older to newer" rule.
-weeklybranches=("master" "MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
-minorbranches=("MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE");
+weeklybranches=("master" "MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE" "MOODLE_26_STABLE");
+minorbranches=("MOODLE_23_STABLE" "MOODLE_24_STABLE" "MOODLE_25_STABLE" "MOODLE_26_STABLE");
 majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");

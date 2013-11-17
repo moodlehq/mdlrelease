@@ -16,6 +16,7 @@ git fetch origin
 #  * github         - git://github.com/moodle/moodle.git
 #  * gitorious      - git://github.com/moodle/moodle.git
 git push --tags public refs/remotes/origin/master:refs/heads/master \
+                        refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
                         refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE \
                         refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE \
                         refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE \
