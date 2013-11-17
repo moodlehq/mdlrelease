@@ -26,7 +26,7 @@ _reset=false # To discard any local change not available @ integration.git
 _show=false # To show all the changes performed locally, comparing with integration.git
 _date='' # To enforce any build date at any moment
 _rc=0 # Sets the release candidate version
-_types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync");
+_types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync" "back-to-dev");
 _nocreate=false
 localbuffer=""
 
@@ -90,6 +90,7 @@ bump_version() {
     local weekly=false
     local ondemand=false
     local onsync=false
+    local backtodev=false
 
     if [ "$2" == "weekly" ] ; then
         # It's a weekly release... easy!
@@ -100,6 +101,9 @@ bump_version() {
     elif [ "$2" == "on-sync" ] ; then
         # It's a on-sync relese... easy too!
         onsync=true
+    elif [ "$2" ==  "back-to-dev" ] ; then
+        # Just returning master to dev after major
+        backtodev=true
     elif [ "$1" == "master" ] && [ "$2" == "minor" ] ; then
         # It's the master branch and a minor release - master just gets a weekly.
         weekly=true
@@ -117,6 +121,8 @@ bump_version() {
                 git commit --quiet -m "on-demand release $release"
             elif $onsync ; then
                 git commit --quiet -m "weekly on-sync release $release"
+            elif $backtodev ; then
+                git commit --quiet -m "weekly back-to-dev release $release"
             else
                 git commit --quiet -m "Moodle release $release"
                 local tagversion=`get_release_tag_version "$release"` # v2.6.0
@@ -243,7 +249,7 @@ show_help() {
     echo "      to the local git clone (gitmirror dir), comparing with integration.git."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
     echo "      The type of release. Must be one of weekly (default), minor or major."
-    echo "      (also beta, rc, on-demand and on-sync are supported, they are basically"
+    echo "      (also beta, rc, back-to-dev, on-demand and on-sync are supported, they are basically"
     echo "       weeklies on master with some restrictions)."
     echo "  ${bold}--no-create${normal}"
     echo "      If this tool finds that one of the expected branches does not exist then"
@@ -488,6 +494,9 @@ case $_type in
         branches=(${rcbranches[@]})
         ;;
     "on-sync" )
+        branches=(${rcbranches[@]})
+        ;;
+    "back-to-dev" )
         branches=(${rcbranches[@]})
         ;;
 esac
