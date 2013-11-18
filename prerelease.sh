@@ -37,6 +37,13 @@ majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");
 
+# Prepare an all branches array.
+OLDIFS="$IFS"
+IFS=$'\n'
+allbranches=("${weeklybranches[@]}" "${minorbranches[@]}" "${majorbranches[@]}" "${betabranches[@]}" "${rcbranches[@]}")
+allbranches=(`for b in "${allbranches[@]}" "${allbranches[@]}" ; do echo "$b" ; done | sort -du`)
+IFS="$OLDIFS"
+
 in_array() {
     for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
     return 1
@@ -215,21 +222,22 @@ show_help() {
     echo "Before running this tool you must have run the installation script, this needs "
     echo "to be done only once."
     echo ""
-    echo "Usage: ./prelease.sh [-b <branch>|--branch <branch>] [-h|--help] [-n|--not-forced]"
-    echo "                     [-p|--pushup] [-q|--quiet] [-t <type>|--type <type>]"
+    echo "${bold}Usage:${normal}"
+    echo "  ./prelease.sh [-b <branch>|--branch <branch>] [-h|--help] [-n|--not-forced]"
+    echo "                [-p|--pushup] [-q|--quiet] [-t <type>|--type <type>]"
     echo ""
+    echo "${bold}Arguments:${normal}"
     echo "The following options can be used to control how this script runs:"
     echo "  ${bold}-b${normal}, ${bold}--branch${normal}"
     echo "      Limits the operation to just the branch that has been given."
     echo "      By default the appropriate branches for the release type will all be"
     echo "      operated on."
+    echo "      [${allbranches[@]}]"
     echo "  ${bold}-d${normal}, ${bold}--date${normal}"
     echo "      Enforces a build date for all the branches being processed. The use of"
     echo "      this option overrides the default behavior, that is the following:"
-    echo "         1) "next monday" is used for major and minor releases."
-    echo "         2) "today" is used for any other release type."
-    echo "  ${bold}-h${normal}, ${bold}--help${normal}"
-    echo "      Prints this help."
+    echo "         1) \"next monday\" is used for major and minor releases."
+    echo "         2) \"today\" is used for any other release type."
     echo "  ${bold}-n${normal}, ${bold}--not-forced${normal}"
     echo "      By default the version file on all branches will be bumped. If this option"
     echo "      has been specified then the version file will only be bumped if there are"
@@ -241,27 +249,35 @@ show_help() {
     echo "  ${bold}-q${normal}, ${bold}--quiet${normal}"
     echo "      If set this script produces no progress output. It'll let you know when "
     echo "      its finished however."
-    echo "  ${bold}-r${normal}, ${bold}--reset${normal}"
-    echo "      Use this (exclusive) option to discard any current change in the local git"
-    echo "      clone (gitmirror dir), reseting it back to origin (integration.git)."
-    echo "  ${bold}-s${normal}, ${bold}--show${normal}"
-    echo "      Use this (exclusive) option to display all the current changes applied"
-    echo "      to the local git clone (gitmirror dir), comparing with integration.git."
     echo "  ${bold}-t${normal}, ${bold}--type${normal}"
-    echo "      The type of release. Must be one of weekly (default), minor or major."
-    echo "      (also beta, rc, back-to-dev, on-demand and on-sync are supported, they are basically"
-    echo "       weeklies on master with some restrictions)."
+    echo "      The type of release to prepare."
+    echo "      [${_types[@]}]"
     echo "  ${bold}--no-create${normal}"
     echo "      If this tool finds that one of the expected branches does not exist then"
     echo "      by default it creates it. If this option is specified the tool will not"
     echo "      create the branch but will exit with an error."
+    echo ""
+    echo "  ${bold}-h${normal}, ${bold}--help${normal}"
+    echo "      Prints this help and exits."
+    echo ""
+    echo "  ${bold}-r${normal}, ${bold}--reset${normal}"
+    echo "      Use this (exclusive) option to discard any current change in the local git"
+    echo "      clone (gitmirror dir), reseting it back to origin (integration.git)."
+    echo "      Causes the script to exit."
+    echo ""
+    echo "  ${bold}-s${normal}, ${bold}--show${normal}"
+    echo "      Use this (exclusive) option to display all the current changes applied"
+    echo "      to the local git clone (gitmirror dir), comparing with integration.git."
+    echo "      If this option is specified it will output what it wants and the script"
+    echo "      Causes the script to exit."
     echo ""
     echo "If no arguments are provided to this script it prepares a weekly release on all "
     echo "expected branches."
     echo "For more information about the release process and how to go about it please "
     echo "have a look at:    https://github.com/moodlehq/mdlrelease"
     echo ""
-    echo "Examples:"
+    echo "${bold}Examples:${normal}"
+    echo ""
     echo "  ${bold}./prerelease.sh${normal} runs a standard weekly release"
     echo "  ${bold}./prerelease.sh -b MOODLE_19_STABLE${normal} runs a weekly release for one branch"
     echo "  ${bold}./prerelease.sh -t minor${normal} runs a minor release"
@@ -274,63 +290,71 @@ show_help() {
 }
 
 reset_repo() {
-    # Combine all possible branches together without dupes. We'll be reseting those branches.
-    allbranches=(${weeklybranches[@]} ${minorbranches[@]} ${majorbranches[@]} ${betabranches[@]} ${rcbranches[@]})
-    allbranches=$(IFS=$'\n' && echo $(sort -u <<< "${allbranches[*]}"))
-    for branch in ${allbranches}; do
-        echo "  - Reseting ${branch} to origin/${branch}."
-        git checkout --quiet ${branch} && git reset --hard --quiet origin/${branch}
+    for branch in ${allbranches[@]}; do
+        git show-ref --verify --quiet refs/heads/$branch
+        if [[ $? -ge 1 ]] ; then
+            output "  - ${Y}Expected ${branch} not found.${N}";
+            output "    It will be automatically created the next time you run a release";
+            output "    unless you specify the --no-create option";
+        else
+            output "  - Reseting ${branch} to origin/${branch}."
+            git checkout --quiet ${branch} && git reset --hard --quiet origin/${branch}
+        fi
     done
-    echo "  - Discarding any modification in the worktree."
-    git clean -dfx
+    output "  - Discarding any modification in the worktree."
+    git clean -dfxq
     exit 0
 }
 
 show_changes() {
     changedbranches=()
     counter=1
-    # Combine all possible branches together without dupes. We'll be looking for changes in those branches.
-    allbranches=(${weeklybranches[@]} ${minorbranches[@]} ${majorbranches[@]} ${betabranches[@]} ${rcbranches[@]})
-    allbranches=$(IFS=$'\n' && echo $(sort -u <<< "${allbranches[*]}"))
-    for branch in ${allbranches}; do
-        logs="$( git log origin/${branch}..${branch} --oneline )"
-        if [[ -n "${logs}" ]] ; then
-            count=$(echo "${logs}" | wc -l)
-            echo "  - Changes found in ${R}${branch}${N} (${count} commits). [${counter}]"
-            changedbranches[${counter}]="${branch}"
-            maxfound=${counter}
-            let counter++
-            IFS=$'\n'
-            for line in ${logs} ; do
-                echo "      -> ${line}"
-            done
+    for branch in ${allbranches[@]}; do
+        git show-ref --verify --quiet refs/heads/$branch
+        if [[ $? -ge 1 ]] ; then
+            output "  - ${Y}Expected ${branch} not found.${N}";
+            output "    It will be automatically created the next time you run a release";
+            output "    unless you specify the --no-create option";
         else
-            echo "  - No changes in ${branch}"
+            logs="$( git log origin/${branch}..${branch} --oneline )"
+            if [[ -n "${logs}" ]] ; then
+                count=$(echo "${logs}" | wc -l)
+                output "  - Changes found in ${R}${branch}${N} (${count} commits). [${counter}]"
+                changedbranches[${counter}]="${branch}"
+                maxfound=${counter}
+                let counter++
+                IFS=$'\n'
+                for line in ${logs} ; do
+                    output "      -> ${line}"
+                done
+            else
+                output "  - No changes in ${branch}"
+            fi
         fi
     done
-    echo
+    output ""
     option="L" # Default to list status
     while [[ "${option}" != "Q" ]]  ; do
         case "${option}" in
             L)  # list status.
                 if [ ${#changedbranches[@]} -eq 0 ]; then
-                    echo "There are no local changes. Friendly exiting. Bye!"
+                    output "There are no local changes. Friendly exiting. Bye!"
                     exit 0
                 else
-                    echo "These branches have local changes"
+                    output "These branches have local changes"
                     for i in "${!changedbranches[@]}"; do
-                        echo "  [${i}] => ${changedbranches[$i]}"
+                        output "  [${i}] => ${changedbranches[$i]}"
                     done
                 fi
                 ;;
 
             A)  # show all branches details.
                 if [ ${#changedbranches[@]} -eq 0 ]; then
-                    echo "There are no local changes. Friendly exiting. Bye!"
+                    output "There are no local changes. Friendly exiting. Bye!"
                     exit 0
                 else
                     for i in "${!changedbranches[@]}"; do
-                        echo "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
+                        output "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
                         read -sn1
                         LESS=-+F git diff origin/${changedbranches[$i]}..${changedbranches[$i]}
                     done
@@ -339,9 +363,9 @@ show_changes() {
 
             [123456789]) # show 1 branch detail.
                 if [[ ${option} -gt ${maxfound} ]]; then
-                    echo "Option out of range, please use a correct alternative [1..${maxfound}]."
+                    output "Option out of range, please use a correct alternative [1..${maxfound}]."
                 else
-                    echo "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
+                    output "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
                     read -sn1
                     LESS=-+F git diff origin/${changedbranches[$option]}..${changedbranches[$option]}
                 fi
@@ -352,14 +376,14 @@ show_changes() {
                 ;;
 
             *)
-                echo "Incorrect option, please try again!"
+                output "Incorrect option, please try again!"
                 ;;
         esac
-        echo
-        echo "${G}Pick an option ${N}([${R}L${N}]ist status, [[${R}1..${maxfound}${N}] => 1 branch details, [${R}A${N}]ll branches details, [${R}Q${N}]uit):"
+        output ""
+        output "${G}Pick an option ${N}([${R}L${N}]ist status, [[${R}1..${maxfound}${N}] => 1 branch details, [${R}A${N}]ll branches details, [${R}Q${N}]uit):"
         read -n1 option
         option=$(echo $option | tr '[:lower:]' '[:upper:]')
-        echo
+        output ""
     done
     exit 0
 }
@@ -462,7 +486,6 @@ fi
 all_clean
 output "  - Git repository clean"
 output "  - Fetching remotes"
-
 
 git fetch --all --prune --quiet
 if [[ $? -ge 1 ]] ; then
