@@ -147,15 +147,15 @@ fi
 #  * github         - git@github.com:moodle/moodle.git
 #  * gitorious      - git@gitorious.org:moodle/moodle.git
 #  * bitbucket      - git@bitbucket.org:moodle/moodle.git
-git push --tags public refs/remotes/origin/master:refs/heads/master \
-                        refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
-                        refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE \
-                        refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE \
-                        refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE \
-                        refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
-# Discontinued 20130708 - refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE \
-# Discontinued 20130114 - refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE \
-# Discontinued 20120706 - refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE \
+git push ${pushargs} public refs/remotes/origin/master:refs/heads/master \
+                            refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
+                            refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE \
+                            refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE \
+                            refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE \
+                            refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
+# Discontinued 20130708 -   refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE \
+# Discontinued 20130114 -   refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE \
+# Discontinued 20120706 -   refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE \
 
 output "${G}Done!${N}"
 exit 0
