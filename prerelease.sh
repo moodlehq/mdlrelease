@@ -356,7 +356,7 @@ show_changes() {
                     for i in "${!changedbranches[@]}"; do
                         output "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
                         read -sn1
-                        LESS=-+F git diff origin/${changedbranches[$i]}..${changedbranches[$i]}
+                        LESS=-+F-r git diff origin/${changedbranches[$i]}..${changedbranches[$i]}
                     done
                 fi
                 ;;
@@ -367,7 +367,7 @@ show_changes() {
                 else
                     output "You are going to view ${G}${changedbranches[$option]}${N} local changes. Press any key."
                     read -sn1
-                    LESS=-+F git diff origin/${changedbranches[$option]}..${changedbranches[$option]}
+                    LESS=-+F-r git diff origin/${changedbranches[$option]}..${changedbranches[$option]}
                 fi
                 ;;
 
