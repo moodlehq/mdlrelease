@@ -365,7 +365,7 @@ show_changes() {
                 if [[ ${option} -gt ${maxfound} ]]; then
                     output "Option out of range, please use a correct alternative [1..${maxfound}]."
                 else
-                    output "You are going to view ${G}${changedbranches[$i]}${N} local changes. Press any key."
+                    output "You are going to view ${G}${changedbranches[$option]}${N} local changes. Press any key."
                     read -sn1
                     LESS=-+F git diff origin/${changedbranches[$option]}..${changedbranches[$option]}
                 fi
