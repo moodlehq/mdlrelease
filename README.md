@@ -43,22 +43,15 @@ Set up is dead easy thanks to a the installation script:
 
     git clone git://github.com/moodlehq/mdlrelease.git
     cd mdlrelease
-    ./install.sh yourmoodleusername
+    ./install.sh protocol username
+
+protocol: defaults to 'ssh', also accepts 'https'.
+username: ignored for 'ssh' (keys are used there), optional for 'https' (git will ask for it if not set).
+
+For more info about the protocols and their differences, read the "Setup required for new iTeam member" article.
 
 The installation script prepares a Moodle repository and the necessary branches. As this involves a Moodle checkout the process can take some time to complete.
 Please be patient.
-
-Update
-------
-The old version of this tool required you to manually complete several steps and think things through.
-This tool now does all of that for you but it has changed the remote repository structure of the gitmirror checkout.
-An upgrade script has been included but you must manually run it.
-
-    ./update.sh
-
-Run that once only if you are updating versions of this tool.
-Please note I've not tested it, it should work, if it doesn't please fix it and pass it onto the next person.
-If in doubt delete the checkout you have and re-run install.sh
 
 Release types
 -----------------
