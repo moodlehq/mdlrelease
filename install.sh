@@ -36,6 +36,17 @@ else
     exit
 fi
 
+if [ -d gitmirror ]; then
+    read -r -p "Directory gitmirror already exists. Do you agree to remove it? [y/N] " response
+    response="$(tr [A-Z] [a-z] <<< "${response}")"
+    if [[ $response =~ ^(yes|y)$ ]]; then
+        rm -rf gitmirror && echo "Directory removed" || echo "Unable to remove directory gitmirror. Aborting"; exit
+    else
+        echo "Installation cancelled"
+        exit
+    fi
+fi
+
 git clone ${remotei} gitmirror
 cd gitmirror
 
