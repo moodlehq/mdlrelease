@@ -637,7 +637,7 @@ for branch in ${branches[@]};
     # Now merge in install strings.
     if $mergestrings ; then
         output "  - Merging install strings..."
-        git fetch --quiet git://git.moodle.org/moodle-install.git $mergestringsbranch && git merge FETCH_HEAD --no-edit --quiet
+        git fetch --quiet https://git.in.moodle.com/amosbot/moodle-install.git $mergestringsbranch && git merge FETCH_HEAD --no-edit --quiet
     fi
 
     # Now fix SVG images if need be.
