@@ -151,6 +151,12 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_RC';
         } else if ($type === 'on-demand') {
+            // Add the + if missing (normally applies to post betas & rcs only,
+            // but it's not wrong to generalize it to any on-demand).
+            if (strpos($releasenew, '+') === false) {
+                // Add the +
+                $releasenew .= '+';
+            }
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'on-sync') {
             $versionminornew++;
