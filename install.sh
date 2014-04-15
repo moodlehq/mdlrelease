@@ -48,6 +48,14 @@ if [ -d gitmirror ]; then
 fi
 
 git clone ${remotei} gitmirror
+if [[ $? -ge 1 ]] ; then
+    # Drat it failed to clone. I bet you are a remote worker and either forgot to connect to the VPN or forgot to
+    # specify https as the protocol.
+    # Either way the gitmirror directory doesn't exist, we need to exit before we screw up your mdlrelease checkout.
+    echo "Failed to clone the Moodle repository. Check the protocol, ${protocol} used. ($?)"
+    exit 1
+fi
+
 cd gitmirror
 
 # Set a push URL for the origin (integration) remote repository.
