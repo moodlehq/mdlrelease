@@ -1,6 +1,14 @@
 #!/bin/bash
 # This script performs required pre-release processing.
 
+# Include config to get access to branch information.
+if [ -f $(dirname $0)/config.sh ]; then
+    source $(dirname $0)/config.sh
+else
+    echo "Unable to include config.sh"
+    exit 1
+fi
+
 # Reset to normal.
 N="$(tput setaf 9)"
 # Red.
@@ -32,8 +40,8 @@ localbuffer=""
 
 # Try to observe the "master first, then stables from older to newer" rule.
 # We don't make a weekly release of the security only branch any more. It is however still released during a minor release.
-weeklybranches=("master" "MOODLE_26_STABLE" "MOODLE_27_STABLE");
-minorbranches=("MOODLE_25_STABLE" "MOODLE_26_STABLE" "MOODLE_27_STABLE");
+weeklybranches=( "master" "${STABLEBRANCHES[@]}" );
+minorbranches=( "${SECURITYBRANCHES[@]}" "${STABLEBRANCHES[@]}" );
 majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");
@@ -41,8 +49,7 @@ rcbranches=("master");
 # Prepare an all branches array.
 OLDIFS="$IFS"
 IFS=$'\n'
-allbranches=("${weeklybranches[@]}" "${minorbranches[@]}" "${majorbranches[@]}" "${betabranches[@]}" "${rcbranches[@]}")
-allbranches=(`for b in "${allbranches[@]}" "${allbranches[@]}" ; do echo "$b" ; done | sort -du`)
+allbranches=($(for b in "master" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 in_array() {
@@ -145,7 +152,7 @@ bump_version() {
 
                 if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
                     # Exciting
-                    local newbranch=`get_new_stable_branch "$release"` # MOODLE_26_STABLE
+                    local newbranch=`get_new_stable_branch "$release"` # MOODLE_XX_STABLE
                     output = "  - Creating new stable branch $newbranch"
                     git branch -f "$newbranch" master # create from (or reset to) master
                     integrationpush="$integrationpush $newbranch"
