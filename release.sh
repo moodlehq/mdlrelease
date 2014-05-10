@@ -148,6 +148,7 @@ fi
 #  * gitorious      - git@gitorious.org:moodle/moodle.git
 #  * bitbucket      - git@bitbucket.org:moodle/moodle.git
 git push ${pushargs} public refs/remotes/origin/master:refs/heads/master \
+                            refs/remotes/origin/MOODLE_27_STABLE:refs/heads/MOODLE_27_STABLE \
                             refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
                             refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE \
                             refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE

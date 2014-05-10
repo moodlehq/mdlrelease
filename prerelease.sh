@@ -32,8 +32,8 @@ localbuffer=""
 
 # Try to observe the "master first, then stables from older to newer" rule.
 # We don't make a weekly release of the security only branch any more. It is however still released during a minor release.
-weeklybranches=("master" "MOODLE_25_STABLE" "MOODLE_26_STABLE");
-minorbranches=("MOODLE_24_STABLE" "MOODLE_25_STABLE" "MOODLE_26_STABLE");
+weeklybranches=("master" "MOODLE_26_STABLE" "MOODLE_27_STABLE");
+minorbranches=("MOODLE_24_STABLE" "MOODLE_25_STABLE" "MOODLE_26_STABLE" "MOODLE_27_STABLE");
 majorbranches=("master");
 betabranches=("master");
 rcbranches=("master");
