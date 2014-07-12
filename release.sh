@@ -150,8 +150,8 @@ fi
 git push ${pushargs} public refs/remotes/origin/master:refs/heads/master \
                             refs/remotes/origin/MOODLE_27_STABLE:refs/heads/MOODLE_27_STABLE \
                             refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
-                            refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE \
-                            refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
+                            refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE
+# Discontinued 20140714 -   refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
 # Discontinued 20140113 -   refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE
 # Discontinued 20140113 -   refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
 # Discontinued 20130708 -   refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
