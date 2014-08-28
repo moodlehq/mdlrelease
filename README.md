@@ -244,11 +244,15 @@ You're not quite done yet, you must do the following after all releases.
 
 Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered)
 
-**2. Update our records.**
+**2. Spam the tracker.**
+
+For a better next weekly release cycle, send the [roll and rebase](http://wiki.moodle.com/x/GgDp) warning to all the issues awaiting integration.
+
+**3. Update our records.**
 
 Annotate the number of closed issues & the number of reopened ones (Tracker - CI - Count reopened issues) in the sheet.
 
-**3. Let the world know.**
+**4. Let the world know.**
 
 Add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting about numbers, major ones, special thanks...
 
