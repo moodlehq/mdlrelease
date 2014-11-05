@@ -7,6 +7,20 @@
 #
 # This script base dir
 
+# Include config to get access to branch information.
+if [ -f $(dirname $0)/config.sh ]; then
+    source $(dirname $0)/config.sh
+else
+    echo "Unable to include config.sh"
+    exit 1
+fi
+
+# Prepare and array of all branches.
+OLDIFS="$IFS"
+IFS=$'\n'
+allbranches=($(for b in "master" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+IFS="$OLDIFS"
+
 # Reset to normal.
 N="$(tput setaf 9)"
 # Red.
@@ -142,21 +156,18 @@ if $_dryrun ; then
     pushargs="${pushargs} --dry-run"
 fi
 
+# Prepare an array of all of the branches to push as refs.
+OLDIFS="$IFS"
+IFS=$'\n'
+pushbranches=($(for b in "${allbranches[@]}" ; do echo "refs/remotes/origin/${b}:refs/heads/${b}" ; done))
+IFS="$OLDIFS"
+
 # Update public repositories
 #  * moodle         - git://git.moodle.org/moodle.git
 #  * github         - git@github.com:moodle/moodle.git
 #  * gitorious      - git@gitorious.org:moodle/moodle.git
 #  * bitbucket      - git@bitbucket.org:moodle/moodle.git
-git push ${pushargs} public refs/remotes/origin/master:refs/heads/master \
-                            refs/remotes/origin/MOODLE_27_STABLE:refs/heads/MOODLE_27_STABLE \
-                            refs/remotes/origin/MOODLE_26_STABLE:refs/heads/MOODLE_26_STABLE \
-                            refs/remotes/origin/MOODLE_25_STABLE:refs/heads/MOODLE_25_STABLE
-# Discontinued 20140714 -   refs/remotes/origin/MOODLE_24_STABLE:refs/heads/MOODLE_24_STABLE
-# Discontinued 20140113 -   refs/remotes/origin/MOODLE_23_STABLE:refs/heads/MOODLE_23_STABLE
-# Discontinued 20140113 -   refs/remotes/origin/MOODLE_19_STABLE:refs/heads/MOODLE_19_STABLE
-# Discontinued 20130708 -   refs/remotes/origin/MOODLE_22_STABLE:refs/heads/MOODLE_22_STABLE
-# Discontinued 20130114 -   refs/remotes/origin/MOODLE_21_STABLE:refs/heads/MOODLE_21_STABLE
-# Discontinued 20120706 -   refs/remotes/origin/MOODLE_20_STABLE:refs/heads/MOODLE_20_STABLE
+git push ${pushargs} public ${pushbranches[@]}
 
 output "${G}Done!${N}"
 exit 0

@@ -4,6 +4,14 @@
 # Please note you need to have public ssh key in all the remotes below (github, gitorious, bitbucket)
 # And also, can decide about the protocol (ssh, https) to be used against moodle main repositories.
 
+# Include config to get access to branch information.
+if [ -f $(dirname $0)/config.sh ]; then
+    source $(dirname $0)/config.sh
+else
+    echo "Unable to include config.sh"
+    exit 1
+fi
+
 protocol=${1:-ssh}
 username=${2:-}
 
@@ -68,12 +76,15 @@ git remote set-url --add --push public git@github.com:moodle/moodle.git
 git remote set-url --add --push public git@gitorious.org:moodle/moodle.git
 git remote set-url --add --push public git@bitbucket.org:moodle/moodle.git
 
-git branch --track MOODLE_26_STABLE refs/remotes/origin/MOODLE_26_STABLE
-git branch --track MOODLE_25_STABLE refs/remotes/origin/MOODLE_25_STABLE
-git branch --track MOODLE_24_STABLE refs/remotes/origin/MOODLE_24_STABLE
-# Discontinued 20140113 - git branch --track MOODLE_23_STABLE refs/remotes/origin/MOODLE_23_STABLE
-# Discontinued 20130708 - git branch --track MOODLE_22_STABLE refs/remotes/origin/MOODLE_22_STABLE
-# Discontinued 20130114 - git branch --track MOODLE_21_STABLE refs/remotes/origin/MOODLE_21_STABLE
-# Discontinued 20120706 - git branch --track MOODLE_20_STABLE refs/remotes/origin/MOODLE_20_STABLE
-# Discontinued 20140113 - git branch --track MOODLE_19_STABLE refs/remotes/origin/MOODLE_19_STABLE
+# Create stable branches with the upstream set.
+for branch in ${STABLEBRANCHES[@]}; do
+    git branch --track ${branch} refs/remotes/origin/${branch}
+done
+
+# Create security branches with the upstream set.
+for branch in ${SECURITYBRANCHES[@]}; do
+    git branch --track ${branch} refs/remotes/origin/${branch}
+done
+
 cd ..
+exit 0
