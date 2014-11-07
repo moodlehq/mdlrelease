@@ -130,8 +130,15 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             // If it's weekly fine, if it's minor the master branch doesn't get a minor release so really it's a weekly anyway.
             // It's the master branch. We need to bump the version, if the version is already higher than today*100 then we need
             // to bump accordingly.
-            // We also need to add "dev" to the end of the version if it's not there (first weekly after a major release).
-            if (strpos($releasecurrent, 'dev') === false) {
+            // If under beta or rc, make weekly behave exactly as on-demand.
+            if (strpos($releasecurrent, 'beta') !== false or strpos($releasecurrent, 'rc') !== false) {
+                // Add the + if missing.
+                if (strpos($releasenew, '+') === false) {
+                    // Add the +
+                    $releasenew .= '+';
+                }
+                list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            } else if (strpos($releasecurrent, 'dev') === false) {
                 // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
                 $releasenew = (float)$releasenew + 0.1;
                 $releasenew = (string)$releasenew.'dev';
