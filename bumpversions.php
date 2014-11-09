@@ -175,6 +175,11 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
                 $branchnew = str_replace('.', '', $releasenew);
                 $releasenew = (string)$releasenew.'dev';
                 $maturitynew = 'MATURITY_ALPHA';
+                if (empty($date)) { // If no date has been forced, back-to-dev have same build date than majors.
+                    if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
+                        $buildnew = date('Ymd', strtotime('next Monday'));
+                    }
+                }
             }
         } else {
             // Awesome major release!
