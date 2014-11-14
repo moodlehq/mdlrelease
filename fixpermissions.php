@@ -75,7 +75,8 @@ $executables = array(
     'filter/tex/mimetex.freebsd',
     'filter/tex/mimetex.darwin',
     'filter/algebra/algebra2tex.pl',
-    // do not include 'filter/tex/mimetex.exe' here because Windows is using just the extension
+    'filter/tex/mimetex.exe'
+    // filter/tex/mimetex.exe added to avoid problems running unit tests in Windows (MDL-47648)
     // do not include 'lib/editor/tinymce/extra/tools/download_langs.sh' here because it is used by devs only
 
 );
