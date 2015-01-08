@@ -129,6 +129,14 @@ output "${G}Moodle release propogator${N}"
 cd ${mydir}/gitmirror
 git fetch --quiet origin
 
+if $_verbose ; then
+    output "${normal}You are about to push:"
+    for b in "${allbranches[@]}"
+    do
+        output "${G}$b: ${normal}$(git log -n1 --pretty=format:"%s (%an %ar)" origin/$b)"
+    done
+fi
+
 if ! $_confirmed ; then
     if ! $_verbose ; then
         echo "${R}Error${N}: you must auto-confirm [-c|--confirm] when running silent [-q|--quiet]"
