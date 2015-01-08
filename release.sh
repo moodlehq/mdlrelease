@@ -142,9 +142,8 @@ skippedbranches=()
 
 output
 output "${normal}You are about to push:"
-builddate=$(date +%Y%m%d)
 for b in "${allbranches[@]}" ; do
-    versionbumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "\+\$release\s*=.*$builddate")
+    versionbumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "\+\$release\s*=\s*")
     if [[ -n ${versionbumped} || $_skip_version_check ]]; then
         pushbranches+=("refs/remotes/origin/${b}:refs/heads/${b}")
         output "${G}$b: ${normal}$(git log -n1 --pretty=format:"%s (%an %ar)" origin/$b)"
