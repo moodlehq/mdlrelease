@@ -69,6 +69,9 @@ show_help() {
     echo "  ${bold}--no-tags${normal}"
     echo "      By default tags are pushed as well, this prevents that from happening."
     echo "      I hope you know what you're doing!"
+    echo "  ${bold}-s${normal}, ${bold}--skip-version-check${normal}"
+    echo "      By default the releaser detects if version.php has been updated. This "
+    echo "      prevents that check and tries to pushes branches regardless."
     echo ""
     echo "May the --force be with you"
     exit 0;
@@ -107,6 +110,10 @@ do
             _tags=false
             shift # Get rid of the flag.
             ;;
+        -s | --skip-version-check)
+            _skip_version_check=true
+            shift # Get rid of the flag.
+            ;;
         *)
             echo "${R}* Invalid option $1 given.${N}"
             _showhelp=true
@@ -129,12 +136,32 @@ output "${G}Moodle release propogator${N}"
 cd ${mydir}/gitmirror
 git fetch --quiet origin
 
-if $_verbose ; then
-    output "${normal}You are about to push:"
-    for b in "${allbranches[@]}"
-    do
+# Prepare an array of all of the branches to push as refs.
+pushbranches=()
+skippedbranches=()
+
+output
+output "${normal}You are about to push:"
+builddate=$(date +%Y%m%d)
+for b in "${allbranches[@]}" ; do
+    versionbumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "\+\$release\s*=.*$builddate")
+    if [[ -n ${versionbumped} || $_skip_version_check ]]; then
+        pushbranches+=("refs/remotes/origin/${b}:refs/heads/${b}")
         output "${G}$b: ${normal}$(git log -n1 --pretty=format:"%s (%an %ar)" origin/$b)"
-    done
+    else
+        skippedbranches+="$b "
+    fi
+done
+output
+
+if [ -z "$pushbranches" ]; then
+    echo "${R}Error${normal}:  No branch changes detected. Exiting"
+    exit 1
+fi
+
+if [ -n "$skippedbranches" ]; then
+    output "${R}Ignoring: $skippedbranches (no version bump detected) $normal"
+    output
 fi
 
 if ! $_confirmed ; then
@@ -163,12 +190,6 @@ fi
 if $_dryrun ; then
     pushargs="${pushargs} --dry-run"
 fi
-
-# Prepare an array of all of the branches to push as refs.
-OLDIFS="$IFS"
-IFS=$'\n'
-pushbranches=($(for b in "${allbranches[@]}" ; do echo "refs/remotes/origin/${b}:refs/heads/${b}" ; done))
-IFS="$OLDIFS"
 
 # Update public repositories
 #  * moodle         - git://git.moodle.org/moodle.git
