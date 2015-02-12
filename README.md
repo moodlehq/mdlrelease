@@ -242,7 +242,13 @@ You're not quite done yet, you must do the following after all releases.
 
 **1. Tidy up tracker.**
 
-Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered)
+Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered). This can be done selecting all tested issues from the integration dash board -> Tools button -> Bulk action to all issues -> Transition -> Mark as commited, and changing:
+   * Change resolution: Fixed
+   * Change integration date: Today's date
+   * Change currently in integration -> None
+   * Add a nice comment
+
+Hint: You can go to your JIRA user profile, edit your user preferences, set autowatch to 'Disabled' before performing the bulk action, and set it back later to the previous value, otherwise you will be autowatching all these issues.
 
 **2. Spam the tracker.**
 
