@@ -84,7 +84,15 @@ This option is useful if you trust the script more than you should ;)
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
@@ -102,7 +110,15 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
@@ -120,7 +136,15 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
@@ -139,7 +163,15 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
@@ -193,7 +225,15 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
@@ -212,7 +252,15 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push to the public repositories**
+**3. Push changes to the integration repository**
+
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+
+**4. Confirm that all is green**
+
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+
+**5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
