@@ -292,8 +292,8 @@ show_help() {
     echo "  ${bold}./prerelease.sh -t major${normal} runs a major release for master only"
     echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release for master only"
     echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for master only"
-    echo "  ${bold}./prerelease.sh -t on-demand 2${normal} runs a weekly on-demand (pre-release) for master only"
-    echo "  ${bold}./prerelease.sh -t on-sync 2${normal} runs a weekly on-sync (post-release) for master only"
+    echo "  ${bold}./prerelease.sh -t on-demand${normal} runs a weekly on-demand (pre-release) for master only"
+    echo "  ${bold}./prerelease.sh -t on-sync${normal} runs a weekly on-sync (post-release) for master only"
     exit 0
 }
 
