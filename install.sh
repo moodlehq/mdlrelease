@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This scripts prepares git checkout necessary for the prerelease and release.sh scripts
-# Please note you need to have public ssh key in all the remotes below (github, gitorious, bitbucket)
+# Please note you need to have public ssh key in all the remotes below (github,  bitbucket)
 # And also, can decide about the protocol (ssh, https) to be used against moodle main repositories.
 
 # Include config to get access to branch information.
@@ -73,7 +73,6 @@ git remote set-url --push origin ${remotei}
 git remote add public ${remotem}
 git remote set-url --add --push public ${remotem}
 git remote set-url --add --push public git@github.com:moodle/moodle.git
-git remote set-url --add --push public git@gitorious.org:moodle/moodle.git
 git remote set-url --add --push public git@bitbucket.org:moodle/moodle.git
 
 # Create stable branches with the upstream set.
