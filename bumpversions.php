@@ -171,9 +171,10 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
                 // Must be immediately after a major release. Bump comment, release and maturity.
                 $commentnew = '// YYYYMMDD      = weekly release date of this DEV branch.';
-                $releasenew = (float)$releasenew + 0.1;
+                // We use + 0.1, because after X.9 we jump to (X+1).0.
+                $releasenew = number_format((float)($releasenew + 0.1), 1);
                 $branchnew = str_replace('.', '', $releasenew);
-                $releasenew = (string)$releasenew.'dev';
+                $releasenew = $releasenew.'dev';
                 $maturitynew = 'MATURITY_ALPHA';
                 if (empty($date)) { // If no date has been forced, back-to-dev have same build date than majors.
                     if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
