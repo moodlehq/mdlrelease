@@ -733,9 +733,8 @@ echo ""
 if [ $_type == "major" ] || [ $_type == "minor" ]; then
     if [ $_type == "major" ] ; then
         echo "${Y}Notes${N}: "
-        echo "       As this was a major release you will need to update prerelease.sh to include the new stable branch as an expected branch."
-        echo "       As this was a major release you will need to update release.sh to include the new stable branch when releasing"
+        echo "       As this was a major release you will need to update mdlrelease (config.sh) to include the new stable branch as an expected branch."
     fi
-    echo "       Follow the instructions for major and minor releases @ http://docs.moodle.org/dev/Release_process_(Combined)#Packaging."
+    echo "       Follow the instructions and steps order for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
     echo ""
 fi
