@@ -447,6 +447,36 @@ show_changes() {
     exit 0
 }
 
+# Argument 1: Branch.
+add_security() {
+
+    local branch=$1
+
+    local remotes='git@git.in.moodle.com:integration/security.git'
+
+    local securityhead="$(git ls-remote $remotes $branch)"
+    if [ "$securityhead" == "" ] ; then
+        output "    ${R}Something went wrong while fetching $branch from $remotes repo.${N}"
+        exit 1
+    fi
+
+    local prevhead="$(git rev-parse $branch)"
+    # We may not have security issues to merge.
+    if [ "$prevhead" == "$securityhead" ] ; then
+        output "    ${Y}No security issues commits to apply to $branch branch.${N}"
+        return 0
+    fi
+
+    # Apply security/$branch to the local branch.
+    git pull --ff-only $remotes $branch
+    if [[ "$?" -ge 1 ]] ; then
+        output "    ${R}Something went wrong while applying the security repository commits.${N}"
+        exit 1
+    fi
+
+    return 0
+}
+
 _showhelp=false
 while test $# -gt 0;
 do
@@ -639,6 +669,7 @@ for branch in ${branches[@]};
     fixpermissions=true
     fixsvg=true
     mergestrings=true
+    addsecurity=false
 
     # Check that we do actually want to process this branch.
     if [ "$branch" == "master" ] ; then
@@ -647,6 +678,10 @@ for branch in ${branches[@]};
             # It's a minor release so we don't do anything with master.
             output "${Y}Skipping master as it's a minor release.${N}"
             continue
+        fi
+        # New major versions include security issues commits.
+        if [ "$_type" == "major" ] ; then
+            addsecurity=true
         fi
         mergestringsbranch="install_$branch"
     else
@@ -677,6 +712,10 @@ for branch in ${branches[@]};
             output "${Y}Skipping $branch as it's a on-sync release.${N}"
             continue
         fi
+        if [ "$_type" == "minor" ] ; then
+            # Minor versions include security issues commits.
+            addsecurity=true
+        fi
         # Get the segment of the stable branch name to use for merges.
         stable=`expr "$branch" : 'MOODLE_'`
         mergestringsbranch="install_${branch:$stable}"
@@ -690,6 +729,12 @@ for branch in ${branches[@]};
             mergestrings=false
             fixpermissions=false
         fi
+    fi
+
+    # Add security repository commits.
+    if $addsecurity ; then
+        output "  - Adding security issues..."
+        add_security "$branch"
     fi
 
     # Now merge in install strings.
