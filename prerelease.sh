@@ -153,8 +153,17 @@ bump_version() {
                 if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
                     # Exciting
                     local newbranch=`get_new_stable_branch "$release"` # MOODLE_XX_STABLE
-                    output = "  - Creating new stable branch $newbranch"
+                    output "  - Creating new stable branch $newbranch"
                     git branch -f "$newbranch" master # create from (or reset to) master
+
+                    output "  - Adjusting .travis.yml to point to $newbranch"
+                    git checkout --quiet $newbranch
+                    if adjust_travis "$newbranch" "$2" "$3"; then
+                        git add .travis.yml
+                        git commit --quiet -m "NOBUG: travis.yml updated to $newbranch"
+                    fi
+                    git checkout --quiet $1
+
                     integrationpush="$integrationpush $newbranch"
                 fi
 
@@ -168,6 +177,24 @@ bump_version() {
         fi
     fi
     return $return;
+}
+
+# Argument 1: branch
+# Argument 2: type
+# Argument 3: pwd
+adjust_travis() {
+    local message
+    message=`php ${mydir}/adjusttravis.php -b "$1" -t "$2" -p "$3"`
+    outcome=$?
+
+    if (( outcome > 0 )); then
+        output "    - ${R}Failed to adjust .travis.yml file [$outcome].${N}"
+        output "    - ${R}Error: $message.${N}"
+        _pushup=false
+    else
+        output "    - travis.yml file adjusted properly ($message)."
+    fi
+    return $outcome
 }
 
 # Argument 1: Release
@@ -714,18 +741,22 @@ else
     output ""
     echo "Pre-release processing has been completed."
     echo "Changes can be reviewed using the --show option."
+    if [ $_type = "major" ] ; then
+        echo "  (you may want to update config.sh branches before using it, see notes below)"
+    fi
+    echo ""
     if [ $_type = "weekly" ] ; then
         echo "Changes have ${R}not${N} been propagated to the integration repository. If you wish to do this run the following:"
     else
         echo "Please propogate these changes to the integration repository with the following:"
     fi
-    printf "$localbuffer\n";
+    printf "  $localbuffer\n";
     # If any tag has been added locally, add a comment about CI and pushing the tag.
     if [[ $localbuffer =~ 'git tag -a' ]]; then
         echo ""
         echo "Once CI jobs have ended successfully, you can safely push the release tag(s) to the integration repository:"
         echo ""
-        echo "git push origin --tags"
+        echo "  git push origin --tags"
     fi
 fi
 echo ""
@@ -733,8 +764,8 @@ echo ""
 if [ $_type == "major" ] || [ $_type == "minor" ]; then
     if [ $_type == "major" ] ; then
         echo "${Y}Notes${N}: "
-        echo "       As this was a major release you will need to update mdlrelease (config.sh) to include the new stable branch as an expected branch."
+        echo "  As this was a major release you will need to update config.sh to include the new stable branch as an expected branch."
     fi
-    echo "       Follow the instructions and steps order for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
+    echo "  Follow the instructions and steps order for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
     echo ""
 fi
