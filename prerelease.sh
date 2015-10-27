@@ -10,7 +10,7 @@ else
 fi
 
 # Reset to normal.
-N="$(tput setaf 9)"
+N="$(tput sgr0)"
 # Red.
 R="$(tput setaf 1)"
 # Green.
@@ -147,7 +147,7 @@ bump_version() {
                     #git tag -a "$tagversion" -m "$tagannotation" $taghash
                     echo "git tag -a '$tagversion' -m '$tagannotation' $taghash"
                 else
-                    localbuffer="$localbuffer\ngit tag -a '$tagversion' -m '$tagannotation' $taghash"
+                    localbuffer="$localbuffer\n  git tag -a '$tagversion' -m '$tagannotation' $taghash"
                 fi
 
                 if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
@@ -737,10 +737,11 @@ if $_pushup ; then
 
 else
     # We're not pushing up to integration so instead give the integrator the commands to do so.
-    localbuffer="\ngit push origin$integrationpush\n$localbuffer"
+    localbuffer="${C}\n  git push origin$integrationpush\n  $localbuffer${N}"
     output ""
-    echo "Pre-release processing has been completed."
-    echo "Changes can be reviewed using the --show option."
+    echo "${G}Pre-release processing has been completed.${N}"
+    echo ""
+    echo "Changes can be reviewed using the ${C}--show${N} option."
     if [ $_type = "major" ] ; then
         echo "  (you may want to update config.sh branches before using it, see notes below)"
     fi
@@ -748,15 +749,15 @@ else
     if [ $_type = "weekly" ] ; then
         echo "Changes have ${R}not${N} been propagated to the integration repository. If you wish to do this run the following:"
     else
-        echo "Please propogate these changes to the integration repository with the following:"
+        echo "Please propagate these changes to the integration repository with the following:"
     fi
-    printf "  $localbuffer\n";
+    printf "$localbuffer\n";
     # If any tag has been added locally, add a comment about CI and pushing the tag.
     if [[ $localbuffer =~ 'git tag -a' ]]; then
         echo ""
-        echo "Once CI jobs have ended successfully, you can safely push the release tag(s) to the integration repository:"
+        echo "Once CI jobs ${R}have ended successfully${N}, you can safely push the release tag(s) to the integration repository:"
         echo ""
-        echo "  git push origin --tags"
+        echo "${C}  git push origin --tags${N}"
     fi
 fi
 echo ""
@@ -764,8 +765,8 @@ echo ""
 if [ $_type == "major" ] || [ $_type == "minor" ]; then
     if [ $_type == "major" ] ; then
         echo "${Y}Notes${N}: "
-        echo "  As this was a major release you will need to update config.sh to include the new stable branch as an expected branch."
+        echo "  - As this was a major release you will need to ${R}update config.sh${N} to include the new stable branch as an expected branch."
     fi
-    echo "  Follow the instructions and steps order for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
+    echo "  - Follow the ${R}instructions and steps order${N} for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
     echo ""
 fi
