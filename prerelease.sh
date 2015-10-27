@@ -143,31 +143,55 @@ bump_version() {
                 local tagversion=`get_release_tag_version "$release"` # v2.6.0
                 local tagannotation=`get_release_tag_annotation "$release"` # MOODLE_26
                 local taghash=`git_last_commit_hash` # The full git commit hash for the last commit on the branch
+
+                if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
+                    # Exciting!
+
+                    # Calculate new branch name.
+                    local newbranch=`get_new_stable_branch "$release"` # MOODLE_XX_STABLE
+
+                    # Delete the last commit (version.php changes one). Need other stuff before.
+                    git reset --quiet --hard HEAD^1
+
+                    # Before branching, let's update .travis.yml for incoming branch.
+                    output "  - Adjusting .travis.yml to point to $newbranch"
+                    if adjust_travis "$newbranch" "$2" "$3"; then
+                        git add .travis.yml
+                        git commit --quiet -m "Change travis.yml to $newbranch"
+                        newcommits=$((newcommits+1))
+                        # We need this commit for later.
+                        local adjustcommit=`git_last_commit_hash`
+                    fi
+
+                    # Add back the version.php commit and annotate it (tagging point).
+                    git cherry-pick $taghash > /dev/null
+                    taghash=`git_last_commit_hash`
+
+                    # Now we can proceed to branch safely.
+                    output "  - Creating new stable branch $newbranch"
+                    git branch -f "$newbranch" master # create from (or reset to) master
+
+                    # And finally, let's change master's travis.yml back to original status.
+                    if [ ! -z "$adjustcommit" ]; then
+                        output "  - Adjusting .travis.yml back to point to master."
+                        git revert -n $adjustcommit
+                        git add .travis.yml
+                        git commit --quiet -m "Change travis.yml back to master"
+                        newcommits=$((newcommits+1))
+                    fi
+
+                    integrationpush="$integrationpush $newbranch"
+                fi
+
+                # Calculate git tags.
                 if $_pushup ; then
                     #git tag -a "$tagversion" -m "$tagannotation" $taghash
                     echo "git tag -a '$tagversion' -m '$tagannotation' $taghash"
                 else
                     localbuffer="$localbuffer\n  git tag -a '$tagversion' -m '$tagannotation' $taghash"
                 fi
-
-                if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
-                    # Exciting
-                    local newbranch=`get_new_stable_branch "$release"` # MOODLE_XX_STABLE
-                    output "  - Creating new stable branch $newbranch"
-                    git branch -f "$newbranch" master # create from (or reset to) master
-
-                    output "  - Adjusting .travis.yml to point to $newbranch"
-                    git checkout --quiet $newbranch
-                    if adjust_travis "$newbranch" "$2" "$3"; then
-                        git add .travis.yml
-                        git commit --quiet -m "NOBUG: travis.yml updated to $newbranch"
-                    fi
-                    git checkout --quiet $1
-
-                    integrationpush="$integrationpush $newbranch"
-                fi
-
             fi
+            # Counting common version.php commit
             newcommits=$((newcommits+1))
         else
             # Failed bump the version - ensure we don't push up.
