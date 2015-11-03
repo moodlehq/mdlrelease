@@ -76,9 +76,8 @@ function validate_travis_file($contents, $branch) {
     $hasmatrix = strpos($contents, 'matrix:') !== false;
     $hasallowfailures = strpos($contents, '    allow_failures:') !== false;
     $haslocalci = strpos($contents, 'moodlehq/moodle-local_ci') !== false;
-    $hasphplint = strpos($contents, 'php_lint/php_lint.sh') !== false;
 
-    if ($hasmatrix && $hasallowfailures && $haslocalci && $hasphplint) {
+    if ($hasmatrix && $hasallowfailures && $haslocalci) {
         return true;
     }
     throw new Exception('Invalid .travis.yml file found.', __LINE__);
