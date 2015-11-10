@@ -220,6 +220,12 @@ The following steps must be followed to perform an on-demand release.
 
     ./prerelease.sh --type on-demand
 
+Note that most of the time we also release stable branches together with a master on-demand, if that is the case we use the following command instead:
+
+    ./prerelease.sh --type weekly
+    # Overwrite weekly master branch with an on-demand master.
+    ./prerelease.sh --type on-demand
+
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
