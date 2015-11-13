@@ -158,6 +158,13 @@ There can be one or more release candidate releases made as the final build up t
     ./prerelease.sh --type rc 2
 
 Where 2 is the release candidate version.
+
+Note that we might want to release stable branches together with a master RC, if that is the case we use the following command instead:
+
+    ./prerelease.sh --type weekly
+    # Overwrite weekly master branch with a master RC.
+    ./prerelease.sh --type rc 2
+
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
