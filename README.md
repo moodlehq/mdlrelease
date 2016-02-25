@@ -313,7 +313,7 @@ Hint: You can go to your JIRA user profile, edit your user preferences, set auto
 
 **2. Spam the tracker.**
 
-For a better next weekly release cycle, send the [roll and rebase](http://wiki.moodle.com/x/GgDp) warning to all the issues awaiting integration.
+For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo) warning to all the issues awaiting integration.
 
 **3. Update our records.**
 
