@@ -34,7 +34,7 @@ As this involves pushing Moodle source code to the public git repositories we ma
 
 * git://git.moodle.ord/moodle.git
 * git://github.com/moodle/moodle.git
-* git://gitorious.org/moodle/moodle.git
+* git@bitbucket.org:moodle/moodle.git
 
 Installation
 ------------
@@ -313,7 +313,7 @@ Hint: You can go to your JIRA user profile, edit your user preferences, set auto
 
 **2. Spam the tracker.**
 
-For a better next weekly release cycle, send the [roll and rebase](http://wiki.moodle.com/x/GgDp) warning to all the issues awaiting integration.
+For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo) warning to all the [issues awaiting integration](https://tracker.moodle.org/issues/?jql=project%20%3D%20MDL%20AND%20status%20%3D%20%22Waiting%20for%20integration%20review%22%20and%20labels%20not%20in%20(%27security_held%27)).
 
 **3. Update our records.**
 
