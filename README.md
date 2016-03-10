@@ -303,7 +303,8 @@ You're not quite done yet, you must do the following after all releases.
 
 **1. Tidy up tracker.**
 
-Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered). This can be done selecting all tested issues from the integration dash board -> Tools button -> Bulk action to all issues -> Transition -> Mark as commited, and changing:
+Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered). This can be done selecting all tested issues from the integration dash board -> Tools button -> Bulk action to all issues -> Transition -> Mark as committed, and changing:
+
    * Change resolution: Fixed
    * Change integration date: Today's date
    * Change currently in integration -> None
@@ -313,15 +314,15 @@ Hint: You can go to your JIRA user profile, edit your user preferences, set auto
 
 **2. Spam the tracker.**
 
-For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo) warning to all the [issues awaiting integration](https://tracker.moodle.org/issues/?jql=project%20%3D%20MDL%20AND%20status%20%3D%20%22Waiting%20for%20integration%20review%22%20and%20labels%20not%20in%20(%27security_held%27)).
+For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) warning to all the [issues awaiting integration](https://tracker.moodle.org/issues/?jql=project%20%3D%20MDL%20AND%20status%20%3D%20%22Waiting%20for%20integration%20review%22%20and%20labels%20not%20in%20(%27security_held%27)).
 
 **3. Update our records.**
 
-Annotate the number of closed issues & the number of reopened ones (Tracker - CI - Count reopened issues) in the sheet.
+Annotate the number of closed, reopened and delayed issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing).
 
 **4. Let the world know.**
 
-Add one entry @ http://moodle.org/mod/forum/view.php?f=1153 commenting about numbers, major ones, special thanks...
+Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... Look to the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for issues and thanks suggestions.
 
 Pre-release options
 -------------------
