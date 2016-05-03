@@ -146,7 +146,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             }
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'beta') {
-            $releasenew = preg_replace('#^(\d+.\d+) *(dev)#', '$1', $releasenew);
+            $releasenew = preg_replace('#^(\d+.\d+) *(dev\+?)#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             $releasenew .= 'beta';
             list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
