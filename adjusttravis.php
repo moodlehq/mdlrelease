@@ -74,10 +74,10 @@ function validate_path($path) {
 function validate_travis_file($contents, $branch) {
     // Some random bits to look for.
     $hasmatrix = strpos($contents, 'matrix:') !== false;
-    $hasallowfailures = strpos($contents, '    allow_failures:') !== false;
+    $hasfastfinish = strpos($contents, '    fast_finish:') !== false;
     $haslocalci = strpos($contents, 'moodlehq/moodle-local_ci') !== false;
 
-    if ($hasmatrix && $hasallowfailures && $haslocalci) {
+    if ($hasmatrix && $hasfastfinish && $haslocalci) {
         return true;
     }
     throw new Exception('Invalid .travis.yml file found.', __LINE__);
