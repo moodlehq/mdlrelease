@@ -157,7 +157,7 @@ bump_version() {
                     output "  - Adjusting .travis.yml to point to $newbranch"
                     if adjust_travis "$newbranch" "$2" "$3"; then
                         git add .travis.yml
-                        git commit --quiet -m "Change travis.yml to $newbranch"
+                        git commit --quiet -m "NOBUG: Change travis.yml to $newbranch"
                         newcommits=$((newcommits+1))
                         # We need this commit for later.
                         local adjustcommit=`git_last_commit_hash`
@@ -176,7 +176,7 @@ bump_version() {
                         output "  - Adjusting .travis.yml back to point to master."
                         git revert -n $adjustcommit
                         git add .travis.yml
-                        git commit --quiet -m "Change travis.yml back to master"
+                        git commit --quiet -m "NOBUG: Change travis.yml back to master"
                         newcommits=$((newcommits+1))
                     fi
 
