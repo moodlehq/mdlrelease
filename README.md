@@ -233,6 +233,8 @@ Note that most of the time we also release stable branches together with a maste
     # Overwrite weekly master branch with an on-demand master.
     ./prerelease.sh --type on-demand
 
+Also, note that every on-demand release adds unconditionally the plus ('+') at the end of the version, so these changes are expected and normal: dev => dev+, beta => beta+, rc1 => rc1+ ...
+
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
