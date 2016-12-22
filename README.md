@@ -255,7 +255,7 @@ Spread changes in integration to moodle.git and mirrors using ./release.sh (you 
 ### On sync release
 
 Used to produce an on-sync release for the master branch. This type of release skips all stable branches.
-This release type should only be used when the Moodle's master branch must stay "in sync" with the latest stable branch after a major release.
+This release type should only be used when the Moodle's master branch must stay "in sync" with the latest stable branch after a major release. Note that the last week of the period, when on-sync ends, it's better to perform a normal master release (weekly) in order to guarantee that versions have diverged and avoid potential problems.
 The following steps must be followed to perform an on-sync release.
 
 **1. Run the pre-release script.**
