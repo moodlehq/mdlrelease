@@ -793,4 +793,8 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
     fi
     echo "  - Follow the ${R}instructions and steps order${N} for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
     echo ""
+elif [ $_type == "on-sync" ]; then
+    echo "${Y}Notes${N}: "
+    echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal master release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
+    echo ""
 fi
