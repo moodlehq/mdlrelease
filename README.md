@@ -311,14 +311,17 @@ You're not quite done yet, you must do the following after all releases.
 
 **1. Tidy up tracker.**
 
-Close all issues in Tracker (reseting linked MDLQA ones if existing or moving them FROM MDLQA-1 to MDLQA-5249 if behat-covered). This can be done selecting all tested issues from the integration dash board -> Tools button -> Bulk action to all issues -> Transition -> Mark as committed, and changing:
+Run the [Close tested issues](https://integration.moodle.org/job/Tracker%20-%20CI%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
 
+   * Status: Closed
    * Change resolution: Fixed
    * Change integration date: Today's date
    * Change currently in integration -> None
-   * Add a nice comment
+   * Default thanks message.
 
-Hint: You can go to your JIRA user profile, edit your user preferences, set autowatch to 'Disabled' before performing the bulk action, and set it back later to the previous value, otherwise you will be autowatching all these issues.
+Note: If there is any problem with the job, still it's possible to proceed using Tracker's bulk actions (transitioning to closed). If using this, you can temporarily disable the autowatch user preference to avoid autowatching all those issues.
+
+Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" label](https://tracker.moodle.org/issues/?filter=14804). They may need resetting or moving associated MDLQA issues. There is a widget about this in the integration Dashboard too.
 
 **2. Spam the tracker.**
 
