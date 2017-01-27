@@ -388,7 +388,6 @@ This resets the expected branches in the local repository.
 
 Please be aware that it doesn't actually fetch upstream changes, it simply resets the expected branches to the currently tracked state.
 This is a particularly useful option if you've naughtily being hacking on the mdlrelease repository.
-
 Note: this is an exclusive function, the prerelease script exits immediately after the reset operations have been completed.
 
 ### Show the state of the local repository
