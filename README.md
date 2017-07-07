@@ -84,6 +84,10 @@ This option is useful if you trust the script more than you should ;)
 
 **2. Review the branches very carefully.**
 
+Note that weekly rolls involve, exclusively, supported branches. Always. No distinction the weeks before releases or the on-demand/on-sync explained below.
+
+Only exception is when, after agreement, it has been decided to force something to land into unsupported branches and configuration is altered to cause that (for example environment.xml changes case).
+
 **3. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
@@ -97,6 +101,7 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
 ### Minor release
+**Note:** Minor releases are usually produced on the weekend, a **normal weekly** is produced for stable supported branches on the weekdays before it.
 
 The following steps must be followed to perform a minor release.
 The minor release affects all stable branches, master however is skipped as you cannot produce a minor release on an unreleased branch.
