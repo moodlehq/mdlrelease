@@ -136,6 +136,12 @@ The beta release puts the master branch into a beta state. This usually happens 
 
     ./prerelease.sh --type beta
 
+Note that we might want to release stable branches together with a master beta, if that is the case we use the following command instead:
+
+    ./prerelease.sh --type weekly
+    # Overwrite weekly master branch with a master beta.
+    ./prerelease.sh --type beta
+
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
