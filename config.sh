@@ -4,7 +4,7 @@
 # it contains only references to the stable and security branches.
 
 # Current stable branches.
-STABLEBRANCHES=('MOODLE_32_STABLE' 'MOODLE_33_STABLE')
+STABLEBRANCHES=('MOODLE_33_STABLE' 'MOODLE_34_STABLE')
 
 # Current security branches.
-SECURITYBRANCHES=('MOODLE_31_STABLE')
+SECURITYBRANCHES=('MOODLE_31_STABLE' 'MOODLE_32_STABLE')
