@@ -320,6 +320,14 @@ After the release
 
 You're not quite done yet, you must do the following after all releases.
 
+**0. Verify external testing counters**
+
+**Before closing the issues in the Tracker** and everything else, please visit the **[Sorted testing assignments](https://docs.google.com/spreadsheets/d/1vQQ1Y0vC8KGwPN2iHy3Guki5T-raBUnfrGT9ePLGqaE/edit#gid=0)** sheet and verify that the numbers in the *"External"* tab have been updated for the current cycle.
+
+If not, and **the cycle does not exist** yet, fill both the *Week* and *Date (start of Week)* in a new row (bottom-up) and press the *"Update empty week row"* button. That will fetch all the information and fill the row properly.
+
+If they were just **outdated but the row already existed**, you can simply clean the pink cells contents and press the button in order to get the information fetched.
+
 **1. Tidy up tracker.**
 
 Run the [Close tested issues](https://integration.moodle.org/job/Tracker%20-%20CI%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
