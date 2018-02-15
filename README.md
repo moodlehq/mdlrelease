@@ -330,7 +330,7 @@ If they were just **outdated but the row already existed**, you can simply clean
 
 **1. Tidy up tracker.**
 
-Run the [Close tested issues](https://integration.moodle.org/job/Tracker%20-%20CI%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
+Run the [Close tested issues](https://ci.moodle.org/view/Tracker/job/TR%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
 
    * Status: Closed
    * Change resolution: Fixed
