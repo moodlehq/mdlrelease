@@ -328,7 +328,11 @@ If not, and **the cycle does not exist** yet, fill both the *Week* and *Date (st
 
 If they were just **outdated but the row already existed**, you can simply clean the pink cells contents and press the button in order to get the information fetched.
 
-**1. Tidy up tracker.**
+**1. Update our records.**
+
+Annotate the number of closed, reopened and delayed issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing). Note: You may need to check the integration dashboard to verify the total number of delayed issues, as some issues (those in progress still, for example) won't have been officially delayed yet (won't show in the count) but will need to be classified as such for the weekly statistics. Delaying is a process that each integrator handles for their own issues, however, any in progress issues are deemed delayed at this stage.
+
+**2. Tidy up tracker.**
 
 Run the [Close tested issues](https://ci.moodle.org/view/Tracker/job/TR%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
 
@@ -342,13 +346,9 @@ Note: If there is any problem with the job, still it's possible to proceed using
 
 Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" label](https://tracker.moodle.org/issues/?filter=14804). They may need resetting or moving associated MDLQA issues. There is a widget about this in the integration Dashboard too.
 
-**2. Spam the tracker.**
+**3. Spam the tracker.**
 
 For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) warning to all the [issues awaiting integration](https://tracker.moodle.org/issues/?filter=14000)).
-
-**3. Update our records.**
-
-Annotate the number of closed, reopened and delayed issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing).
 
 **4. Let the world know.**
 
