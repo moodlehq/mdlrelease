@@ -348,7 +348,9 @@ Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" la
 
 **3. Spam the tracker.**
 
-For a better next weekly release cycle, send the [roll and rebase](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) warning to all the [issues awaiting integration](https://tracker.moodle.org/issues/?filter=14000)).
+Run the [Send rebase message](https://ci.moodle.org/view/Tracker/job/TR%20-%20Send%20rebase%20message/) job in the CI server. It will send the [standard rebase message](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) to all issues awaiting for integration for the next week (you can provide an alternative comment there).
+
+Note: If there is any problem with the job, still it's possible to proceed using Tracker's bulk actions (sending a comment). If using this, you can temporarily disable the autowatch user preference to avoid autowatching all those issues.
 
 **4. Let the world know.**
 
