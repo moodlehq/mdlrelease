@@ -21,8 +21,6 @@ if ($unrecognized) {
     cli_error("Unrecognised options:\n  {$unrecognized}\nPlease use --help option.");
 }
 
-// If necessary add files that should be ignored - such as in 3rd party plugins.
-$blacklist = array();
 $path = $options['path'];
 if (!file_exists($path)) {
     cli_error("Invalid path $path");
@@ -30,6 +28,13 @@ if (!file_exists($path)) {
 
 $CFG = new stdClass;
 $CFG->dirroot = $path;
+
+// If necessary add files that should be ignored - such as in 3rd party plugins.
+$blacklist = array(
+        // We don't touch fontawesome ever.
+        $CFG->dirroot . '/lib/fonts/fontawesome-webfont.svg',
+        $CFG->dirroot . '/lib/fonts/font-awesome-4.7.0/fonts/fontawesome-webfont.svg',
+);
 
 if ($options['ie9fix']) {
     theme_base_recurse_svgs($path, '', 'theme_base_svgtool_ie9fix', $blacklist);
