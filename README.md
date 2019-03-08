@@ -117,11 +117,11 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **3. Push changes to the integration repository**
 
-Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
+Use the command provided by **prerelease.sh** to push these last changes to the integration repository. **Don't push tags** at this stage.
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public. Once verified and passing, **push tags** following the commands provided by **prerelease.sh**.
 
 **5. Push to public repository**
 
