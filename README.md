@@ -100,6 +100,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed.
+
 ### Minor release
 **Note:** Minor releases are usually produced on the weekend, a **normal weekly** is produced for stable supported branches on the weekdays before it.
 
@@ -126,6 +130,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 **5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
+
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed. Then, continue with the [Moodle release process](https://docs.moodle.org/dev/Release_process#Releasing) for major versions.
 
 ### Beta release
 
@@ -158,6 +166,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 **5. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
+
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed.
 
 ### RC release
 
@@ -193,6 +205,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed.
+
 ### Major release
 
 The following steps must be followed to perform a major release.
@@ -223,6 +239,10 @@ Verify integration.git looks 100% perfect before continuing
 **6. Push to the public repositories**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
+
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed. Then, continue with the [Moodle release process](https://docs.moodle.org/dev/Release_process#Releasing) for major versions.
 
 Advanced release types
 ----------------------
@@ -263,6 +283,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed.
+
 ### On sync release
 
 Used to produce an on-sync release for the master branch. This type of release skips all stable branches.
@@ -296,6 +320,10 @@ http://integration.moodle.org jobs chain will start once last version bump is pu
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
+**6. Complete remaining tasks**
+
+Follow the [After the release](#after-the-release) steps where needed.
+
 ### Back to dev release
 
 Used to produce a back-to-dev release after a major release.
@@ -322,6 +350,8 @@ You're not quite done yet, you must do the following after all releases.
 
 **0. Verify external testing counters**
 
+Note: this only applies to releases where **real issues have been fixed**, usually weeklies, on-demand, on-sync, not for "tagging" releases like betas, rcs, minors, majors (unless they come with any new issue fixed).
+
 **Before closing the issues in the Tracker** and everything else, please visit the **[Sorted testing assignments](https://docs.google.com/spreadsheets/d/1vQQ1Y0vC8KGwPN2iHy3Guki5T-raBUnfrGT9ePLGqaE/edit#gid=0)** sheet and verify that the numbers in the *"External"* tab have been updated for the current cycle.
 
 If not, and **the cycle does not exist** yet, fill both the *Week* and *Date (start of Week)* in a new row (bottom-up) and press the *"Update empty week row"* button. That will fetch all the information and fill the row properly.
@@ -330,9 +360,13 @@ If they were just **outdated but the row already existed**, you can simply clean
 
 **1. Update our records.**
 
+Note: for **all release types**, no matter the counters are zero.
+
 Annotate the number of closed, reopened and delayed issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing). Note: You may need to check the integration dashboard to verify the total number of delayed issues, as some issues (those in progress still, for example) won't have been officially delayed yet (won't show in the count) but will need to be classified as such for the weekly statistics. Delaying is a process that each integrator handles for their own issues, however, any in progress issues are deemed delayed at this stage.
 
 **2. Tidy up tracker.**
+
+Note: for **all release types**, as far as there are issues to close.
 
 Run the [Close tested issues](https://ci.moodle.org/view/Tracker/job/TR%20-%20Close%20tested%20issues/) job in the CI server. It will close all the tested issues under current integration (you can provide an alternative date or comment there). It will perform these changes:
 
@@ -348,11 +382,15 @@ Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" la
 
 **3. Spam the tracker.**
 
+Note: Only under normal integration periods. Aka, **not under continuous integration**.
+
 Run the [Send rebase message](https://ci.moodle.org/view/Tracker/job/TR%20-%20Send%20rebase%20message/) job in the CI server. It will send the [standard rebase message](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) to all issues awaiting for integration for the next week (you can provide an alternative comment there).
 
 Note: If there is any problem with the job, still it's possible to proceed using Tracker's bulk actions (sending a comment). If using this, you can temporarily disable the autowatch user preference to avoid autowatching all those issues.
 
 **4. Let the world know.**
+
+Note: Only under normal integration periods. Aka, **not under continuous integration**. Unless there is something relevant enough and agreed to be shared.
 
 Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... Look to the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for issues and thanks suggestions.
 
