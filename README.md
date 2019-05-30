@@ -74,6 +74,13 @@ There are also a handful of advanced release types. These release types are usua
 
 The following steps must be followed to perform a weekly release.
 
+**0. Ensure that we have achieved true roll-ability**
+
+Only possible when:
+
+- CI status is green (only controlled problems allowed).
+- Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
+
 **1. Run the pre-release script.**
 
     ./prerelease.sh
@@ -105,6 +112,7 @@ Spread changes in integration to moodle.git and mirrors using ./release.sh (you 
 Follow the [After the release](#after-the-release) steps where needed.
 
 ### Minor release
+
 **Note:** Minor releases are usually produced on the weekend, a **normal weekly** is produced for stable supported branches on the weekdays before it.
 
 The following steps must be followed to perform a minor release.
@@ -292,6 +300,13 @@ Follow the [After the release](#after-the-release) steps where needed.
 Used to produce an on-sync release for the master branch. This type of release skips all stable branches.
 This release type should only be used when the Moodle's master branch must stay "in sync" with the latest stable branch after a major release. Note that the last week of the period, when on-sync ends, it's better to perform a normal master release (weekly) in order to guarantee that versions have diverged and avoid potential problems.
 The following steps must be followed to perform an on-sync release.
+
+**0. Ensure that we have achieved true roll-ability**
+
+Only possible when:
+
+- CI status is green (only controlled problems allowed).
+- Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
 
 **1. Run the pre-release script.**
 
