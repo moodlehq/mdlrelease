@@ -80,6 +80,7 @@ Only possible when:
 
 - CI status is green (only controlled problems allowed).
 - Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
+- There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
 
@@ -307,6 +308,7 @@ Only possible when:
 
 - CI status is green (only controlled problems allowed).
 - Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
+- There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
 
