@@ -409,7 +409,7 @@ Note: If there is any problem with the job, still it's possible to proceed using
 
 Note: Only under normal integration periods. Aka, **not under continuous integration**. Unless there is something relevant enough and agreed to be shared.
 
-Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... Look to the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for issues and thanks suggestions.
+Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... **always** checking the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for both general and [policy issues](https://tracker.moodle.org/browse/MDLSITE-6092) to be shared or proposed, together with other interesting topics worth commenting and thanks suggestions.
 
 Pre-release options
 -------------------
