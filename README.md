@@ -53,6 +53,39 @@ For more info about the protocols and their differences, read the "Setup require
 The installation script prepares a Moodle repository and the necessary branches. As this involves a Moodle checkout the process can take some time to complete.
 Please be patient.
 
+### MacOS users
+These scripts rely on some GNU utilities, and macOS ships the BSD flavor of command line tools instead of the GNU flavor. Homebrew can be use to install the GNU versions of tools, as well as MacPorts.
+
+**Homebrew**
+
+You can install most of the GNU flavored tools with:
+
+    brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
+        gnu-indent gnu-sed gnu-tar gnu-which gpatch grep gzip less m4 make nano \
+        screen watch wdiff wget
+
+To use the GNU versions by default, append to your ~/.profile ({~/.zprofile if you use *zsh*):
+
+    # Get list of gnubin directories
+    export GNUBINS="$(find /usr/local/opt -type d -follow -name gnubin -print)";
+    
+    if type brew &>/dev/null; then
+      HOMEBREW_PREFIX=$(brew --prefix)
+      for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
+    fi
+
+Source: https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+
+**MacPorts**
+
+To install the port:
+    
+    sudo port install gnutls
+
+Add them to your PATH:
+
+    PATH="/opt/local/libexec/gnubin:$PATH"; export PATH
+
 Release types
 -----------------
 
