@@ -35,21 +35,24 @@ _show=false # To show all the changes performed locally, comparing with integrat
 _date='' # To enforce any build date at any moment
 _rc=0 # Sets the release candidate version
 _types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync" "back-to-dev");
+# TODO:  See how implement this, maybe it's enough to make the --barnch mandatory and dont need another --relbrach
+_reltypes=("major" "beta" "rc" "on-demand" "on-sync" "back-to-dev"); # Types requiring to specify a dev branch to act on)
+_relbranch='' # To define the dev branch to act on when the release type is one of the above (_reltypes).
 _nocreate=false
 localbuffer=""
 
-# Try to observe the "master first, then stables from older to newer" rule.
+# Try to observe the "dev branches first, then stables from older to newer" rule.
 # We don't make a weekly release of the security only branch any more. It is however still released during a minor release.
-weeklybranches=( "master" "${STABLEBRANCHES[@]}" );
+weeklybranches=( "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" );
 minorbranches=( "${SECURITYBRANCHES[@]}" "${STABLEBRANCHES[@]}" );
-majorbranches=("master");
-betabranches=("master");
-rcbranches=("master");
+majorbranches=("${DEVBRANCHES[@]}");
+betabranches=("${DEVBRANCHES[@]}");
+rcbranches=("${DEVBRANCHES[@]}");
 
 # Prepare an all branches array.
 OLDIFS="$IFS"
 IFS=$'\n'
-allbranches=($(for b in "master" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+allbranches=($(for b in "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 in_array() {
@@ -98,8 +101,9 @@ all_clean() {
 # Argument 3: pwd
 # Argument 4: rc
 # Argument 5: date
+# Argument 6: isdevbranch
 bump_version() {
-    local release=`php ${mydir}/bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4" -d "$5"`
+    local release=`php ${mydir}/bumpversions.php -b "$1" -t "$2" -p "$3" -r "$4" -d "$5" -i "$6"`
     local outcome=$?
     local return=0
     local weekly=false
@@ -640,12 +644,18 @@ for branch in ${branches[@]};
     fixsvg=true
     mergestrings=true
 
+    # Determine if it's a development branch.
+    isdevbranch=
+    if in_array "$branch" "${DEVBRANCHES[@]}"; then
+        isdevbranch=1
+    fi
+
     # Check that we do actually want to process this branch.
-    if [ "$branch" == "master" ] ; then
-        # master branch is included in everything except a minor release.
+    if [ -n "$isdevbranch" ]; then
+        # Development branches are included in everything except a minor release.
         if [ "$_type" == "minor" ] ; then
-            # It's a minor release so we don't do anything with master.
-            output "${Y}Skipping master as it's a minor release.${N}"
+            # It's a minor release so we don't do anything with development branches..
+            output "${Y}Skipping $branch as it's a minor release.${N}"
             continue
         fi
         mergestringsbranch="install_$branch"
@@ -680,6 +690,7 @@ for branch in ${branches[@]};
         # Get the segment of the stable branch name to use for merges.
         stable=`expr "$branch" : 'MOODLE_'`
         mergestringsbranch="install_${branch:$stable}"
+        # TODO: Remove next 10 lines.
         version=${branch:$stable:2}
         if (( "$version" < 24 )) ; then
             # Version less than Moodle 24
@@ -736,7 +747,7 @@ for branch in ${branches[@]};
     if (( $newcommits > 0 )) || $_forcebump ; then
         # Bump the version file.
         output "  - Bumping version."
-        if bump_version "$branch" "$_type" "$pwd" "$_rc" "$_date"; then
+        if bump_version "$branch" "$_type" "$pwd" "$_rc" "$_date" "$isdevbranch"; then
             # Yay it worked!
             if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
                 output "  - Don't forget to read the notes."
