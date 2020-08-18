@@ -5,8 +5,8 @@ date_default_timezone_set('Australia/Perth');
 
 // We need the branch and the bump type (weekly. minor, major)
 try {
-    $shortoptions = 'b:t:p:r:d:';
-    $longoptions = array('branch:', 'type:', 'path:', 'rc:', 'date:');
+    $shortoptions = 'b:t:p:r:d:i:';
+    $longoptions = array('branch:', 'type:', 'path:', 'rc:', 'date:', 'isdevbranch:');
 
     $options = getopt($shortoptions, $longoptions);
     $branch = get_option_from_options_array($options, 'b', 'branch');
@@ -14,9 +14,10 @@ try {
     $path = get_option_from_options_array($options, 'p', 'path');
     $rc = get_option_from_options_array($options, 'r', 'rc');
     $date = get_option_from_options_array($options, 'd', 'date');
+    $isdevbranch = (bool)get_option_from_options_array($options, 'i', 'isdevbranch');
     $path = rtrim($path, '/').'/version.php';
 
-    $release = bump_version($path, $branch, $type, $rc, $date);
+    $release = bump_version($path, $branch, $type, $rc, $date, $isdevbranch);
     $result = 0;
 } catch (Exception $ex) {
     $release = $ex->getMessage();
@@ -27,7 +28,7 @@ exit($result);
 
 
 
-function bump_version($path, $branch, $type, $rc = null, $date = null) {
+function bump_version($path, $branch, $type, $rc = null, $date = null, $isdevbranch) {
 
     validate_branch($branch);
     validate_type($type);
@@ -38,7 +39,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
     validate_version_file($versionfile, $branch);
 
     $is19 = ($branch === 'MOODLE_19_STABLE');
-    $isstable = branch_is_stable($branch);
+    $isstable = branch_is_stable($branch, $isdevbranch);
     $today = date('Ymd');
 
     $versionmajorcurrent = null;
@@ -116,7 +117,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             $versionmajornew = (int)$versionmajornew + 1;
             $versionmajornew = (string)$versionmajornew;
             $versionminornew = '00';
-            // Now handle builddate for releases.
+            // Now handle build date for releases.
             if (empty($date)) { // If no date has been forced, stable minors always are released on Monday.
                 if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
                     $buildnew = date('Ymd', strtotime('next monday'));
@@ -125,10 +126,10 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
         }
 
     } else {
-        // Ok it's the master branch.
+        // Ok it's a development branch.
         if ($type === 'weekly' || $type === 'minor') {
-            // If it's weekly fine, if it's minor the master branch doesn't get a minor release so really it's a weekly anyway.
-            // It's the master branch. We need to bump the version, if the version is already higher than today*100 then we need
+            // If it's weekly, ok, if it's minor the dev branch doesn't get a minor release so really it's a weekly anyway.
+            // It's a dev branch. We need to bump the version, if the version is already higher than today*100 then we need
             // to bump accordingly.
             // If under beta or rc, make weekly behave exactly as on-demand.
             if (strpos($releasecurrent, 'beta') !== false or strpos($releasecurrent, 'rc') !== false) {
@@ -137,25 +138,25 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
                     // Add the +
                     $releasenew .= '+';
                 }
-                list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+                list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             } else if (strpos($releasecurrent, 'dev') === false) {
                 // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
                 $releasenew = (float)$releasenew + 0.1;
                 $releasenew = (string)$releasenew.'dev';
                 $maturitynew = 'MATURITY_ALPHA';
             }
-            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'beta') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev\+?)#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             $releasenew .= 'beta';
-            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_BETA';
         } else if ($type === 'rc') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d)\+?#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
             $releasenew .= 'rc'.$rc;
-            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_RC';
         } else if ($type === 'on-demand') {
             // Add the + if missing (normally applies to post betas & rcs only,
@@ -164,13 +165,14 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
                 // Add the +
                 $releasenew .= '+';
             }
-            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'on-sync') {
             $versionminornew++;
         } else if ($type === 'back-to-dev') {
             if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
                 // Must be immediately after a major release. Bump comment, release and maturity.
                 $commentnew = '// YYYYMMDD      = weekly release date of this DEV branch.';
+                // TODO: Wrong assumption. Change this (increase by 1 the decimal part for release and ensure branch has 3cc.
                 // We use + 0.1, because after X.9 we jump to (X+1).0.
                 $releasenew = number_format((float)($releasenew + 0.1), 1);
                 $branchnew = str_replace('.', '', $releasenew);
@@ -186,20 +188,20 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
             // Awesome major release!
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
             $branchnew = str_replace('.', '', $releasenew);
-            list($versionmajornew, $versionminornew) = bump_master_ensure_higher($versionmajornew, $versionminornew);
+            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_STABLE';
             // Now handle builddate for releases.
-            if (empty($date)) { // If no date has been forced, master majors always are released on Monday.
+            if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
                 if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
                     $buildnew = date('Ymd', strtotime('next Monday'));
                 }
             }
             $commentnew = '// ' . $buildnew . '      = branching date YYYYMMDD - do not modify!';
-            // TODO: Move this to bump_master_ensure_higher() to keep thigs clear. Require new params.
+            // TODO: Move this to bump_dev_ensure_higher() to keep things clear. Require new params.
             // Also force version for major releases. Must match "next Monday" or --date (if specified)
-            if (empty($date)) { // If no date has been forced, master majors always are released on Monday.
+            if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
                 if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
-                    $versionmajornew =  date('Ymd', strtotime('next Monday')) . '00';
+                    $versionmajornew = date('Ymd', strtotime('next Monday')) . '00';
                 }
             } else {
                 $versionmajornew = $date . '00'; // Apply $date also to major versions.
@@ -239,7 +241,7 @@ function bump_version($path, $branch, $type, $rc = null, $date = null) {
     return $releasenew;
 }
 
-function bump_master_ensure_higher($major, $minor) {
+function bump_dev_ensure_higher($major, $minor) {
     $today = date('Ymd');
     if ($major >= $today*100) {
         // Version is already past today * 100, increment minor version instead of major version.
@@ -252,8 +254,8 @@ function bump_master_ensure_higher($major, $minor) {
     return array($major, $minor);
 }
 
-function branch_is_stable($branch) {
-    return  (strpos($branch, '_STABLE') !== false);
+function branch_is_stable($branch, $isdevbranch) {
+    return  (strpos($branch, '_STABLE') !== false && !$isdevbranch);
 }
 
 function validate_branch($branch) {
