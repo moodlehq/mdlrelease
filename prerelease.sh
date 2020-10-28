@@ -34,10 +34,8 @@ _reset=false # To discard any local change not available @ integration.git
 _show=false # To show all the changes performed locally, comparing with integration.git
 _date='' # To enforce any build date at any moment
 _rc=0 # Sets the release candidate version
-_types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync" "back-to-dev");
-# TODO:  See how implement this, maybe it's enough to make the --barnch mandatory and dont need another --relbrach
-_reltypes=("major" "beta" "rc" "on-demand" "on-sync" "back-to-dev"); # Types requiring to specify a dev branch to act on)
-_relbranch='' # To define the dev branch to act on when the release type is one of the above (_reltypes).
+_types=("weekly" "minor" "major" "beta" "rc" "on-demand" "on-sync" "back-to-dev"); # All types.
+_reltypes=("major" "beta" "rc" "on-demand" "on-sync" "back-to-dev"); # Major-release related types, always on a dev branch.
 _nocreate=false
 localbuffer=""
 
@@ -45,9 +43,9 @@ localbuffer=""
 # We don't make a weekly release of the security only branch any more. It is however still released during a minor release.
 weeklybranches=( "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" );
 minorbranches=( "${SECURITYBRANCHES[@]}" "${STABLEBRANCHES[@]}" );
-majorbranches=("${DEVBRANCHES[@]}");
-betabranches=("${DEVBRANCHES[@]}");
-rcbranches=("${DEVBRANCHES[@]}");
+# For on-demand, beta, rc, major, on-sync, back-to-dev, the target are always development branches.
+# (we'll be reducing this later to the best dev branch, unless a explicity --branch is passed).
+devbranches=("${DEVBRANCHES[@]}");
 
 # Prepare an all branches array.
 OLDIFS="$IFS"
@@ -115,10 +113,10 @@ bump_version() {
         # It's a weekly release... easy!
         weekly=true
     elif [ "$2" == "on-demand" ] ; then
-        # It's a on-demand relese... easy too!
+        # It's a on-demand release... easy too!
         ondemand=true
     elif [ "$2" == "on-sync" ] ; then
-        # It's a on-sync relese... easy too!
+        # It's a on-sync release... easy too!
         onsync=true
     elif [ "$2" ==  "back-to-dev" ] ; then
         # Just returning master to dev after major
@@ -558,34 +556,62 @@ if [[ $? -ge 1 ]] ; then
     exit 1
 fi
 
-# Establish the branches array by coping the relevant type array into it.
+# Let's calculate the branches (or branch) we are going to operate on.
 branches=()
-case $_type in
-    "weekly" )
-        branches=(${weeklybranches[@]})
-        ;;
-    "minor" )
-        branches=(${minorbranches[@]})
-        ;;
-    "major" )
-        branches=(${majorbranches[@]})
-        ;;
-    "beta" )
-        branches=(${betabranches[@]})
-        ;;
-    "rc" )
-        branches=(${rcbranches[@]})
-        ;;
-    "on-demand" )
-        branches=(${rcbranches[@]})
-        ;;
-    "on-sync" )
-        branches=(${rcbranches[@]})
-        ;;
-    "back-to-dev" )
-        branches=(${rcbranches[@]})
-        ;;
-esac
+
+# If the release is a major-related one, and no branch has been forced, and we are under parallel development
+# let's pick the best default branch (first non-master one).
+if in_array "$_type" "${_reltypes[@]}" && [ -z $_onlybranch ] && [ ${#devbranches[@]} > 1 ] ; then
+    # There isn't any back-to-dev under parallel development. Next branch needs to
+    # be created manually (if parallel continues), or is master that is already dev (if parallel ends).
+    if [ "$_type" == "back-to-dev" ] ; then
+        output "Invalid type \"back-to-dev\" specified under parallel development.";
+        exit 1
+    fi
+    # The best branch when there are multiple is always the nearest to be released, usually the 1st non-master one.
+    output "  - Major release related \"${_type}\" type detected under parallel development."
+    output "  - Calculating the development branch to apply the changes to (note that"
+    output "    this can be overridden using the --branch option to force a branch)"
+    output "  - Candidates: ${devbranches[*]}"
+    for branch in "${devbranches[@]}"; do
+        if [ "${branch}" == "master" ]; then
+            # If there are multiple, master isn't ever the next one.
+            continue
+        else
+            # First one is the next one.
+            branches=(${branch})
+            break
+        fi
+    done
+else
+    # Establish the branches array by coping the relevant type array into it.
+    case $_type in
+        "weekly" )
+            branches=(${weeklybranches[@]})
+            ;;
+        "minor" )
+            branches=(${minorbranches[@]})
+            ;;
+        "major" )
+            branches=(${devbranches[@]})
+            ;;
+        "beta" )
+            branches=(${devbranches[@]})
+            ;;
+        "rc" )
+            branches=(${devbranches[@]})
+            ;;
+        "on-demand" )
+            branches=(${devbranches[@]})
+            ;;
+        "on-sync" )
+            branches=(${devbranches[@]})
+            ;;
+        "back-to-dev" )
+            branches=(${devbranches[@]})
+            ;;
+    esac
+fi
 
 if [ ${#branches[@]} = 0 ] ; then
     # Obviously they didn't provide a valid type, there are no branches.
@@ -800,7 +826,20 @@ echo ""
 if [ $_type == "major" ] || [ $_type == "minor" ]; then
     if [ $_type == "major" ] ; then
         echo "${Y}Notes${N}: "
-        echo "  - As this was a major release you will need to ${R}update config.sh${N} to include the new stable branch as an expected branch."
+        if [ ${#devbranches[@]} > 1 ]; then
+            echo "  - This has been a major release ${R}under parallel development${N}. It implies that the"
+            echo "    STABLE branch released already existed, hence no new branch has been created by this tool."
+            echo "    - If the parallel development period is going to continue with a new STABLE branch and master"
+            echo "      then you will have to:"
+            echo "      - Create the new MOODLE_XYZ_STABLE branch manually (branching from the STABLE branch just released)."
+            echo "      - Modify all the related places needing to know about that new branch (security, travis, CI, tracker, this tool config.sh..."
+            echo "        (basically this implies to review all the Moodle Release Process check-list and perform all the"
+            echo "        actions detailed there for a new branch - but without releasing it, heh, it's a dev branch!)."
+            echo "    - If the parallel development period has ended, no further actions are needed, development will"
+            echo "      be back to normal, master-only"
+        else
+            echo "  - As this was a major release you will need to ${R}update config.sh${N} to include the new stable branch as an expected branch."
+        fi
     fi
     echo "  - Follow the ${R}instructions and steps order${N} for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
     echo ""
