@@ -775,7 +775,7 @@ for branch in ${branches[@]};
         output "  - Bumping version."
         if bump_version "$branch" "$_type" "$pwd" "$_rc" "$_date" "$isdevbranch"; then
             # Yay it worked!
-            if [ "$branch" == "master" ] && [ "$_type" == "major" ] ; then
+            if [ "$isdevbranch" ] && [ "$_type" == "major" ] ; then
                 output "  - Don't forget to read the notes."
             fi
         fi
@@ -829,8 +829,8 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
         if [ ${#devbranches[@]} > 1 ]; then
             echo "  - This has been a major release ${R}under parallel development${N}. It implies that the"
             echo "    STABLE branch released already existed, hence no new branch has been created by this tool."
-            echo "    - If the parallel development period is going to continue with a new STABLE branch and master"
-            echo "      then you will have to:"
+            echo "    - Important: If the parallel development period is going to continue with a new STABLE branch and master"
+            echo "      then, in few weeks, once the on-sync period ends, you will have to:"
             echo "      - Create the new MOODLE_XYZ_STABLE branch manually (branching from the STABLE branch just released)."
             echo "      - Modify all the related places needing to know about that new branch (security, travis, CI, tracker, this tool config.sh..."
             echo "        (basically this implies to review all the Moodle Release Process check-list and perform all the"
