@@ -356,6 +356,11 @@ Note that most of the time we also release stable branches together with a maste
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
+Note that the **last week of on-sync**, it's better to perform a normal master release (weekly) in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly.
+
+**IMPORTANT:** If this is the **last week of on-sync**, don't forget to disable the [Continuous queues manager job](https://  ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) right now to prevent it to continue processing issues once on-sync is finished.
+
+
 **2. Review the branches very carefully.**
 
 **3. Push changes to the integration repository**

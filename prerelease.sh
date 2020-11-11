@@ -561,7 +561,7 @@ branches=()
 
 # If the release is a major-related one, and no branch has been forced, and we are under parallel development
 # let's pick the best default branch (first non-master one).
-if in_array "$_type" "${_reltypes[@]}" && [ -z $_onlybranch ] && [ ${#devbranches[@]} > 1 ] ; then
+if in_array "$_type" "${_reltypes[@]}" && [ -z $_onlybranch ] && [ ${#devbranches[@]} -gt 1 ] ; then
     # There isn't any back-to-dev under parallel development. Next branch needs to
     # be created manually (if parallel continues), or is master that is already dev (if parallel ends).
     if [ "$_type" == "back-to-dev" ] ; then
@@ -846,5 +846,6 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
 elif [ $_type == "on-sync" ]; then
     echo "${Y}Notes${N}: "
     echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal master release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
+    echo "  - IMPORTANT: If this is ${R}the last week of on-sync${N}, don't forget to disable the Continuous queues manager job (link: https://ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) to prevent it to continue processing issues once on-sync is finished."
     echo ""
 fi
