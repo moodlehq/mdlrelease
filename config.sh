@@ -4,7 +4,7 @@
 # it contains only references to the stable and security branches.
 
 # Current dev branches (always keep master the first).
-DEVBRANCHES=('master')
+DEVBRANCHES=('master' 'MOODLE_311_STABLE')
 
 # Current stable branches.
 STABLEBRANCHES=('MOODLE_39_STABLE' 'MOODLE_310_STABLE')
