@@ -684,7 +684,9 @@ for branch in ${branches[@]};
             output "${Y}Skipping $branch as it's a minor release.${N}"
             continue
         fi
-        mergestringsbranch="install_$branch"
+        # Get the segment of the stable branch name to use for merges.
+        stable=`expr "$branch" : 'MOODLE_'`
+        mergestringsbranch="install_${branch:$stable}"
     else
         # Must be a stable branch.
         # Stable branches are not included in major, beta, or rc releases.
