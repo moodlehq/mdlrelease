@@ -71,11 +71,12 @@ $gitignore    = array('.gitignore', '.cvsignore', '.settings', '.buildpath', '.p
 /* List of moodle files that are supposed to be executable */
 
 $executables = array(
-    'filter/tex/mimetex.linux',
-    'filter/tex/mimetex.freebsd',
     'filter/tex/mimetex.darwin',
+    'filter/tex/mimetex.exe',
+    'filter/tex/mimetex.freebsd',
+    'filter/tex/mimetex.linux',
+    'filter/tex/mimetex.linux.aarch64',
     'filter/algebra/algebra2tex.pl',
-    'filter/tex/mimetex.exe'
     // filter/tex/mimetex.exe added to avoid problems running unit tests in Windows (MDL-47648)
     // do not include 'lib/editor/tinymce/extra/tools/download_langs.sh' here because it is used by devs only
 
