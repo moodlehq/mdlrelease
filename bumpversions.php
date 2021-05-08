@@ -28,7 +28,7 @@ exit($result);
 
 
 
-function bump_version($path, $branch, $type, $rc = null, $date = null, $isdevbranch) {
+function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
 
     validate_branch($branch);
     validate_type($type);
