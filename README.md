@@ -68,7 +68,7 @@ To use the GNU versions by default, append to your ~/.profile ({~/.zprofile if y
 
     # Get list of gnubin directories
     export GNUBINS="$(find /usr/local/opt -type d -follow -name gnubin -print)";
-    
+
     if type brew &>/dev/null; then
       HOMEBREW_PREFIX=$(brew --prefix)
       for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
@@ -79,7 +79,7 @@ Source: https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
 **MacPorts**
 
 To install the port:
-    
+
     sudo port install gnutls
 
 Add them to your PATH:
@@ -112,7 +112,6 @@ The following steps must be followed to perform a weekly release.
 Only possible when:
 
 - CI status is green (only controlled problems allowed).
-- Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
 - There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
@@ -340,7 +339,6 @@ The following steps must be followed to perform an on-sync release.
 Only possible when:
 
 - CI status is green (only controlled problems allowed).
-- Every ongoing issue under current integration has a valid outcome (integrated, reopened, delayed) applied.
 - There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
@@ -439,7 +437,7 @@ Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" la
 
 Note: Only under normal integration periods. Aka, **not under continuous integration**.
 
-Run the [Send rebase message](https://ci.moodle.org/view/Tracker/job/TR%20-%20Send%20rebase%20message/) job in the CI server. It will send the [standard rebase message](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) to all issues awaiting for integration for the next week (you can provide an alternative comment there).
+Run the [Send rebase message](https://ci.moodle.org/view/Tracker/job/TR%20-%20Send%20rebase%20message/) job in the CI server. It will send the [standard rebase messages](https://drive.google.com/open?id=1AjuyJKit4X4mk7aZL-28slydSPibt0yTDKCAl_egrxo#heading=h.xihdue23zgbu) to all issues awaiting for integration for the next week (you can provide an alternative comment using altcommentcandidate). It also sends the message to issues in current queue waiting for integration or in progress (in that case, you can use the altcommentcurrent field to provide an alternative comment).
 
 Note: If there is any problem with the job, still it's possible to proceed using Tracker's bulk actions (sending a comment). If using this, you can temporarily disable the autowatch user preference to avoid autowatching all those issues.
 
