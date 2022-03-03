@@ -147,14 +147,14 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
             }
             list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
         } else if ($type === 'beta') {
-            $releasenew = preg_replace('#^(\d+.\d+) *(dev\+?)#', '$1', $releasenew);
-            $branchnew = str_replace('.', '', $releasenew);
+            $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta)\+?#', '$1', $releasenew);
+            $branchnew = $branchcurrent; // Branch doesn't change in beta releases ever.
             $releasenew .= 'beta';
             list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_BETA';
         } else if ($type === 'rc') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d)\+?#', '$1', $releasenew);
-            $branchnew = str_replace('.', '', $releasenew);
+            $branchnew = $branchcurrent; // Branch doesn't change in rc releases ever.
             $releasenew .= 'rc'.$rc;
             list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_RC';
@@ -187,7 +187,7 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
         } else {
             // Awesome major release!
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
-            $branchnew = str_replace('.', '', $releasenew);
+            $branchnew = $branchcurrent; // Branch doesn't change in major releases ever.
             list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
             $maturitynew = 'MATURITY_STABLE';
             // Now handle builddate for releases.
