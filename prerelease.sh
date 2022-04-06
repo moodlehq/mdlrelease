@@ -237,6 +237,9 @@ get_release_tag_annotation() {
     if [[ rc -gt 0 ]] ; then
         forth="_RC$rc"
     fi
+    if [[ second -lt 10 ]] ; then
+        second="0${second}"
+    fi
     echo "MOODLE_$first$second$third$forth"
 }
 
@@ -265,6 +268,9 @@ get_release_tag_version() {
 get_new_stable_branch() {
     local first=`expr match "$1" '\([0-9]\+\)'`
     local second=`expr match "$1" '[0-9]\+\.\([0-9]\+\)'`
+    if [[ second -lt 10 ]] ; then
+        second="0${second}"
+    fi
     echo "MOODLE_${first}${second}_STABLE"
 }
 output() {
@@ -828,7 +834,7 @@ echo ""
 if [ $_type == "major" ] || [ $_type == "minor" ]; then
     if [ $_type == "major" ] ; then
         echo "${Y}Notes${N}: "
-        if [ ${#devbranches[@]} > 1 ]; then
+        if [ ${#devbranches[@]} -gt 1 ]; then
             echo "  - This has been a major release ${R}under parallel development${N}. It implies that the"
             echo "    STABLE branch released already existed, hence no new branch has been created by this tool."
             echo "    - Important: If the parallel development period is going to continue with a new STABLE branch and master"
@@ -849,5 +855,17 @@ elif [ $_type == "on-sync" ]; then
     echo "${Y}Notes${N}: "
     echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal master release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
     echo "  - IMPORTANT: If this is ${R}the last week of on-sync${N}, don't forget to disable the Continuous queues manager job (link: https://ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) to prevent it to continue processing issues once on-sync is finished."
+    echo ""
+elif [ $_type == "back-to-dev" ]; then
+    echo "${Y}Notes${N}: "
+    echo "  - This is a "back-to-dev" release. And it's the ${R}unique type of release${N}"
+    echo "    ${R}effectively incrementing the "\$release" and "\$branch" in the main version.php file${N}."
+    echo ""
+    echo "    Triple ensure that both variables are correct for the next planned major. It may be that you"
+    echo "    want to jump to the next X+1.00 version instead of continue the X series. For example,"
+    echo "    after release 7.23... you may want to jump to 8.0 instead of the, calculated by default, 7.24."
+    echo ""
+    echo "    If that's the case, please ${R}amend the commit manually to make both "\$release"${N}"
+    echo "    ${R}and "\$branch" to point to the correct next major planned release${N}."
     echo ""
 fi
