@@ -172,11 +172,14 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
             if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
                 // Must be immediately after a major release. Bump comment, release and maturity.
                 $commentnew = '// YYYYMMDD      = weekly release date of this DEV branch.';
-                // TODO: Wrong assumption. Change this (increase by 1 the decimal part for release and ensure branch has 3cc.
-                // We use + 0.1, because after X.9 we jump to (X+1).0.
-                $releasenew = number_format((float)($releasenew + 0.1), 1);
-                $branchnew = str_replace('.', '', $releasenew);
-                $releasenew = $releasenew.'dev';
+                // Normalise a little bit the release, getting rid of everything after the numerical part.
+                $releasenew = preg_replace('/^([0-9.]+).*$/', '\1', $releasenew);
+                // Split the major and minor parts of the release for further process.
+                list($releasemajor, $releaseminor) = explode('.', $releasenew);
+                $releasenew = $releasemajor . '.' . (++$releaseminor); // Increment to next dev version.
+                $releasenew = $releasenew . 'dev';
+                // The branch is the major followed by 2-chars minor.
+                $branchnew = $releasemajor . str_pad($releaseminor, 2, '0', STR_PAD_LEFT);
                 $maturitynew = 'MATURITY_ALPHA';
                 if (empty($date)) { // If no date has been forced, back-to-dev have same build date than majors.
                     if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
