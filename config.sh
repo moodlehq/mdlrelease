@@ -6,8 +6,8 @@
 # Current dev branches (always keep master the first).
 DEVBRANCHES=('master')
 
-# Current stable branches.
-STABLEBRANCHES=('MOODLE_311_STABLE')
+# Current stable branches. (Later versions first)
+STABLEBRANCHES=('MOODLE_400_STABLE' 'MOODLE_311_STABLE')
 
-# Current security branches.
+# Current security branches. (Later versions first)
 SECURITYBRANCHES=('MOODLE_310_STABLE' 'MOODLE_39_STABLE')
