@@ -854,7 +854,7 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
 elif [ $_type == "on-sync" ]; then
     echo "${Y}Notes${N}: "
     echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal master release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
-    echo "  - IMPORTANT: If this is ${R}the last week of on-sync${N}, don't forget to disable the Continuous queues manager job (link: https://ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) to prevent it to continue processing issues once on-sync is finished."
+    echo "  - IMPORTANT: If this is ${R}the last week of on-sync${N}, don't forget to run all the actions that are documented together in the Point 1 of the \"2 weeks after\" section of the Moodle Release Process (link: https://docs.moodle.org/dev/Release_process#2_weeks_after). It is ${R}highly recommended to execute ALL the actions in that Point 1${N} immediately after moving out from on-sync (before the next week begins).${N}"
     echo ""
 elif [ $_type == "back-to-dev" ]; then
     echo "${Y}Notes${N}: "
