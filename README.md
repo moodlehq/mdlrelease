@@ -415,7 +415,7 @@ If they were just **outdated but the row already existed**, you can simply clean
 
 Note: for **all release types**, no matter the counters are zero.
 
-Annotate the number of closed, reopened and delayed issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing). Note: You may need to check the integration dashboard to verify the total number of delayed issues, as some issues (those in progress still, for example) won't have been officially delayed yet (won't show in the count) but will need to be classified as such for the weekly statistics. Delaying is a process that each integrator handles for their own issues, however, any in progress issues are deemed delayed at this stage.
+Annotate the number of closed, reopened and queued issues in [the sheet](https://docs.google.com/a/moodle.com/spreadsheets/d/1EzYuIRYLEi3rKnzCVOV89gpFqhWUX8DyTQ6JCe9MPig/edit?usp=sharing). Note: The queues total is the sum of all the issues in both (candidates and current) queues. Usually, as a cell comment in the sheet, we add the details about: Awaiting candidates / awaiting current / integration in progress / waiting for feedback.
 
 **2. Tidy up tracker.**
 
