@@ -32,8 +32,8 @@ This tool helps you prepare a Moodle release.
 As this involves pushing Moodle source code to the public git repositories we maintain you must ensure you have had your
  ssh keys added to the following repositories by an administrator.
 
-* git://git.moodle.ord/moodle.git
-* git://github.com/moodle/moodle.git
+* git://git.moodle.org/moodle.git
+* git@github.com:moodle/moodle.git
 * git@bitbucket.org:moodle/moodle.git
 
 Installation
@@ -41,7 +41,7 @@ Installation
 Before running releases this project needs to be set up. This only need to be done the very first time you use this tool.
 Set up is dead easy thanks to a the installation script:
 
-    git clone git://github.com/moodlehq/mdlrelease.git
+    git clone https://github.com/moodlehq/mdlrelease.git
     cd mdlrelease
     ./install.sh protocol username
 
