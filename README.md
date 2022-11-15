@@ -181,6 +181,13 @@ Follow the [After the release](#after-the-release) steps where needed. Then, con
 The following steps must be followed to perform a beta release.
 The beta release puts the master branch into a beta state. This usually happens in conjunction with QA testing, however it can happen any time we feel the master branch is maturing + stabilising in the lead up to a major release. Stable branches are skipped of course.
 
+**0. Ensure that we have achieved true roll-ability**
+
+Only possible when:
+
+- CI status is green (only controlled problems allowed).
+- There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
+
 **1. Run the pre-release script.**
 
     ./prerelease.sh --type beta
@@ -216,6 +223,13 @@ Follow the [After the release](#after-the-release) steps where needed.
 
 The following steps must be followed to perform a release candidate release.
 There can be one or more release candidate releases made as the final build up to a major release. They signify that we believe master branch is now stable and that we don't expect to find any more significant issues before release. We have usually addressed all QA related issues and release blocking issues. Again master only.
+
+**0. Ensure that we have achieved true roll-ability**
+
+Only possible when:
+
+- CI status is green (only controlled problems allowed).
+- There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
 
@@ -294,6 +308,13 @@ The following advanced release types are also available.
 
 Used to produce an on-demand release for the master branch. This type of release skips all stable branches.
 The following steps must be followed to perform an on-demand release.
+
+**0. Ensure that we have achieved true roll-ability**
+
+Only possible when:
+
+- CI status is green (only controlled problems allowed).
+- There aren't remaining issues under testing. That may imply that you have to pass some issues under automated testing on CiBoT's behalf.
 
 **1. Run the pre-release script.**
 
