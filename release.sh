@@ -144,7 +144,7 @@ output
 output "${normal}You are about to push:"
 for b in "${allbranches[@]}" ; do
     # Search for a 'real' release by ensuring the top commit on version.php changes $release and was recent.
-    releasebumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "\+\$release\s*=\s*")
+    releasebumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "+\$release\s*=\s*")
     if [[ -n ${releasebumped} || $_skip_version_check ]]; then
         pushbranches+=("refs/remotes/origin/${b}:refs/heads/${b}")
         output "${G}$b: ${normal}$(git log -n1 --pretty=format:"%s (%an %ar)" origin/$b)"
