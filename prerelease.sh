@@ -152,18 +152,17 @@ bump_version() {
                     # Calculate new branch name.
                     local newbranch=`get_new_stable_branch "$release"` # MOODLE_XX_STABLE
 
-                    # Delete the last commit (version.php changes one). Need other stuff before.
+                    # Delete the last commit (version.php changes one). May need other stuff before.
                     git reset --quiet --hard HEAD^1
 
-                    # Before branching, let's update .travis.yml for incoming branch.
-                    output "  - Adjusting .travis.yml to point to $newbranch"
-                    if adjust_travis "$newbranch" "$2" "$3"; then
-                        git add .travis.yml
-                        git commit --quiet -m "NOBUG: Change travis.yml to $newbranch"
-                        newcommits=$((newcommits+1))
-                        # We need this commit for later.
-                        local adjustcommit=`git_last_commit_hash`
-                    fi
+                    # Originally, here it is where we used to automatically apply for travis changes
+                    # when a new branch was going to be created. If, in the future we need a place
+                    # to automate any other change before creating a new branch... this is the place.
+                    # (between the git reset above and the git cherry-pick following this comment).
+                    #
+                    # For a valid example about how to apply for automated changes before branching,
+                    # you can look for "travis" occurrences in a checkout of 67ff731 (last commit
+                    # having that automatism enabled).
 
                     # Add back the version.php commit and annotate it (tagging point).
                     git cherry-pick $taghash > /dev/null
@@ -172,15 +171,6 @@ bump_version() {
                     # Now we can proceed to branch safely.
                     output "  - Creating new stable branch $newbranch"
                     git branch -f "$newbranch" master # create from (or reset to) master
-
-                    # And finally, let's change master's travis.yml back to original status.
-                    if [ ! -z "$adjustcommit" ]; then
-                        output "  - Adjusting .travis.yml back to point to master."
-                        git revert -n $adjustcommit
-                        git add .travis.yml
-                        git commit --quiet -m "NOBUG: Change travis.yml back to master"
-                        newcommits=$((newcommits+1))
-                    fi
 
                     integrationpush="$integrationpush $newbranch"
                 fi
@@ -203,24 +193,6 @@ bump_version() {
         fi
     fi
     return $return;
-}
-
-# Argument 1: branch
-# Argument 2: type
-# Argument 3: pwd
-adjust_travis() {
-    local message
-    message=`php ${mydir}/adjusttravis.php -b "$1" -t "$2" -p "$3"`
-    outcome=$?
-
-    if (( outcome > 0 )); then
-        output "    - ${R}Failed to adjust .travis.yml file [$outcome].${N}"
-        output "    - ${R}Error: $message.${N}"
-        _pushup=false
-    else
-        output "    - travis.yml file adjusted properly ($message)."
-    fi
-    return $outcome
 }
 
 # Argument 1: Release
@@ -840,7 +812,7 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
             echo "    - Important: If the parallel development period is going to continue with a new STABLE branch and master"
             echo "      then, in few weeks, once the on-sync period ends, you will have to:"
             echo "      - Create the new MOODLE_XYZ_STABLE branch manually (branching from the STABLE branch just released)."
-            echo "      - Modify all the related places needing to know about that new branch (security, travis, CI, tracker, this tool config.sh..."
+            echo "      - Modify all the related places needing to know about that new branch (security, CI, tracker, this tool config.sh..."
             echo "        (basically this implies to review all the Moodle Release Process check-list and perform all the"
             echo "        actions detailed there for a new branch - but without releasing it, heh, it's a dev branch!)."
             echo "    - If the parallel development period has ended, no further actions are needed, development will"
