@@ -209,6 +209,7 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
             } else {
                 $versionmajornew = $date . '00'; // Apply $date also to major versions.
             }
+            $versionminornew = '00'; // Majors always have the decimal reset to .00.
         }
     }
 
