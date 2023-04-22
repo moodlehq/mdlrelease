@@ -7,7 +7,7 @@
 DEVBRANCHES=('master')
 
 # Current stable branches. (Later versions first)
-STABLEBRANCHES=('MOODLE_401_STABLE' 'MOODLE_400_STABLE')
+STABLEBRANCHES=('MOODLE_402_STABLE' 'MOODLE_401_STABLE' 'MOODLE_400_STABLE')
 
 # Current security branches. (Later versions first)
 SECURITYBRANCHES=('MOODLE_311_STABLE' 'MOODLE_39_STABLE')
