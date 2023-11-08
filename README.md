@@ -91,15 +91,15 @@ Release types
 
 There are several different types of release that can be made by this tool. In fact it covers all of the planned release types.
 
-**Weekly release** - the most common release, made every week and containing all the newly integrated work. Includes master and all stables branches.
+**Weekly release** - the most common release, made every week and containing all the newly integrated work. Includes main and all stables branches.
 
 **Minor release** - every two to three months we make a minor release, this release type handles everything involved with that. Only stable branches are worked on here.
 
-**Beta release** - Around a month or two before a major release we create a beta release of the master branch. This usually occurs when QA testing starts and only affects the master branch.
+**Beta release** - Around a month or two before a major release we create a beta release of the main branch. This usually occurs when QA testing starts and only affects the main branch.
 
-**RC release** - The release candidate release. Usually one or more release candidate releases are prepared for the master branch in the final lead up to the major release. Again master only.
+**RC release** - The release candidate release. Usually one or more release candidate releases are prepared for the main branch in the final lead up to the major release. Again main only.
 
-**Major release** - twice a year we make a major release (and usually a minor release of stables at the same time). This affects only the master branch although it leads to the next stable branch being produced.
+**Major release** - twice a year we make a major release (and usually a minor release of stables at the same time). This affects only the main branch although it leads to the next stable branch being produced.
 
 There are also a handful of advanced release types. These release types are usually very specific and you may - or may not be required to run them. As such they are unplanned and usually only required if the situation demands it.
 
@@ -149,7 +149,7 @@ Follow the [After the release](#after-the-release) steps where needed.
 **Note:** Minor releases are usually produced on the weekend, a **normal weekly** is produced for stable supported branches on the weekdays before it.
 
 The following steps must be followed to perform a minor release.
-The minor release affects all stable branches, master however is skipped as you cannot produce a minor release on an unreleased branch.
+The minor release affects all stable branches, main however is skipped as you cannot produce a minor release on an unreleased branch.
 
 **1. Run the pre-release script.**
 
@@ -179,7 +179,7 @@ Follow the [After the release](#after-the-release) steps where needed. Then, con
 ### Beta release
 
 The following steps must be followed to perform a beta release.
-The beta release puts the master branch into a beta state. This usually happens in conjunction with QA testing, however it can happen any time we feel the master branch is maturing + stabilising in the lead up to a major release. Stable branches are skipped of course.
+The beta release puts the main branch into a beta state. This usually happens in conjunction with QA testing, however it can happen any time we feel the main branch is maturing + stabilising in the lead up to a major release. Stable branches are skipped of course.
 
 **0. Ensure that we have achieved true roll-ability**
 
@@ -192,10 +192,10 @@ Only possible when:
 
     ./prerelease.sh --type beta
 
-Note that we might want to release stable branches together with a master beta, if that is the case we use the following command instead:
+Note that we might want to release stable branches together with a main beta, if that is the case we use the following command instead:
 
     ./prerelease.sh --type weekly
-    # Overwrite weekly master branch with a master beta.
+    # Overwrite weekly main branch with a main beta.
     ./prerelease.sh --type beta
 
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
@@ -222,7 +222,7 @@ Follow the [After the release](#after-the-release) steps where needed.
 ### RC release
 
 The following steps must be followed to perform a release candidate release.
-There can be one or more release candidate releases made as the final build up to a major release. They signify that we believe master branch is now stable and that we don't expect to find any more significant issues before release. We have usually addressed all QA related issues and release blocking issues. Again master only.
+There can be one or more release candidate releases made as the final build up to a major release. They signify that we believe main branch is now stable and that we don't expect to find any more significant issues before release. We have usually addressed all QA related issues and release blocking issues. Again main only.
 
 **0. Ensure that we have achieved true roll-ability**
 
@@ -237,10 +237,10 @@ Only possible when:
 
 Where 2 is the release candidate version.
 
-Note that we might want to release stable branches together with a master RC, if that is the case we use the following command instead:
+Note that we might want to release stable branches together with a main RC, if that is the case we use the following command instead:
 
     ./prerelease.sh --type weekly
-    # Overwrite weekly master branch with a master RC.
+    # Overwrite weekly main branch with a main RC.
     ./prerelease.sh --type rc 2
 
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
@@ -267,7 +267,7 @@ Follow the [After the release](#after-the-release) steps where needed.
 ### Major release
 
 The following steps must be followed to perform a major release.
-Hurrah - we are ready for a major release, a twice yearly occasion normally. This will take the master branch only, produce a major release, and then create the next stable branch.
+Hurrah - we are ready for a major release, a twice yearly occasion normally. This will take the main branch only, produce a major release, and then create the next stable branch.
 After running this release type you will be required to edit these scripts and add a reference to the newly created stable release so that it is included in the processes here-after.
 
 **1. Run the pre-release script.**
@@ -285,7 +285,7 @@ Add support for the new branch in install.sh, prerelease.sh, and release.sh
 
 **4. Prepare the current integration server**
 
-Create a new repo, view and jobs (cloning from master) in the Jenkins servers, so the new branch becomes tested by 1st time.
+Create a new repo, view and jobs (cloning from main) in the Jenkins servers, so the new branch becomes tested by 1st time.
 
 **5. Double check everything.**
 
@@ -306,7 +306,7 @@ The following advanced release types are also available.
 
 ### On demand release
 
-Used to produce an on-demand release for the master branch. This type of release skips all stable branches.
+Used to produce an on-demand release for the main branch. This type of release skips all stable branches.
 The following steps must be followed to perform an on-demand release.
 
 **0. Ensure that we have achieved true roll-ability**
@@ -320,10 +320,10 @@ Only possible when:
 
     ./prerelease.sh --type on-demand
 
-Note that most of the time we also release stable branches together with a master on-demand, if that is the case we use the following command instead:
+Note that most of the time we also release stable branches together with a main on-demand, if that is the case we use the following command instead:
 
     ./prerelease.sh --type weekly
-    # Overwrite weekly master branch with an on-demand master.
+    # Overwrite weekly main branch with an on-demand main.
     ./prerelease.sh --type on-demand
 
 Also, note that every on-demand release adds unconditionally the plus ('+') at the end of the version, so these changes are expected and normal: dev => dev+, beta => beta+, rc1 => rc1+ ...
@@ -351,8 +351,8 @@ Follow the [After the release](#after-the-release) steps where needed.
 
 ### On sync release
 
-Used to produce an on-sync release for the master branch. This type of release skips all stable branches.
-This release type should only be used when the Moodle's master branch must stay "in sync" with the latest stable branch after a major release. Note that the last week of the period, when on-sync ends, it's better to perform a normal master release (weekly) in order to guarantee that versions have diverged and avoid potential problems.
+Used to produce an on-sync release for the main branch. This type of release skips all stable branches.
+This release type should only be used when the Moodle's main branch must stay "in sync" with the latest stable branch after a major release. Note that the last week of the period, when on-sync ends, it's better to perform a normal main release (weekly) in order to guarantee that versions have diverged and avoid potential problems.
 The following steps must be followed to perform an on-sync release.
 
 **0. Ensure that we have achieved true roll-ability**
@@ -366,16 +366,16 @@ Only possible when:
 
     ./prerelease.sh --type on-sync
 
-Note that most of the time we also release stable branches together with a master on-sync, if that is the case we use the following command instead:
+Note that most of the time we also release stable branches together with a main on-sync, if that is the case we use the following command instead:
 
     ./prerelease.sh --type weekly
-    # Overwrite weekly master branch with an on-sync master.
+    # Overwrite weekly main branch with an on-sync main.
     ./prerelease.sh --type on-sync
 
 By default this script prepares the branches and gives you the commands to push. It doesn't actually push up to the integration server.
 there is an optional argument *-p* which if specified pushes the updated branches to the integration repository.
 
-Note that the **last week of on-sync**, it's better to perform a normal master release (weekly) in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly.
+Note that the **last week of on-sync**, it's better to perform a normal main release (weekly) in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly.
 
 **IMPORTANT:** If this is the **last week of on-sync**, don't forget to disable the [Continuous queues manager job](https://ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) right now to prevent it to continue processing issues once on-sync is finished.
 
@@ -401,7 +401,7 @@ Follow the [After the release](#after-the-release) steps where needed.
 ### Back to dev release
 
 Used to produce a back-to-dev release after a major release.
-This release type should only be used immediately after a major release has been successfully completed in order to set the master branch back to a development state.
+This release type should only be used immediately after a major release has been successfully completed in order to set the main branch back to a development state.
 The following steps must be followed to perform an on-sync release.
 
 **1. Run the pre-release script.**

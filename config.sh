@@ -3,8 +3,8 @@
 # It only needs to be updated after major releases at the moment as
 # it contains only references to the stable and security branches.
 
-# Current dev branches (always keep master the first).
-DEVBRANCHES=('master')
+# Current dev branches (always keep main the first).
+DEVBRANCHES=('main')
 
 # Current stable branches. (Later versions first)
 STABLEBRANCHES=('MOODLE_403_STABLE' 'MOODLE_402_STABLE' 'MOODLE_401_STABLE')
