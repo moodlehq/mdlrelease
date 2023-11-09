@@ -50,7 +50,8 @@ devbranches=("${DEVBRANCHES[@]}");
 # Prepare an all branches array.
 OLDIFS="$IFS"
 IFS=$'\n'
-allbranches=($(for b in "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+# TODO: Remove master from the list once we delete it.
+allbranches=($(for b in master "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 in_array() {
@@ -192,6 +193,7 @@ bump_version() {
             return=1
         fi
     fi
+
     return $return;
 }
 
@@ -665,6 +667,8 @@ for branch in ${branches[@]};
         # Get the segment of the stable branch name to use for merges.
         stable=`expr "$branch" : 'MOODLE_'`
         mergestringsbranch="install_${branch:$stable}"
+        # TODO: Remove these 2 lines once AMOS starts generating the install_main branch.
+        mergestringsbranch="install_master"
     else
         # Must be a stable branch.
         # Stable branches are not included in major, beta, or rc releases.
@@ -762,6 +766,13 @@ for branch in ${branches[@]};
     fi
 
     if (( $newcommits > 0 )) ; then
+        # TODO: Delete these 7 lines (comments and if block) once we delete master.
+        # Ensure that, always, master is the same as main.
+        if [[ "${branch}" == "main" ]]; then
+            git branch -f master main
+            integrationpush="$integrationpush master"
+            output "  - ${Y}master branch updated to match main branch.${N}"
+        fi
         output "  + ${C}$branch done! $newcommits new commits to push.${N}"
         integrationpush="$integrationpush $branch"
     else
