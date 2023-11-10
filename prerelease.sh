@@ -50,7 +50,8 @@ devbranches=("${DEVBRANCHES[@]}");
 # Prepare an all branches array.
 OLDIFS="$IFS"
 IFS=$'\n'
-allbranches=($(for b in "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+# TODO: Remove master from the list once we delete it.
+allbranches=($(for b in master "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 in_array() {
@@ -119,10 +120,10 @@ bump_version() {
         # It's a on-sync release... easy too!
         onsync=true
     elif [ "$2" ==  "back-to-dev" ] ; then
-        # Just returning master to dev after major
+        # Just returning main to dev after major
         backtodev=true
-    elif [ "$1" == "master" ] && [ "$2" == "minor" ] ; then
-        # It's the master branch and a minor release - master just gets a weekly.
+    elif [ "$1" == "main" ] && [ "$2" == "minor" ] ; then
+        # It's the main branch and a minor release - main just gets a weekly.
         weekly=true
     fi
 
@@ -146,7 +147,7 @@ bump_version() {
                 local tagannotation=`get_release_tag_annotation "$release"` # MOODLE_26
                 local taghash=`git_last_commit_hash` # The full git commit hash for the last commit on the branch
 
-                if [ "$1" == "master" ] && [ "$2" == "major" ] ; then
+                if [ "$1" == "main" ] && [ "$2" == "major" ] ; then
                     # Exciting!
 
                     # Calculate new branch name.
@@ -170,7 +171,7 @@ bump_version() {
 
                     # Now we can proceed to branch safely.
                     output "  - Creating new stable branch $newbranch"
-                    git branch -f "$newbranch" master # create from (or reset to) master
+                    git branch -f "$newbranch" main # create from (or reset to) main
 
                     integrationpush="$integrationpush $newbranch"
                 fi
@@ -192,6 +193,7 @@ bump_version() {
             return=1
         fi
     fi
+
     return $return;
 }
 
@@ -320,11 +322,11 @@ show_help() {
     echo "  ${bold}./prerelease.sh${normal} runs a standard weekly release"
     echo "  ${bold}./prerelease.sh -b MOODLE_19_STABLE${normal} runs a weekly release for one branch"
     echo "  ${bold}./prerelease.sh -t minor${normal} runs a minor release"
-    echo "  ${bold}./prerelease.sh -t major${normal} runs a major release for master only"
-    echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release for master only"
-    echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for master only"
-    echo "  ${bold}./prerelease.sh -t on-demand${normal} runs a weekly on-demand (pre-release) for master only"
-    echo "  ${bold}./prerelease.sh -t on-sync${normal} runs a weekly on-sync (post-release) for master only"
+    echo "  ${bold}./prerelease.sh -t major${normal} runs a major release for main only"
+    echo "  ${bold}./prerelease.sh -t beta${normal} runs a beta release for main only"
+    echo "  ${bold}./prerelease.sh -t rc 2${normal} runs a release for rc2 for main only"
+    echo "  ${bold}./prerelease.sh -t on-demand${normal} runs a weekly on-demand (pre-release) for main only"
+    echo "  ${bold}./prerelease.sh -t on-sync${normal} runs a weekly on-sync (post-release) for main only"
     exit 0
 }
 
@@ -538,22 +540,22 @@ fi
 branches=()
 
 # If the release is a major-related one, and no branch has been forced, and we are under parallel development
-# let's pick the best default branch (first non-master one).
+# let's pick the best default branch (first non-main one).
 if in_array "$_type" "${_reltypes[@]}" && [ -z $_onlybranch ] && [ ${#devbranches[@]} -gt 1 ] ; then
     # There isn't any back-to-dev under parallel development. Next branch needs to
-    # be created manually (if parallel continues), or is master that is already dev (if parallel ends).
+    # be created manually (if parallel continues), or is main that is already dev (if parallel ends).
     if [ "$_type" == "back-to-dev" ] ; then
         output "Invalid type \"back-to-dev\" specified under parallel development.";
         exit 1
     fi
-    # The best branch when there are multiple is always the nearest to be released, usually the 1st non-master one.
+    # The best branch when there are multiple is always the nearest to be released, usually the 1st non-main one.
     output "  - Major release related \"${_type}\" type detected under parallel development."
     output "  - Calculating the development branch to apply the changes to (note that"
     output "    this can be overridden using the --branch option to force a branch)"
     output "  - Candidates: ${devbranches[*]}"
     for branch in "${devbranches[@]}"; do
-        if [ "${branch}" == "master" ]; then
-            # If there are multiple, master isn't ever the next one.
+        if [ "${branch}" == "main" ]; then
+            # If there are multiple, main isn't ever the next one.
             continue
         else
             # First one is the next one.
@@ -665,6 +667,8 @@ for branch in ${branches[@]};
         # Get the segment of the stable branch name to use for merges.
         stable=`expr "$branch" : 'MOODLE_'`
         mergestringsbranch="install_${branch:$stable}"
+        # TODO: Remove these 2 lines once AMOS starts generating the install_main branch.
+        mergestringsbranch="install_master"
     else
         # Must be a stable branch.
         # Stable branches are not included in major, beta, or rc releases.
@@ -762,6 +766,13 @@ for branch in ${branches[@]};
     fi
 
     if (( $newcommits > 0 )) ; then
+        # TODO: Delete these 7 lines (comments and if block) once we delete master.
+        # Ensure that, always, master is the same as main.
+        if [[ "${branch}" == "main" ]]; then
+            git branch -f master main
+            integrationpush="$integrationpush master"
+            output "  - ${Y}master branch updated to match main branch.${N}"
+        fi
         output "  + ${C}$branch done! $newcommits new commits to push.${N}"
         integrationpush="$integrationpush $branch"
     else
@@ -809,14 +820,14 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
         if [ ${#devbranches[@]} -gt 1 ]; then
             echo "  - This has been a major release ${R}under parallel development${N}. It implies that the"
             echo "    STABLE branch released already existed, hence no new branch has been created by this tool."
-            echo "    - Important: If the parallel development period is going to continue with a new STABLE branch and master"
+            echo "    - Important: If the parallel development period is going to continue with a new STABLE branch and main"
             echo "      then, in few weeks, once the on-sync period ends, you will have to:"
             echo "      - Create the new MOODLE_XYZ_STABLE branch manually (branching from the STABLE branch just released)."
             echo "      - Modify all the related places needing to know about that new branch (security, CI, tracker, this tool config.sh..."
             echo "        (basically this implies to review all the Moodle Release Process check-list and perform all the"
             echo "        actions detailed there for a new branch - but without releasing it, heh, it's a dev branch!)."
             echo "    - If the parallel development period has ended, no further actions are needed, development will"
-            echo "      be back to normal, master-only"
+            echo "      be back to normal, main-only"
         else
             echo "  - As this was a major release you will need to ${R}update config.sh${N} to include the new stable branch as an expected branch."
         fi
@@ -826,7 +837,7 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
     echo ""
 elif [ $_type == "on-sync" ]; then
     echo "${Y}Notes${N}: "
-    echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal master release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
+    echo "  - Don't forget that ${R}the last week of on-sync${N} it's better to perform a ${R}normal main release (weekly)${N} in order to guarantee that versions have diverged. If this is such a week, please proceed accordingly."
     echo "  - IMPORTANT: If this is ${R}the last week of on-sync${N}, don't forget to run all the actions that are documented together in the Point 1 of the \"2 weeks after\" section of the Moodle Release Process (link: https://docs.moodle.org/dev/Release_process#2_weeks_after). It is ${R}highly recommended to execute ALL the actions in that Point 1${N} immediately after moving out from on-sync (before the next week begins).${N}"
     echo ""
 elif [ $_type == "back-to-dev" ]; then

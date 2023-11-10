@@ -18,7 +18,8 @@ fi
 # Prepare and array of all branches.
 OLDIFS="$IFS"
 IFS=$'\n'
-allbranches=($(for b in "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+# TODO: Remove master from the list once we delete it.
+allbranches=($(for b in master "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 # Reset to normal.

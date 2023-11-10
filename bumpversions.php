@@ -263,7 +263,7 @@ function branch_is_stable($branch, $isdevbranch) {
 }
 
 function validate_branch($branch) {
-    if (!preg_match('#^(master|MOODLE_(\d+)_STABLE)$#', $branch, $matches)) {
+    if (!preg_match('#^(main|MOODLE_(\d+)_STABLE)$#', $branch, $matches)) {
         throw new Exception('Invalid branch given', __LINE__);
     }
     return true;
