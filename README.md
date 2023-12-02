@@ -34,7 +34,6 @@ As this involves pushing Moodle source code to the public git repositories we ma
 
 * git://git.moodle.org/moodle.git
 * git@github.com:moodle/moodle.git
-* git@bitbucket.org:moodle/moodle.git
 
 Installation
 ------------
