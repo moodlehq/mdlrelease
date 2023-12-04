@@ -195,7 +195,6 @@ fi
 # Update public repositories
 #  * moodle         - git://git.moodle.org/moodle.git
 #  * github         - git@github.com:moodle/moodle.git
-#  * bitbucket      - git@bitbucket.org:moodle/moodle.git
 git push ${pushargs} public ${pushbranches[@]}
 
 output "${G}Done!${N}"
