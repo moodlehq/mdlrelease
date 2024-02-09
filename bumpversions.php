@@ -245,17 +245,17 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
     return $releasenew;
 }
 
-function bump_dev_ensure_higher($major, $minor) {
+function bump_dev_ensure_higher($versionint, $versiondec) {
     $today = date('Ymd');
-    if ($major >= $today*100) {
-        // Version is already past today * 100, increment minor version instead of major version.
-        $minor = (int)$minor + 1;
-        $minor = (string)$minor;
+    if ($versionint >= $today*100) {
+        // Integer version is already past today * 100, increment version decimal part instead of integer part.
+        $versiondec = (int)$versiondec + 1;
+        $versiondec = (string)$versiondec;
     } else {
-        $major = $today.'00';
-        $minor = '00';
+        $versionint = $today.'00';
+        $versiondec = '00';
     }
-    return array($major, $minor);
+    return array($versionint, $versiondec);
 }
 
 function branch_is_stable($branch, $isdevbranch) {
