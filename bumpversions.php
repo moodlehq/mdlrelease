@@ -42,8 +42,8 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
     $isstable = branch_is_stable($branch, $isdevbranch);
     $today = date('Ymd');
 
-    $versionmajorcurrent = null;
-    $versionminorcurrent = null;
+    $integerversioncurrent = null;
+    $decimalversioncurrent = null;
     $commentcurrent = null;
     $releasecurrent = null;
     $buildcurrent = null;
@@ -53,19 +53,19 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
     $branchquote = null;
     $releasequote = null;
 
-    $versionmajornew = null;
-    $versionminornew = null;
+    $integerversionnew = null;
+    $decimalversionnew = null;
     $commentnew = null;
     $releasenew = null;
     $buildnew = null;
     $branchnew = null;
     $maturitynew = null;
 
-    if (!preg_match('#^ *\$version *= *(?P<major>\d{10})\.(?P<minor>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
+    if (!preg_match('#^ *\$version *= *(?P<integer>\d{10})\.(?P<decimal>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
         throw new Exception('Could not determine version.', __LINE__);
     }
-    $versionmajornew = $versionmajorcurrent = $matches['major'];
-    $versionminornew = $versionminorcurrent = $matches['minor'];
+    $integerversionnew = $integerversioncurrent = $matches['integer'];
+    $decimalversionnew = $decimalversioncurrent = $matches['decimal'];
     $commentnew = $commentcurrent = $matches['comment'];
 
     if (!preg_match('#^ *\$release *= *(?P<quote>\'|")(?P<release>[^ \+]+\+?) *\(Build: (?P<build>\d{8})\)\1#m', $versionfile, $matches)) {
@@ -97,7 +97,7 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
                 // Add the +
                 $releasenew .= '+';
             }
-            $versionminornew++;
+            $decimalversionnew++;
             $maturitynew = 'MATURITY_STABLE';
         } else if ($type === 'minor' || $type === 'major') {
             // If it's minor fine, it's if major then stable gets a minor release.
@@ -114,9 +114,9 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
                 // First minor release on this stable branch. Yay X.Y.1.
                 $releasenew .= '.1';
             }
-            $versionmajornew = (int)$versionmajornew + 1;
-            $versionmajornew = (string)$versionmajornew;
-            $versionminornew = '00';
+            $integerversionnew = (int)$integerversionnew + 1;
+            $integerversionnew = (string)$integerversionnew;
+            $decimalversionnew = '00';
             // Now handle build date for releases.
             if (empty($date)) { // If no date has been forced, stable minors always are released on Monday.
                 if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
@@ -138,25 +138,25 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
                     // Add the +
                     $releasenew .= '+';
                 }
-                list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
             } else if (strpos($releasecurrent, 'dev') === false) {
                 // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
                 $releasenew = (float)$releasenew + 0.1;
                 $releasenew = (string)$releasenew.'dev';
                 $maturitynew = 'MATURITY_ALPHA';
             }
-            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+            list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
         } else if ($type === 'beta') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta)\+?#', '$1', $releasenew);
             $branchnew = $branchcurrent; // Branch doesn't change in beta releases ever.
             $releasenew .= 'beta';
-            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+            list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
             $maturitynew = 'MATURITY_BETA';
         } else if ($type === 'rc') {
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d)\+?#', '$1', $releasenew);
             $branchnew = $branchcurrent; // Branch doesn't change in rc releases ever.
             $releasenew .= 'rc'.$rc;
-            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+            list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
             $maturitynew = 'MATURITY_RC';
         } else if ($type === 'on-demand') {
             // Add the + if missing (normally applies to post betas & rcs only,
@@ -165,9 +165,9 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
                 // Add the +
                 $releasenew .= '+';
             }
-            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+            list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
         } else if ($type === 'on-sync') {
-            $versionminornew++;
+            $decimalversionnew++;
         } else if ($type === 'back-to-dev') {
             if (strpos($releasecurrent, 'dev') === false) { // Ensure it's not a "dev" version already.
                 // Must be immediately after a major release. Bump comment, release and maturity.
@@ -191,7 +191,7 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
             // Awesome major release!
             $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
             $branchnew = $branchcurrent; // Branch doesn't change in major releases ever.
-            list($versionmajornew, $versionminornew) = bump_dev_ensure_higher($versionmajornew, $versionminornew);
+            list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
             $maturitynew = 'MATURITY_STABLE';
             // Now handle builddate for releases.
             if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
@@ -204,20 +204,20 @@ function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
             // Also force version for major releases. Must match "next Monday" or --date (if specified)
             if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
                 if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
-                    $versionmajornew = date('Ymd', strtotime('next Monday')) . '00';
+                    $integerversionnew = date('Ymd', strtotime('next Monday')) . '00';
                 }
             } else {
-                $versionmajornew = $date . '00'; // Apply $date also to major versions.
+                $integerversionnew = $date . '00'; // Apply $date also to major versions.
             }
-            $versionminornew = '00'; // Majors always have the decimal reset to .00.
+            $decimalversionnew = '00'; // Majors always have the decimal reset to .00.
         }
     }
 
     // Replace the old version with the new version.
-    if (strlen($versionminornew) === 1) {
-        $versionminornew = '0'.$versionminornew;
+    if (strlen($decimalversionnew) === 1) {
+        $decimalversionnew = '0'.$decimalversionnew;
     }
-    $versionfile = str_replace($versionmajorcurrent.'.'.$versionminorcurrent, $versionmajornew.'.'.$versionminornew, $versionfile);
+    $versionfile = str_replace($integerversioncurrent.'.'.$decimalversioncurrent, $integerversionnew.'.'.$decimalversionnew, $versionfile);
     // Replace the old build with the new build.
     $versionfile = str_replace('Build: '.$buildcurrent, 'Build: '.$buildnew, $versionfile);
     // Replace the old release with the new release if they've changed.
