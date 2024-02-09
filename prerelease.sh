@@ -833,7 +833,8 @@ if [ $_type == "major" ] || [ $_type == "minor" ]; then
         fi
     fi
     echo "  - Follow the ${R}instructions and steps order${N} for major and minor releases @ https://docs.moodle.org/dev/Release_process#Packaging."
-    echo "  - If the ${R}'Rebase security branch'${N} jobs have been disabled (as part of the security2integration task), now it's time to enable them back, so they catch up with current code and are ready for next week. The ${R}'MAINT - Toggle (enable, disable) jobs by name'${N} @ CI job can be used to do that."
+    # As of 20240209 iTeam agreed to keep the jobs enabled always, infrastructure is capable. Hence, commenting out next line.
+    # echo "  - If the ${R}'Rebase security branch'${N} jobs have been disabled (as part of the security2integration task), now it's time to enable them back, so they catch up with current code and are ready for next week. The ${R}'MAINT - Toggle (enable, disable) jobs by name'${N} @ CI job can be used to do that."
     echo ""
 elif [ $_type == "on-sync" ]; then
     echo "${Y}Notes${N}: "
