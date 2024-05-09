@@ -44,3 +44,17 @@ output() {
         fi
     fi
 }
+
+# Given a UTC time in the HH:MM:SS format, returns the next unix seconds
+# when it will be that UTC time.
+function next_utc_time() {
+    local time="${1}" # Time in HH:MM:SS format.
+    local now         # Current time in seconds.
+    local next        # To calculate the next time in seconds.
+    now=$(date -u +%s)
+    next=$(date -u -d "$(date -u -d @"${now}" +"%Y-%m-%d $time")" +%s)
+    if [ "${now}" -gt "${next}" ]; then # If the time has already passed today.
+        next=$(date -u -d "$(date -u -d @"${next}") +1 day" +%s)
+    fi
+    echo "${next}" # Return the next time in seconds.
+}

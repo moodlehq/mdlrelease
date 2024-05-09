@@ -482,6 +482,26 @@ if $_showhelp ; then
     show_help
 fi
 
+# Before anything else, let's check if, right now, it's a good time to run this script.
+
+# Calculate a few timestamps (unix seconds since epoch).
+curr=$(date -u +%s) # Now
+publ=$(next_utc_time "${PUBLISHING_TIME}") # Publishing time UTC.
+
+# Calculate some local and interval times.
+publlocal=$(date -d @"${publ}" +'%H:%M:%S %Z')    # Publishing time in local time.
+prevention=$((publ - PREVENT_MINUTES * 60))       # Begin of prevention time.
+
+# If we are within the prevention time, let's prevent and exit.
+if [ "${curr}" -gt "${prevention}" ]; then
+    output "${Y}The packaging server is about to start processing git changes${N}"
+    output "${Y}and it is not advisable to run this script while that happens.${N}"
+    output ""
+    output "${Y}Please wait until everything has been executed after ${PUBLISHING_TIME} UTC (${publlocal}).${N}"
+    output "${R}Exiting.${N}"
+    exit 1
+fi
+
 if [[ ! -d ${mydir}/gitmirror ]] ; then
     output "Directory ${mydir}/gitmirror not found. You may need to create it with install.sh"
     exit 1
