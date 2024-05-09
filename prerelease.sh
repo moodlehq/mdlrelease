@@ -1,26 +1,14 @@
 #!/bin/bash
 # This script performs required pre-release processing.
 
-# Include config to get access to branch information.
-if [ -f $(dirname $0)/config.sh ]; then
-    source $(dirname $0)/config.sh
+# Include lib.sh to get access to shared stuff..
+if [ -f "$(dirname "${0}")"/lib.sh ]; then
+    source "$(dirname "${0}")"/lib.sh
 else
-    echo "Unable to include config.sh"
+    echo "Unable to include lib.sh"
     exit 1
 fi
 
-# Reset to normal.
-N="$(tput sgr0)"
-# Red.
-R="$(tput setaf 1)"
-# Green.
-G="$(tput setaf 2)"
-# Yellow.
-Y="$(tput setaf 3)"
-# Cyan.
-C="$(tput setaf 6)"
-# This script base dir
-mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # The branches to push to integration.
 integrationpush=""
 
@@ -247,11 +235,7 @@ get_new_stable_branch() {
     fi
     echo "MOODLE_${first}${second}_STABLE"
 }
-output() {
-    if $_verbose ; then
-        echo "$1"
-    fi
-}
+
 show_help() {
     bold=`tput bold`
     normal=`tput sgr0`
