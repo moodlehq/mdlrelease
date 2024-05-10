@@ -236,6 +236,23 @@ get_new_stable_branch() {
     echo "MOODLE_${first}${second}_STABLE"
 }
 
+generate_upgrade_notes() {
+    local type=$1
+
+    cd ${mydir}/gitmirror
+    if [ -f .grunt/upgradenotes.mjs ]; then
+        nvm use
+        npm ci
+        if [ $type == "major" ] || [ $type == "minor" ]; then
+            .grunt/upgradenotes.mjs release -d
+        else
+            .grunt/upgradenotes.mjs release
+        fi
+    else
+        output "${Y}Upgrade notes script not found.${N}"
+    fi
+}
+
 show_help() {
     bold=`tput bold`
     normal=`tput sgr0`
@@ -653,6 +670,7 @@ for branch in ${branches[@]};
     fixpermissions=true
     fixsvg=true
     mergestrings=true
+    upgradenotes=true
 
     # Determine if it's a development branch.
     isdevbranch=
@@ -752,6 +770,22 @@ for branch in ${branches[@]};
             # Make sure everything is clean again.
             all_clean
             output "    ${Y}Permissions fixed as required.${N}"
+        fi
+    fi
+
+    # Now generate the upgrade notes.
+    if $upgradenotes ; then
+        output "  - Generating upgrade notes..."
+        generate_upgrade_notes "$_type"
+        if git_unstaged_changes ; then
+            # Add any upgrade files.
+            git add -A
+            if git_staged_changes ; then
+                git commit --quiet -m "NOBUG: Add upgrade notes"
+            fi
+            # Make sure everything is clean again.
+            all_clean
+            output "    ${Y}Upgrade notes generated as required.${N}"
         fi
     fi
 

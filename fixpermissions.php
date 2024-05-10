@@ -77,6 +77,7 @@ $executables = array(
     'filter/tex/mimetex.linux',
     'filter/tex/mimetex.linux.aarch64',
     'filter/algebra/algebra2tex.pl',
+    '.grunt/upgradenotes.mjs',
     // filter/tex/mimetex.exe added to avoid problems running unit tests in Windows (MDL-47648)
     // do not include 'lib/editor/tinymce/extra/tools/download_langs.sh' here because it is used by devs only
 
