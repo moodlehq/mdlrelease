@@ -125,8 +125,28 @@ for b in "${allbranches[@]}" ; do
     # Search for a 'real' release by ensuring the top commit on version.php changes $release and was recent.
     releasebumped=$(git show --since='8 hours ago' -n1 origin/${b} version.php | grep "+\$release\s*=\s*")
     if [[ -n ${releasebumped} || $_skip_version_check ]]; then
-        pushbranches+=("refs/remotes/origin/${b}:refs/heads/${b}")
         output "${G}$b: ${normal}$(git log -n1 --pretty=format:"%s (%an %ar)" origin/$b)"
+        # Check if between the last commit in the branch and now, it has been PUBLISHING_TIME (UTC)
+        # If that happens, then we cannot publish the branch and we'll need to rewrite the
+        # integration.git history and pre-release again. See MDLSITE-7681 for more details.
+        # We very-rarely should face this, as far as the pre-release script already detects
+        # 99% of cases, but this is a last-resort check.
+        comm=$(git log -n1 --pretty=format:"%ct" origin/"${b}") # Last commit time in seconds.
+        curr=$(date -u +%s)                            # Now in seconds.
+        publ=$(date -u -d "${PUBLISHING_TIME}" +%s)    # Publishing time in seconds.
+        publlocal=$(date -d @"${publ}" +'%H:%M:%S %Z') # Publishing time in local time.
+
+        if [ "${comm}" -lt "${publ}" ] && [ "${curr}" -gt "${publ}" ]; then
+            output "  ${Y}Between the last commit and now, the packaging server${N}"
+            output "  ${Y}has already processed the branch at ${PUBLISHING_TIME} (${publlocal}${N})"
+            output "  ${Y}and pushing it now would lead to unpublished releases.${N}"
+            output "  ${Y}Please rewrite history in integration.git and pre-release again.${N}"
+            output "  ${R}Skipping branch.${N}"
+            continue
+        fi
+
+        # Arrived here, all ok, this branch will be pushed.
+        pushbranches+=("refs/remotes/origin/${b}:refs/heads/${b}")
     else
         skippedbranches+="$b "
     fi
