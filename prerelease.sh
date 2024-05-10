@@ -1,26 +1,14 @@
 #!/bin/bash
 # This script performs required pre-release processing.
 
-# Include config to get access to branch information.
-if [ -f $(dirname $0)/config.sh ]; then
-    source $(dirname $0)/config.sh
+# Include lib.sh to get access to shared stuff..
+if [ -f "$(dirname "${0}")"/lib.sh ]; then
+    source "$(dirname "${0}")"/lib.sh
 else
-    echo "Unable to include config.sh"
+    echo "Unable to include lib.sh"
     exit 1
 fi
 
-# Reset to normal.
-N="$(tput sgr0)"
-# Red.
-R="$(tput setaf 1)"
-# Green.
-G="$(tput setaf 2)"
-# Yellow.
-Y="$(tput setaf 3)"
-# Cyan.
-C="$(tput setaf 6)"
-# This script base dir
-mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # The branches to push to integration.
 integrationpush=""
 
@@ -247,11 +235,7 @@ get_new_stable_branch() {
     fi
     echo "MOODLE_${first}${second}_STABLE"
 }
-output() {
-    if $_verbose ; then
-        echo "$1"
-    fi
-}
+
 show_help() {
     bold=`tput bold`
     normal=`tput sgr0`
@@ -496,6 +480,26 @@ done
 
 if $_showhelp ; then
     show_help
+fi
+
+# Before anything else, let's check if, right now, it's a good time to run this script.
+
+# Calculate a few timestamps (unix seconds since epoch).
+curr=$(date -u +%s) # Now
+publ=$(next_utc_time "${PUBLISHING_TIME}") # Publishing time UTC.
+
+# Calculate some local and interval times.
+publlocal=$(date -d @"${publ}" +'%H:%M:%S %Z')    # Publishing time in local time.
+prevention=$((publ - PREVENT_MINUTES * 60))       # Begin of prevention time.
+
+# If we are within the prevention time, let's prevent and exit.
+if [ "${curr}" -gt "${prevention}" ]; then
+    output "${Y}The packaging server is about to start processing git changes${N}"
+    output "${Y}and it is not advisable to run this script while that happens.${N}"
+    output ""
+    output "${Y}Please wait until everything has been executed after ${PUBLISHING_TIME} UTC (${publlocal}).${N}"
+    output "${R}Exiting.${N}"
+    exit 1
 fi
 
 if [[ ! -d ${mydir}/gitmirror ]] ; then

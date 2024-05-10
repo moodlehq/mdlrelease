@@ -7,11 +7,11 @@
 #
 # This script base dir
 
-# Include config to get access to branch information.
-if [ -f $(dirname $0)/config.sh ]; then
-    source $(dirname $0)/config.sh
+# Include lib.sh to get access to shared stuff..
+if [ -f "$(dirname "${0}")"/lib.sh ]; then
+    source "$(dirname "${0}")"/lib.sh
 else
-    echo "Unable to include config.sh"
+    echo "Unable to include lib.sh"
     exit 1
 fi
 
@@ -22,18 +22,6 @@ IFS=$'\n'
 allbranches=($(for b in master "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
-# Reset to normal.
-N="$(tput setaf 9)"
-# Red.
-R="$(tput setaf 1)"
-# Green.
-G="$(tput setaf 2)"
-# Yellow.
-Y="$(tput setaf 3)"
-# Cyan.
-C="$(tput setaf 6)"
-bold=`tput bold`
-normal=`tput sgr0`
 _verbose=true # Make lots of noise.
 _showhelp=false
 _confirmed=false
@@ -76,16 +64,6 @@ show_help() {
     echo ""
     echo "May the --force be with you"
     exit 0;
-}
-
-output() {
-    if $_verbose ; then
-        if [ ! -z $2 ]  ; then
-            echo -n "$1"
-        else
-            echo "$1"
-        fi
-    fi
 }
 
 while test $# -gt 0;
