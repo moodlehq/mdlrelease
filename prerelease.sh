@@ -241,15 +241,17 @@ generate_upgrade_notes() {
 
     cd ${mydir}/gitmirror
     if [ -f .grunt/upgradenotes.mjs ]; then
-        nvm use
-        npm ci
+        output "    - Installing NodeJS modules"
+        nvm use --silent
+        npm ci --silent --no-progress > /dev/null 2>&1
+        output "    - Generating upgrade notes"
         if [ $type == "major" ] || [ $type == "minor" ]; then
-            .grunt/upgradenotes.mjs release -d
+            .grunt/upgradenotes.mjs release -d > /dev/null 2>&1
         else
-            .grunt/upgradenotes.mjs release
+            .grunt/upgradenotes.mjs release > /dev/null 2>&1
         fi
     else
-        output "${Y}Upgrade notes script not found.${N}"
+        output "    ${Y}Upgrade notes script not found.${N}"
     fi
 }
 
@@ -665,6 +667,9 @@ for branch in ${branches[@]};
             continue;
         fi
     fi
+
+    # We don't want any untracked files (vendor, node_modules, etc) before starting to process the branch.
+    git clean -Xdf --quiet
 
     # Set default operations.
     fixpermissions=true

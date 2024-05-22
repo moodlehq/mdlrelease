@@ -10,6 +10,18 @@ else
     exit 1
 fi
 
+# We need to check if nvm is available and load it, because prerelease requires it.
+# First, check if can be loaded from NVM_DIR/nvm.sh, else, try to load it from HOME/.nvm/nvm.sh,
+# with error if none is available.
+if [ -r "${NVM_DIR}/nvm.sh" ]; then
+    source "${NVM_DIR}/nvm.sh"
+elif [ -r "${HOME}/.nvm/nvm.sh" ]; then
+    source "${HOME}/.nvm/nvm.sh"
+else
+    echo "Unable to load nvm, please set NVM_DIR to the correct path."
+    exit 1
+fi
+
 # A few colours for output.
 # Reset to normal.
 N="$(tput sgr0)"

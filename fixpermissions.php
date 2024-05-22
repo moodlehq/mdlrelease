@@ -77,7 +77,6 @@ $executables = array(
     'filter/tex/mimetex.linux',
     'filter/tex/mimetex.linux.aarch64',
     'filter/algebra/algebra2tex.pl',
-    '.grunt/upgradenotes.mjs',
     // filter/tex/mimetex.exe added to avoid problems running unit tests in Windows (MDL-47648)
     // do not include 'lib/editor/tinymce/extra/tools/download_langs.sh' here because it is used by devs only
 
@@ -97,6 +96,12 @@ foreach ($executables as $relname) {
         exit(1);
     }
 }
+
+// These files may not exist in all the branches, so we are adding them now, after
+// the previous checks. Once any file is available in all the branches, we should
+// move it to the $executables assignment above.
+// TODO: Move this to the $executables assignment above once 405_STABLE is the min branch supported.
+$executables[realpath("$sourcedir/.grunt/upgradenotes.mjs")] = '.grunt/upgradenotes.mjs';
 
 process_dir($sourcedir, $executables, $gitignore);
 
