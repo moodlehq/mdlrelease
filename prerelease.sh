@@ -241,15 +241,24 @@ generate_upgrade_notes() {
 
     cd ${mydir}/gitmirror
     if [ -f .grunt/upgradenotes.mjs ]; then
+        # We are going to use a temporal file to capture stdout and stderr, in case something fails.
+        tmpfile=$(mktemp) || \
+            { output "    ${R}Failed to create temp file.${N}"; exit 1; }
         output "    - Installing NodeJS modules"
-        nvm use --silent
-        npm ci --silent --no-progress > /dev/null 2>&1
+        # Capture output and error into a temporary file.
+        nvm use > "${tmpfile}" 2>&1 || \
+            output "      ${R}Error running nvm. Details:${N} $(<"${tmpfile}")"
+        npm ci --no-progress > "${tmpfile}" 2>&1 || \
+            output "      ${R}Error running npm ci. Details:${N} $(<"${tmpfile}")"
         output "    - Generating upgrade notes"
         if [ $type == "major" ] || [ $type == "minor" ]; then
-            .grunt/upgradenotes.mjs release -d > /dev/null 2>&1
+            .grunt/upgradenotes.mjs release -d > "${tmpfile}" 2>&1 || \
+                output "      ${R}Error running upgradenotes.mjs. Details:${N} $(<"${tmpfile}")"
         else
-            .grunt/upgradenotes.mjs release > /dev/null 2>&1
+            .grunt/upgradenotes.mjs release > "${tmpfile}" 2>&1 || \
+                output "      ${R}Error running upgradenotes.mjs. Details:${N} $(<"${tmpfile}")"
         fi
+        rm -f "${tmpfile}"
     else
         output "    ${Y}Upgrade notes script not found.${N}"
     fi
