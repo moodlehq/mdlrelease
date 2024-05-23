@@ -97,6 +97,12 @@ foreach ($executables as $relname) {
     }
 }
 
+// These files may not exist in all the branches, so we are adding them now, after
+// the previous checks. Once any file is available in all the branches, we should
+// move it to the $executables assignment above.
+// TODO: Move this to the $executables assignment above once 405_STABLE is the min branch supported.
+$executables[realpath("$sourcedir/.grunt/upgradenotes.mjs")] = '.grunt/upgradenotes.mjs';
+
 process_dir($sourcedir, $executables, $gitignore);
 
 exit(0);
