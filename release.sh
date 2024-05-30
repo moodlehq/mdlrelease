@@ -132,9 +132,9 @@ for b in "${allbranches[@]}" ; do
         # We very-rarely should face this, as far as the pre-release script already detects
         # 99% of cases, but this is a last-resort check.
         comm=$(git log -n1 --pretty=format:"%ct" origin/"${b}") # Last commit time in seconds.
-        curr=$(date -u +%s)                            # Now in seconds.
-        publ=$(date -u -d "${PUBLISHING_TIME}" +%s)    # Publishing time in seconds.
-        publlocal=$(date -d @"${publ}" +'%H:%M:%S %Z') # Publishing time in local time.
+        curr=$(LC_ALL=C date -u +%s)                            # Now in seconds.
+        publ=$(LC_ALL=C date -u -d "${PUBLISHING_TIME}" +%s)    # Publishing time in seconds.
+        publlocal=$(LC_ALL=C date -d @"${publ}" +'%H:%M:%S %Z') # Publishing time in local time.
 
         if [ "${comm}" -lt "${publ}" ] && [ "${curr}" -gt "${publ}" ]; then
             output "  ${Y}Between the last commit and now, the packaging server${N}"
