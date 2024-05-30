@@ -63,10 +63,10 @@ function next_utc_time() {
     local time="${1}" # Time in HH:MM:SS format.
     local now         # Current time in seconds.
     local next        # To calculate the next time in seconds.
-    now=$(date -u +%s)
-    next=$(date -u -d "$(date -u -d @"${now}" +"%Y-%m-%d $time")" +%s)
+    now=$(LC_ALL=C date -u +%s)
+    next=$(LC_ALL=C date -u -d "$(LC_ALL=C date -u -d @"${now}" +"%Y-%m-%d $time")" +%s)
     if [ "${now}" -gt "${next}" ]; then # If the time has already passed today.
-        next=$(date -u -d "$(date -u -d @"${next}") +1 day" +%s)
+        next=$(LC_ALL=C date -u -d "$(LC_ALL=C date -u -d @"${next}") +1 day" +%s)
     fi
     echo "${next}" # Return the next time in seconds.
 }

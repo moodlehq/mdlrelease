@@ -513,11 +513,11 @@ fi
 # Before anything else, let's check if, right now, it's a good time to run this script.
 
 # Calculate a few timestamps (unix seconds since epoch).
-curr=$(date -u +%s) # Now
+curr=$(LC_ALL=C date -u +%s) # Now
 publ=$(next_utc_time "${PUBLISHING_TIME}") # Publishing time UTC.
 
 # Calculate some local and interval times.
-publlocal=$(date -d @"${publ}" +'%H:%M:%S %Z')    # Publishing time in local time.
+publlocal=$(LC_ALL=C date -d @"${publ}" +'%H:%M:%S %Z')    # Publishing time in local time.
 prevention=$((publ - PREVENT_MINUTES * 60))       # Begin of prevention time.
 
 # If we are within the prevention time, let's prevent and exit.
