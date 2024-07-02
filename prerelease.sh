@@ -703,8 +703,6 @@ for branch in ${branches[@]};
         # Get the segment of the stable branch name to use for merges.
         stable=`expr "$branch" : 'MOODLE_'`
         mergestringsbranch="install_${branch:$stable}"
-        # TODO: Remove these 2 lines once AMOS starts generating the install_main branch.
-        mergestringsbranch="install_master"
     else
         # Must be a stable branch.
         # Stable branches are not included in major, beta, or rc releases.
