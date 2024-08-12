@@ -38,8 +38,7 @@ devbranches=("${DEVBRANCHES[@]}");
 # Prepare an all branches array.
 OLDIFS="$IFS"
 IFS=$'\n'
-# TODO: Remove master from the list once we delete it.
-allbranches=($(for b in master "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
+allbranches=($(for b in "${DEVBRANCHES[@]}" "${STABLEBRANCHES[@]}" "${SECURITYBRANCHES[@]}" ; do echo "$b" ; done | sort -du))
 IFS="$OLDIFS"
 
 in_array() {
@@ -816,13 +815,6 @@ for branch in ${branches[@]};
     fi
 
     if (( $newcommits > 0 )) ; then
-        # TODO: Delete these 7 lines (comments and if block) once we delete master.
-        # Ensure that, always, master is the same as main.
-        if [[ "${branch}" == "main" ]]; then
-            git branch -f master main
-            integrationpush="$integrationpush master"
-            output "  - ${Y}master branch updated to match main branch.${N}"
-        fi
         output "  + ${C}$branch done! $newcommits new commits to push.${N}"
         integrationpush="$integrationpush $branch"
     else
