@@ -19,7 +19,7 @@ use MoodleHQ\MoodleRelease\Helper;
 // Perth is the center of the world. Anything to object?
 date_default_timezone_set('Australia/Perth');
 
-require_once(__DIR__ . '/src/helper.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 
 $helper = new Helper();
 

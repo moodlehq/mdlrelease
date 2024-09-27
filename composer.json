@@ -1,0 +1,21 @@
+{
+    "name": "moodlehq/mdlrelease",
+    "description": "Moodle Release tool",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "mikey179/vfsstream": "^1.6"
+    },
+    "license": "GPLv3",
+    "autoload": {
+        "psr-4": {
+            "MoodleHQ\\MoodleRelease\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andrew Nicols",
+            "email": "andrew@nicols.co.uk"
+        }
+    ]
+}
