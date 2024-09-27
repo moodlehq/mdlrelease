@@ -16,6 +16,8 @@
 
 namespace MoodleHQ\MoodleRelease;
 
+use Exception;
+
 /**
  * Helper library for Moodle Release scripts.
  *
@@ -24,18 +26,37 @@ namespace MoodleHQ\MoodleRelease;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class Helper {
-    function bump_version($path, $branch, $type, $rc, $date, $isdevbranch) {
+    /**
+     * Bump the version.
+     *
+     * @param string $path
+     * @param string $branch
+     * @param string $type
+     * @param string $rc
+     * @param string $date
+     * @param bool $isdevbranch
+     * @throws Exception
+     * @return mixed
+     */
+    public static function bumpVersion(
+        string $path,
+        string $branch,
+        string $type,
+        string $rc,
+        string $date,
+        bool $isdevbranch,
+    ) {
 
-        validate_branch($branch);
-        validate_type($type);
-        validate_path($path);
+        self::isBranchNameValid($branch);
+        self::isTypeValid($type);
+        self::isPathValid($path);
 
         $versionfile = file_get_contents($path);
 
-        validate_version_file($versionfile, $branch);
+        self::isVersionFileValid($versionfile, $branch);
 
         $is19 = ($branch === 'MOODLE_19_STABLE');
-        $isstable = branch_is_stable($branch, $isdevbranch);
+        $isstable = self::isBranchStable($branch, $isdevbranch);
         $today = date('Ymd');
 
         $integerversioncurrent = null;
@@ -134,25 +155,25 @@ class Helper {
                         // Add the +
                         $releasenew .= '+';
                     }
-                    list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                    list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
                 } else if (strpos($releasecurrent, 'dev') === false) {
                     // Must be immediately after a major release. Bump the release version and set maturity to Alpha.
                     $releasenew = (float)$releasenew + 0.1;
                     $releasenew = (string)$releasenew.'dev';
                     $maturitynew = 'MATURITY_ALPHA';
                 }
-                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
             } else if ($type === 'beta') {
                 $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta)\+?#', '$1', $releasenew);
                 $branchnew = $branchcurrent; // Branch doesn't change in beta releases ever.
                 $releasenew .= 'beta';
-                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
                 $maturitynew = 'MATURITY_BETA';
             } else if ($type === 'rc') {
                 $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d)\+?#', '$1', $releasenew);
                 $branchnew = $branchcurrent; // Branch doesn't change in rc releases ever.
                 $releasenew .= 'rc'.$rc;
-                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
                 $maturitynew = 'MATURITY_RC';
             } else if ($type === 'on-demand') {
                 // Add the + if missing (normally applies to post betas & rcs only,
@@ -161,7 +182,7 @@ class Helper {
                     // Add the +
                     $releasenew .= '+';
                 }
-                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
             } else if ($type === 'on-sync') {
                 $decimalversionnew++;
             } else if ($type === 'back-to-dev') {
@@ -187,7 +208,7 @@ class Helper {
                 // Awesome major release!
                 $releasenew = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $releasenew);
                 $branchnew = $branchcurrent; // Branch doesn't change in major releases ever.
-                list($integerversionnew, $decimalversionnew) = bump_dev_ensure_higher($integerversionnew, $decimalversionnew);
+                list($integerversionnew, $decimalversionnew) = self::getValidatedVersionNumber($integerversionnew, $decimalversionnew);
                 $maturitynew = 'MATURITY_STABLE';
                 // Now handle builddate for releases.
                 if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
@@ -196,7 +217,7 @@ class Helper {
                     }
                 }
                 $commentnew = '// ' . $buildnew . '      = branching date YYYYMMDD - do not modify!';
-                // TODO: Move this to bump_dev_ensure_higher() to keep things clear. Require new params.
+                // TODO: Move this to self::getValidatedVersionNumber() to keep things clear. Require new params.
                 // Also force version for major releases. Must match "next Monday" or --date (if specified)
                 if (empty($date)) { // If no date has been forced, dev majors always are released on Monday.
                     if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
@@ -241,39 +262,88 @@ class Helper {
         return $releasenew;
     }
 
-    function bump_dev_ensure_higher($versionint, $versiondec) {
+    /**
+     * Ensure that the buymped version is higher than the current one.
+     *
+     * @param int $versionint The integer part of the version
+     * @param int $versiondec The decimal part of the version
+     * @return array
+     */
+    public static function getValidatedVersionNumber(
+        int $versionint,
+        int $versiondec,
+    ): array {
         $today = date('Ymd');
-        if ($versionint >= $today*100) {
+        if ($versionint >= $today * 100) {
             // Integer version is already past today * 100, increment version decimal part instead of integer part.
-            $versiondec = (int)$versiondec + 1;
-            $versiondec = (string)$versiondec;
+            $versiondec = (int) $versiondec + 1;
+            $versiondec = (string) $versiondec;
         } else {
-            $versionint = $today.'00';
+            $versionint = $today . '00';
             $versiondec = '00';
         }
-        return array($versionint, $versiondec);
+        return [
+            $versionint,
+            $versiondec,
+        ];
     }
 
-    function branch_is_stable($branch, $isdevbranch) {
-        return  (strpos($branch, '_STABLE') !== false && !$isdevbranch);
+    /**
+     * Check if the branch is a stable branch.
+     *
+     * @param string $branch The branch name
+     * @param bool $isdevbranch Whether the branch is a development branch
+     * @return bool
+     */
+    public static function isBranchStable(
+        string $branch,
+        bool $isdevbranch,
+    ): bool {
+        return (strpos($branch, '_STABLE') !== false && !$isdevbranch);
     }
 
-    function validate_branch($branch) {
+    /**
+     * Validate the branch.
+     *
+     * @param string $branch The branch name
+     * @throws Exception
+     */
+    public static function isBranchNameValid(
+        string $branch,
+    ): bool {
         if (!preg_match('#^(main|MOODLE_(\d+)_STABLE)$#', $branch, $matches)) {
             throw new Exception('Invalid branch given', __LINE__);
         }
         return true;
     }
 
-    function validate_type($type) {
-        $types = array('weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync', 'back-to-dev');
+    /**
+     * Check whether the type is valid.
+     *
+     * @param string $type The type of the release
+     * @return bool
+     * @throws Exception
+     */
+    public static function isTypeValid(
+        string $type,
+    ): bool {
+        $types = ['weekly', 'minor', 'major', 'beta', 'rc', 'on-demand', 'on-sync', 'back-to-dev'];
         if (!in_array($type, $types)) {
             throw new Exception('Invalid type given.', __LINE__);
         }
         return true;
     }
 
-    function validate_path($path) {
+    /**
+     * Check whether the path is valid.
+     *
+     * @param string $path The path to the version file
+     * @return bool
+     * @throws Exception
+     */
+    public static function isPathValid(
+        string $path,
+    ): bool {
         if (file_exists($path) && is_readable($path)) {
             if (is_writable($path)) {
                 return true;
@@ -283,7 +353,18 @@ class Helper {
         throw new Exception('Invalid path given.', __LINE__);
     }
 
-    function validate_version_file($contents, $branch) {
+    /**
+     * Validate the version file.
+     *
+     * @param string $contents The contents of the version file
+     * @param string $branch The branch name
+     * @return bool
+     * @throws Exception
+     */
+    public static function isVersionFileValid(
+        string $contents,
+        string $branch,
+    ): bool {
         $hasversion = strpos($contents, '$version ') !== false;
         $hasrelease = strpos($contents, '$release ') !== false;
         $hasbranch = strpos($contents, '$branch ') !== false;
@@ -298,13 +379,27 @@ class Helper {
         throw new Exception('Invalid version file found.', __LINE__);
     }
 
-    function get_option_from_options_array(array $options, $short, $long) {
+    /**
+     * Get the value of an option from the options array.
+     *
+     * @param array $options THe options configuration
+     * @param string $short The short name of the option
+     * @param string $long The long name of the option
+     * @return mixed
+     */
+    public static function getOption(
+        array $options,
+        string $short,
+        string $long,
+    ): mixed {
         if (!isset($options[$short]) && !isset($options[$long])) {
             throw new Exception("Required option -$short|--$long must be provided.", __LINE__);
         }
-        if ((isset($options[$short]) && is_array($options[$short])) ||
+        if (
+            (isset($options[$short]) && is_array($options[$short])) ||
             (isset($options[$long]) && is_array($options[$long])) ||
-            (isset($options[$short]) && isset($options[$long]))) {
+            (isset($options[$short]) && isset($options[$long]))
+        ) {
             throw new Exception("Option -$short|--$long specified more than once.", __LINE__);
         }
         return (isset($options[$short])) ? $options[$short] : $options[$long];
