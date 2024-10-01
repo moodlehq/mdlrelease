@@ -236,7 +236,12 @@ get_new_stable_branch() {
 }
 
 generate_upgrade_notes() {
-    local type=$1
+    local branch=$1
+    local type=$2
+    local pwd=$3
+    local rc=$4
+    local date=$5
+    local isdevbranch=$6
 
     cd ${mydir}/gitmirror
     if [ -f .grunt/upgradenotes.mjs ]; then
@@ -250,11 +255,14 @@ generate_upgrade_notes() {
         npm ci --no-progress > "${tmpfile}" 2>&1 || \
             output "      ${R}Error running npm ci. Details:${N} $(<"${tmpfile}")"
         output "    - Generating upgrade notes"
+
+        local release=`php ${mydir}/bumpversions.php -b "$branch" -t "$type" -p "$pwd" -r "$rc" -d "$date" -i "$isdevbranch"`
+
         if [ $type == "major" ] || [ $type == "minor" ]; then
-            .grunt/upgradenotes.mjs release -d > "${tmpfile}" 2>&1 || \
+            .grunt/upgradenotes.mjs release -d "${release}" > "${tmpfile}" 2>&1 || \
                 output "      ${R}Error running upgradenotes.mjs. Details:${N} $(<"${tmpfile}")"
         else
-            .grunt/upgradenotes.mjs release > "${tmpfile}" 2>&1 || \
+            .grunt/upgradenotes.mjs release "${release}" > "${tmpfile}" 2>&1 || \
                 output "      ${R}Error running upgradenotes.mjs. Details:${N} $(<"${tmpfile}")"
         fi
         rm -f "${tmpfile}"
@@ -787,7 +795,7 @@ for branch in ${branches[@]};
     # Now generate the upgrade notes.
     if $upgradenotes ; then
         output "  - Generating upgrade notes..."
-        generate_upgrade_notes "$_type"
+        generate_upgrade_notes "$branch" "$_type" "$pwd" "$_rc" "$_date" "$isdevbranch"
         if git_unstaged_changes ; then
             # Add any upgrade files.
             git add -A
