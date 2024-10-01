@@ -131,7 +131,6 @@ final class HelperTest extends TestCase
         return [
             'main' => ['main', true, false],
             'master' => ['master', true, false],
-            'MOODLE_19_STABLE' => ['MOODLE_19_STABLE', false, true],
             'MOODLE_401_STABLE' => ['MOODLE_401_STABLE', false, true],
             'MOODLE_500_STABLE' => ['MOODLE_500_STABLE', false, true],
             'MOODLE_500_STABLE in parallel develoipment' => ['MOODLE_500_STABLE', true, false],
@@ -164,7 +163,7 @@ final class HelperTest extends TestCase
         return [
             'main' => ['main', true],
             'master' => ['master', false],
-            'MOODLE_19_STABLE' => ['MOODLE_19_STABLE', true],
+            'MOODLE_19_STABLE' => ['MOODLE_19_STABLE', false],
             'MOODLE_401_STABLE' => ['MOODLE_401_STABLE', true],
             'MOODLE_500_STABLE' => ['MOODLE_500_STABLE', true],
             'MOODLE_500_STABLE in parallel develoipment' => ['MOODLE_500_STABLE', true],
@@ -336,28 +335,6 @@ final class HelperTest extends TestCase
                     \$branch   = '405';                     // This version's branch.
                 EOF,
                 'branch' => 'MOODLE_405_STABLE',
-                'expected' => false,
-            ],
-            'Valid 19' => [
-                'content' => <<<EOF
-                    \$version  = 2024092900.01;              // YYYYMMDD      = weekly release date of this DEV branch.
-                    \$release  = '4.5beta (Build: 20240928)'; // Human-friendly version name
-                EOF,
-                'branch' => 'MOODLE_19_STABLE',
-                'expected' => true,
-            ],
-            'Missing version 19' => [
-                'content' => <<<EOF
-                    \$release  = '4.5beta (Build: 20240928)'; // Human-friendly version name
-                EOF,
-                'branch' => 'MOODLE_19_STABLE',
-                'expected' => false,
-            ],
-            'Missing release 19' => [
-                'content' => <<<EOF
-                    \$version  = 2024092900.01;              // YYYYMMDD      = weekly release date of this DEV branch.
-                EOF,
-                'branch' => 'MOODLE_19_STABLE',
                 'expected' => false,
             ],
         ];

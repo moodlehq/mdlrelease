@@ -55,7 +55,6 @@ class Helper
         $nextVersionInfo = $currentVersionInfo->getNextVersion($branch, $type, $rc, $date, $isdevbranch);
 
         return [
-            'is19' => ($branch === 'MOODLE_19_STABLE'),
             'versionfile' => $versionfile,
             'current' => $currentVersionInfo,
             'new' => $nextVersionInfo,
@@ -83,7 +82,6 @@ class Helper
         bool $isdevbranch,
     ): string {
         [
-            'is19' => $is19,
             'versionfile' => $versionfile,
             'current' => $currentVersionInfo,
             'new' => $newVersionInfo,
@@ -101,15 +99,13 @@ class Helper
             $versionfile = str_replace($currentVersionInfo->comment, $newVersionInfo->comment, $versionfile);
         }
 
-        if (!$is19) {
-            // Replace the branch value if need be.
-            if ($currentVersionInfo->branch !== $newVersionInfo->branch) {
-                $versionfile = str_replace($currentVersionInfo->branchquote.$currentVersionInfo->branch.$newVersionInfo->branchquote, $newVersionInfo->branchquote.$newVersionInfo->branch.$newVersionInfo->branchquote, $versionfile);
-            }
-            // Replace the maturity value if need be.
-            if ($currentVersionInfo->maturity !== $newVersionInfo->maturity) {
-                $versionfile = str_replace('= '.$currentVersionInfo->maturity, '= '.$newVersionInfo->maturity, $versionfile);
-            }
+        // Replace the branch value if need be.
+        if ($currentVersionInfo->branch !== $newVersionInfo->branch) {
+            $versionfile = str_replace($currentVersionInfo->branchquote.$currentVersionInfo->branch.$newVersionInfo->branchquote, $newVersionInfo->branchquote.$newVersionInfo->branch.$newVersionInfo->branchquote, $versionfile);
+        }
+        // Replace the maturity value if need be.
+        if ($currentVersionInfo->maturity !== $newVersionInfo->maturity) {
+            $versionfile = str_replace('= '.$currentVersionInfo->maturity, '= '.$newVersionInfo->maturity, $versionfile);
         }
 
         file_put_contents($path, $versionfile);
@@ -172,6 +168,11 @@ class Helper
     public static function isBranchNameValid(
         string $branch,
     ): bool {
+        if (str_contains($branch, 'MOODLE_19_STABLE')) {
+            // Moodle 1.9 is no longer supported by this tooling.
+            return false;
+        }
+
         return (preg_match('#^(main|MOODLE_(\d+)_STABLE)$#', $branch, $matches));
     }
 
@@ -268,9 +269,6 @@ class Helper
         $hasmaturity = strpos($contents, '$maturity ') !== false;
 
         if ($hasversion && $hasrelease && $hasbranch && $hasmaturity) {
-            return true;
-        }
-        if ($branch === 'MOODLE_19_STABLE' && $hasversion && $hasrelease) {
             return true;
         }
 

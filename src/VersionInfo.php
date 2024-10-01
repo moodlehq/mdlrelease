@@ -42,8 +42,6 @@ class VersionInfo
     public static function fromVersionFile(string $versionfile, string $branch): self {
         Helper::requireVersionFileValid($versionfile, $branch);
 
-        $is19 = ($branch === 'MOODLE_19_STABLE');
-
         if (!preg_match('#^ *\$version *= *(?P<integer>\d{10})\.(?P<decimal>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
             throw new Exception('Could not determine version.', __LINE__);
         }
@@ -58,17 +56,15 @@ class VersionInfo
         $releasequote = $matches['quote'];
         $buildcurrent = $matches['build'];
 
-        if (!$is19) {
-            if (!preg_match('# *\$branch *= *(?P<quote>\'|")(?P<branch>\d+)\1#m', $versionfile, $matches)) {
-                throw new Exception('Could not determine branch.', __LINE__);
-            }
-            $branchquote = $matches['quote'];
-            $branch = $matches['branch'];
-            if (!preg_match('# *\$maturity *= *(?P<maturity>MATURITY_[A-Z]+)#m', $versionfile, $matches)) {
-                throw new Exception('Could not determine maturity.', __LINE__);
-            }
-            $maturity = $matches['maturity'];
+        if (!preg_match('# *\$branch *= *(?P<quote>\'|")(?P<branch>\d+)\1#m', $versionfile, $matches)) {
+            throw new Exception('Could not determine branch.', __LINE__);
         }
+        $branchquote = $matches['quote'];
+        $branch = $matches['branch'];
+        if (!preg_match('# *\$maturity *= *(?P<maturity>MATURITY_[A-Z]+)#m', $versionfile, $matches)) {
+            throw new Exception('Could not determine maturity.', __LINE__);
+        }
+        $maturity = $matches['maturity'];
 
         return new self(
             integerversion: $integerversion,
