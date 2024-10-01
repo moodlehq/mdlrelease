@@ -166,13 +166,16 @@ class Helper
      *
      * @param  string $branch The branch name
      * @throws Exception
+     * @return bool
      */
     public static function requireBranchNameValid(
         string $branch,
-    ): void {
+    ): bool {
         if (!self::isBranchNameValid($branch)) {
             throw new Exception('Invalid branch given', __LINE__);
         }
+
+        return true;
     }
 
     /**
@@ -193,13 +196,16 @@ class Helper
      *
      * @param  string $type The type of the release
      * @throws Exception
+     * @return bool
      */
     public static function requireTypeValid(
         string $type,
-    ): void {
+    ): bool {
         if (!self::isTypeValid($type)) {
             throw new Exception('Invalid type given.', __LINE__);
         }
+
+        return true;
     }
 
     /**
@@ -224,13 +230,14 @@ class Helper
      *
      * @param  string $path The path to the version file
      * @throws Exception
+     * @return bool
      */
     public static function requirePathValid(
         string $path,
-    ): void {
+    ): bool {
         if (file_exists($path) && is_readable($path)) {
             if (is_writable($path)) {
-                return;
+                return true;
             }
             throw new Exception('Path cannot be written to.', __LINE__);
         }
@@ -263,13 +270,16 @@ class Helper
      *
      * @param  string $contents The contents of the version file
      * @throws Exception
+     * @return bool
      */
     public static function requireVersionFileValid(
         string $contents,
-    ): void {
+    ): bool {
         if (!self::isVersionFileValid($contents)) {
             throw new Exception('Invalid version file found.', __LINE__);
         }
+
+        return true;
     }
 
     /**

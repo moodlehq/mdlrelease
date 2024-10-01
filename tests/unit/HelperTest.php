@@ -42,7 +42,7 @@ final class HelperTest extends TestCase
     public function testRequireTypeValid(string $type, bool $expected): void
     {
         if ($expected) {
-            $this->assertNull(Helper::requireTypeValid($type));
+            $this->assertTrue(Helper::requireTypeValid($type));
         } else {
             $this->expectException(\Exception::class);
             Helper::requireTypeValid($type);
@@ -155,7 +155,7 @@ final class HelperTest extends TestCase
         bool $expected,
     ): void {
         if ($expected) {
-            $this->assertNull(Helper::requireBranchNameValid($name));
+            $this->assertTrue(Helper::requireBranchNameValid($name));
         } else {
             $this->expectException(\Exception::class);
             Helper::requireBranchNameValid($name);
@@ -234,7 +234,7 @@ final class HelperTest extends TestCase
 
         $path = vfsStream::url("root/{$path}");
         if ($expected) {
-            $this->assertNull(Helper::requirePathValid($path));
+            $this->assertTrue(Helper::requirePathValid($path));
         } else {
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage($message);
@@ -280,7 +280,7 @@ final class HelperTest extends TestCase
         bool $expected,
     ): void {
         if ($expected) {
-            $this->assertNull(Helper::requireVersionFileValid($content));
+            $this->assertTrue(Helper::requireVersionFileValid($content));
         } else {
             $this->expectException(\Exception::class);
             Helper::requireVersionFileValid($content);
