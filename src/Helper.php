@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,20 +22,20 @@ use Exception;
 /**
  * Helper library for Moodle Release scripts.
  *
- * @copyright  2024 Andrew Lyons <andrew@nicols.co.uk>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2024 Andrew Lyons <andrew@nicols.co.uk>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class Helper
 {
     /**
      * Bump the version.
      *
-     * @param string $path The path to the versio file
-     * @param string $branch The branch name to set
-     * @param string $type The type of release
-     * @param string $rc If a release candidate, the RC number
-     * @param string $date The date to use for the version
-     * @param bool $isdevbranch Whether this is a developmentbranch
+     * @param  string $path        The path to the versio file
+     * @param  string $branch      The branch name to set
+     * @param  string $type        The type of release
+     * @param  string $rc          If a release candidate, the RC number
+     * @param  string $date        The date to use for the version
+     * @param  bool   $isdevbranch Whether this is a developmentbranch
      * @throws Exception
      * @return string
      */
@@ -69,7 +70,7 @@ class Helper
      * this function will not work as expected. If this happens this function
      * will need to be extended as appropriate in the circumstances.
      *
-     * @param int $branch The branch number in integer form
+     * @param  int $branch The branch number in integer form
      * @return int The new branch number
      */
     public static function getNextBranchNumber(
@@ -79,8 +80,8 @@ class Helper
             return $branch + 1;
         }
 
-        $releasemajor = (int) substr($branch, 0, 1);
-        $releaseminor = (int) substr($branch, 2, 1);
+        $releasemajor = (int) substr((string) $branch, 0, 1);
+        $releaseminor = (int) substr((string) $branch, 2, 1);
 
         if ($releaseminor >= 3) {
             $releasemajor++;
@@ -95,40 +96,41 @@ class Helper
     /**
      * Ensure that the buymped version is higher than the current one.
      *
-     * @param int $versionint The integer part of the version
-     * @param int $versiondec The decimal part of the version
-     * @return array
+     * @param  int $versionint The integer part of the version
+     * @param  string|int $versiondec The decimal part of the version
+     * @return array<string, int|string>
      */
     public static function getValidatedVersionNumber(
         int $versionint,
-        int $versiondec,
+        string|int $versiondec,
     ): array {
         $today = date('Ymd');
+        $versiondec = (int) $versiondec;
+
         if ($versionint >= $today * 100) {
             // Integer version is already past today * 100, increment version decimal part instead of integer part.
             $versiondec = (int) $versiondec + 1;
-            $versiondec = sprintf("%'02d", $versiondec);
         } else {
             $versionint = $today . '00';
-            $versiondec = '00';
+            $versiondec = 0;
         }
         if ($versiondec >= 100) {
             // Decimal version is already past 99, increment integer part and reset decimal part.
             $versionint = (int) $versionint + 1;
-            $versiondec = '00';
+            $versiondec = 0;
         }
 
         return [
-            (int) $versionint,
-            (string) $versiondec,
+            'versionint' => (int) $versionint,
+            'versiondec' => (string) sprintf("%'02d", $versiondec),
         ];
     }
 
     /**
      * Check if the branch is a stable branch.
      *
-     * @param string $branch The branch name
-     * @param bool $isdevbranch Whether the branch is a development branch
+     * @param  string $branch      The branch name
+     * @param  bool   $isdevbranch Whether the branch is a development branch
      * @return bool
      */
     public static function isBranchStable(
@@ -141,7 +143,7 @@ class Helper
     /**
      * Check whether a branch name is valid.
      *
-     * @param string $branch The branch name
+     * @param  string $branch The branch name
      * @return bool
      */
     public static function isBranchNameValid(
@@ -156,13 +158,13 @@ class Helper
             return true;
         }
 
-        return (preg_match('#^(MOODLE_(\d+)_STABLE)$#', $branch, $matches));
+        return !!(preg_match('#^(MOODLE_(\d+)_STABLE)$#', $branch, $matches));
     }
 
     /**
      * Ensure the branch name is valid.
      *
-     * @param string $branch The branch name
+     * @param  string $branch The branch name
      * @throws Exception
      */
     public static function requireBranchNameValid(
@@ -176,7 +178,7 @@ class Helper
     /**
      * Check whether the type is valid.
      *
-     * @param string $type The type of the release
+     * @param  string $type The type of the release
      * @return bool
      */
     public static function isTypeValid(
@@ -189,7 +191,7 @@ class Helper
     /**
      * Ensure the type is valid.
      *
-     * @param string $type The type of the release
+     * @param  string $type The type of the release
      * @throws Exception
      */
     public static function requireTypeValid(
@@ -203,7 +205,7 @@ class Helper
     /**
      * Check whether the path is valid.
      *
-     * @param string $path The path to the version file
+     * @param  string $path The path to the version file
      * @return bool
      */
     public static function isPathValid(
@@ -220,7 +222,7 @@ class Helper
     /**
      * Ensure the path is valid.
      *
-     * @param string $path The path to the version file
+     * @param  string $path The path to the version file
      * @throws Exception
      */
     public static function requirePathValid(
@@ -238,7 +240,7 @@ class Helper
     /**
      * Validate the version file.
      *
-     * @param string $contents The contents of the version file
+     * @param  string $contents The contents of the version file
      * @return bool
      */
     public static function isVersionFileValid(
@@ -259,8 +261,7 @@ class Helper
     /**
      * Ensure the version file is valid.
      *
-     * @param string $contents The contents of the version file
-     * @param string $branch The branch name
+     * @param  string $contents The contents of the version file
      * @throws Exception
      */
     public static function requireVersionFileValid(
@@ -274,9 +275,9 @@ class Helper
     /**
      * Get the value of an option from the options array.
      *
-     * @param array $options THe options configuration
-     * @param string $short The short name of the option
-     * @param string $long The long name of the option
+     * @param  array<string, string>  $options The options configuration
+     * @param  string $short   The short name of the option
+     * @param  string $long    The long name of the option
      * @return mixed
      */
     public static function getOption(
@@ -287,14 +288,9 @@ class Helper
         if (!isset($options[$short]) && !isset($options[$long])) {
             throw new Exception("Required option -$short|--$long must be provided.", __LINE__);
         }
-        if (
-            (isset($options[$short]) && is_array($options[$short])) ||
-            (isset($options[$long]) && is_array($options[$long])) ||
-            (isset($options[$short]) && isset($options[$long]))
-        ) {
+        if (array_key_exists($short, $options) && array_key_exists($long, $options)) {
             throw new Exception("Option -$short|--$long specified more than once.", __LINE__);
         }
         return (isset($options[$short])) ? $options[$short] : $options[$long];
     }
-
 }

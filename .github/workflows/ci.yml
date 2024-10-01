@@ -14,15 +14,37 @@ jobs:
           - 8.4
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
 
-      - name: Install dependencies
-        run: composer install
+      - uses: php-actions/composer@v6 # or alternative dependency management
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit
+  cs:
+    name: Coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: cs2pr, phpcs
+          coverage: none
+
+      - uses: php-actions/composer@v6 # or alternative dependency management
+
+      - name: PHP CodeSniffer
+        run: phpcs -q --no-colors --report=checkstyle | cs2pr
+
+      - uses: php-actions/phpstan@v3
+        with:
+          path: src/
+          level: 9

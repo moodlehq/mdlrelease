@@ -13,3 +13,4 @@
 .phpunit.cache
 coverage
 coverage.txt
+.phpcs-cache

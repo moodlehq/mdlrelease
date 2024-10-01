@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -70,7 +71,10 @@ final class HelperTest extends TestCase
         int $expectedint,
         string $expecteddec
     ): void {
-        [$newint, $newdec] = Helper::getValidatedVersionNumber($int, $dec);
+        [
+            'versionint' => $newint,
+            'versiondec' => $newdec,
+        ] = Helper::getValidatedVersionNumber($int, $dec);
         $this->assertSame($expectedint, $newint);
         $this->assertSame($expecteddec, $newdec);
     }
@@ -283,7 +287,8 @@ final class HelperTest extends TestCase
         }
     }
 
-    public static function versionFileProvider(): array {
+    public static function versionFileProvider(): array
+    {
         return [
             'Valid version file' => [
                 'content' => <<<EOF

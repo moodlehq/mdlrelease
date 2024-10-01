@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -34,8 +35,7 @@ final class VersionInfoTest extends TestCase
         array $currentVersionArgs,
         array $nextVersionArgs,
         array $expectations,
-    ): void
-    {
+    ): void {
         $version = new VersionInfo(...$currentVersionArgs);
         $nextVersion = $version->getNextVersion(...$nextVersionArgs);
 
@@ -48,7 +48,7 @@ final class VersionInfoTest extends TestCase
     {
         $majorVersion = [
             'integerversion' => 2024092300,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5',
             'build' => '20240921',
@@ -133,24 +133,6 @@ final class VersionInfoTest extends TestCase
                     'releasequote' => "'",
                 ],
             ],
-            'Development version from major' => [
-                $majorVersion,
-                [
-                    'branch' => 'MOODLE_500_STABLE',
-                    'type' => 'weekly',
-                    'rc' => '',
-                    'date' => '20240923',
-                    'isdevbranch' => true,
-                ],
-                [
-                    'integerversion' => date('Ymd') * 100,
-                    'decimalversion' => '00',
-                    'release' => '4.6dev', // Note: The tooling has not yet been updated to handle the new versioning scheme.
-                    'build' => '20240923',
-                    'branchquote' => "'",
-                    'releasequote' => "'",
-                ],
-            ],
         ];
     }
 
@@ -158,7 +140,7 @@ final class VersionInfoTest extends TestCase
     {
         $minorVersion = [
             'integerversion' => 2024092301,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5.1',
             'build' => '20240921',
@@ -229,7 +211,7 @@ final class VersionInfoTest extends TestCase
     {
         $weeklyVersion = [
             'integerversion' => 2024092301,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5.1+',
             'build' => '20240921',
@@ -300,7 +282,7 @@ final class VersionInfoTest extends TestCase
     {
         $version = [
             'integerversion' => 2024092301,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '5.0dev',
             'build' => '20240921',
@@ -453,7 +435,7 @@ final class VersionInfoTest extends TestCase
     {
         $version = [
             'integerversion' => 2024092301,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '5.0beta',
             'build' => '20240921',
@@ -477,6 +459,25 @@ final class VersionInfoTest extends TestCase
                     'integerversion' => date('Ymd') * 100,
                     'decimalversion' => '00',
                     'release' => '5.0beta',
+                    'build' => '20240923',
+                    'branchquote' => "'",
+                    'releasequote' => "'",
+                    'maturity' => 'MATURITY_BETA',
+                ],
+            ],
+            'Weekly version from beta' => [
+                $version,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'weekly',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+                [
+                    'integerversion' => date('Ymd') * 100,
+                    'decimalversion' => '00',
+                    'release' => '5.0beta+',
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
@@ -560,7 +561,7 @@ final class VersionInfoTest extends TestCase
     {
         $developmentVersion = [
             'integerversion' => 2024092301,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '5.0dev',
             'build' => '20240921',
@@ -571,7 +572,7 @@ final class VersionInfoTest extends TestCase
         ];
         $majorVersion = [
             'integerversion' => 2024092300,
-            'decimalversion' => '00',
+            'decimalversion' => 0,
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5',
             'build' => '20240921',
@@ -602,6 +603,16 @@ final class VersionInfoTest extends TestCase
                     'isdevbranch' => true,
                 ],
             ],
+            'Development version from major' => [
+                $majorVersion,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'weekly',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+            ],
         ];
     }
 
@@ -609,8 +620,7 @@ final class VersionInfoTest extends TestCase
     public function testFromVersionContent(
         string $versionFileName,
         array $expectations,
-    ): void
-    {
+    ): void {
         $versionFileContent = file_get_contents($versionFileName);
         $version = VersionInfo::fromVersionContent($versionFileContent);
 
@@ -623,8 +633,7 @@ final class VersionInfoTest extends TestCase
     public function testFromVersionFile(
         string $versionFileName,
         array $expectations,
-    ): void
-    {
+    ): void {
         $version = VersionInfo::fromVersionFile($versionFileName);
 
         foreach ($expectations as $property => $expectedValue) {
