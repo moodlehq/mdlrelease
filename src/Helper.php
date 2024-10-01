@@ -27,49 +27,14 @@ use Exception;
 class Helper
 {
     /**
-     * Get information about the next version
-     *
-     * @param string $path
-     * @param string $branch
-     * @param string $type
-     * @param string $rc
-     * @param string $date
-     * @param bool $isdevbranch
-     * @throws Exception
-     * @return mixed
-     */
-    public static function getNextVersion(
-        string $path,
-        string $branch,
-        string $type,
-        string $rc,
-        string $date,
-        bool $isdevbranch,
-    ) {
-        self::requireBranchNameValid($branch);
-        self::requireTypeValid($type);
-        self::requirePathValid($path);
-
-        $versionfile = file_get_contents($path);
-        $currentVersionInfo = VersionInfo::fromVersionFile($versionfile, $branch);
-        $nextVersionInfo = $currentVersionInfo->getNextVersion($branch, $type, $rc, $date, $isdevbranch);
-
-        return [
-            'versionfile' => $versionfile,
-            'current' => $currentVersionInfo,
-            'new' => $nextVersionInfo,
-        ];
-    }
-
-    /**
      * Bump the version.
      *
-     * @param string $path
-     * @param string $branch
-     * @param string $type
-     * @param string $rc
-     * @param string $date
-     * @param bool $isdevbranch
+     * @param string $path The path to the versio file
+     * @param string $branch The branch name to set
+     * @param string $type The type of release
+     * @param string $rc If a release candidate, the RC number
+     * @param string $date The date to use for the version
+     * @param bool $isdevbranch Whether this is a developmentbranch
      * @throws Exception
      * @return string
      */
@@ -81,36 +46,50 @@ class Helper
         string $date,
         bool $isdevbranch,
     ): string {
-        [
-            'versionfile' => $versionfile,
-            'current' => $currentVersionInfo,
-            'new' => $newVersionInfo,
-        ] = self::getNextVersion($path, $branch, $type, $rc, $date, $isdevbranch);
+        // Require that the new branch name is valid.
+        self::requireBranchNameValid($branch);
+        self::requireTypeValid($type);
+        self::requirePathValid($path);
 
-        $versionfile = str_replace($currentVersionInfo->integerversion . '.' . $currentVersionInfo->decimalversion, $newVersionInfo->integerversion.'.'.$newVersionInfo->decimalversion, $versionfile);
-        // Replace the old build with the new build.
-        $versionfile = str_replace('Build: '.$currentVersionInfo->build, 'Build: '.$newVersionInfo->build, $versionfile);
-        // Replace the old release with the new release if they've changed.
-        if ($currentVersionInfo->release !== $newVersionInfo->release) {
-            $versionfile = str_replace($currentVersionInfo->releasequote.$currentVersionInfo->release, $newVersionInfo->releasequote.$newVersionInfo->release, $versionfile);
-        }
-        // Replace the old comment with the new one if they've changed
-        if ($currentVersionInfo->comment !== $newVersionInfo->comment) {
-            $versionfile = str_replace($currentVersionInfo->comment, $newVersionInfo->comment, $versionfile);
-        }
+        $currentVersionInfo = VersionInfo::fromVersionFile($path);
+        $newVersionInfo = $currentVersionInfo->getNextVersion($branch, $type, $rc, $isdevbranch, $date);
 
-        // Replace the branch value if need be.
-        if ($currentVersionInfo->branch !== $newVersionInfo->branch) {
-            $versionfile = str_replace($currentVersionInfo->branchquote.$currentVersionInfo->branch.$newVersionInfo->branchquote, $newVersionInfo->branchquote.$newVersionInfo->branch.$newVersionInfo->branchquote, $versionfile);
-        }
-        // Replace the maturity value if need be.
-        if ($currentVersionInfo->maturity !== $newVersionInfo->maturity) {
-            $versionfile = str_replace('= '.$currentVersionInfo->maturity, '= '.$newVersionInfo->maturity, $versionfile);
-        }
-
-        file_put_contents($path, $versionfile);
+        file_put_contents($path, $newVersionInfo->generateVersionFile());
 
         return $newVersionInfo->release;
+    }
+
+    /**
+     * Determine the next branch number based on the current one.
+     *
+     * Note: This function is valid for Moodle 4.0 and later and follows
+     * the Moodle versioning scheme.
+     *
+     * If there is an exceptional release and the life of a branch is extended
+     * this function will not work as expected. If this happens this function
+     * will need to be extended as appropriate in the circumstances.
+     *
+     * @param int $branch The branch number in integer form
+     * @return int The new branch number
+     */
+    public static function getNextBranchNumber(
+        int $branch,
+    ): int {
+        if ($branch <= 404) {
+            return $branch + 1;
+        }
+
+        $releasemajor = (int) substr($branch, 0, 1);
+        $releaseminor = (int) substr($branch, 2, 1);
+
+        if ($releaseminor >= 3) {
+            $releasemajor++;
+            $releaseminor = 0;
+        } else {
+            $releaseminor++;
+        }
+
+        return (int) sprintf('%d%02d', $releasemajor, $releaseminor);
     }
 
     /**
@@ -128,7 +107,7 @@ class Helper
         if ($versionint >= $today * 100) {
             // Integer version is already past today * 100, increment version decimal part instead of integer part.
             $versiondec = (int) $versiondec + 1;
-            $versiondec = sprintf("%'02d", $versiondec)  ;
+            $versiondec = sprintf("%'02d", $versiondec);
         } else {
             $versionint = $today . '00';
             $versiondec = '00';
@@ -173,7 +152,11 @@ class Helper
             return false;
         }
 
-        return (preg_match('#^(main|MOODLE_(\d+)_STABLE)$#', $branch, $matches));
+        if ($branch === 'main') {
+            return true;
+        }
+
+        return (preg_match('#^(MOODLE_(\d+)_STABLE)$#', $branch, $matches));
     }
 
     /**
@@ -256,12 +239,10 @@ class Helper
      * Validate the version file.
      *
      * @param string $contents The contents of the version file
-     * @param string $branch The branch name
      * @return bool
      */
     public static function isVersionFileValid(
         string $contents,
-        string $branch,
     ): bool {
         $hasversion = strpos($contents, '$version ') !== false;
         $hasrelease = strpos($contents, '$release ') !== false;
@@ -284,9 +265,8 @@ class Helper
      */
     public static function requireVersionFileValid(
         string $contents,
-        string $branch,
     ): void {
-        if (!self::isVersionFileValid($contents, $branch)) {
+        if (!self::isVersionFileValid($contents)) {
             throw new Exception('Invalid version file found.', __LINE__);
         }
     }

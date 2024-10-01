@@ -52,7 +52,7 @@ final class VersionInfoTest extends TestCase
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5',
             'build' => '20240921',
-            'branch' => '405',
+            'branch' => 'MOODLE_405_STABLE',
             'maturity' => 'MATURITY_STABLE',
             'branchquote' => "'",
             'releasequote' => "'",
@@ -114,6 +114,25 @@ final class VersionInfoTest extends TestCase
                     'releasequote' => "'",
                 ],
             ],
+            'Back to development version from major' => [
+                $majorVersion,
+                [
+                    'branch' => 'main',
+                    'type' => 'back-to-dev',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+                [
+                    // TODO: Calculate the correct version. This is based on the day of the week.
+                    // 'integerversion' => date('Ymd') * 100,
+                    'decimalversion' => '00',
+                    'release' => '5.0dev',
+                    'build' => '20240923',
+                    'branchquote' => "'",
+                    'releasequote' => "'",
+                ],
+            ],
             'Development version from major' => [
                 $majorVersion,
                 [
@@ -143,7 +162,7 @@ final class VersionInfoTest extends TestCase
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5.1',
             'build' => '20240921',
-            'branch' => '405',
+            'branch' => 405,
             'maturity' => 'MATURITY_STABLE',
             'branchquote' => "'",
             'releasequote' => "'",
@@ -214,7 +233,7 @@ final class VersionInfoTest extends TestCase
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
             'release' => '4.5.1+',
             'build' => '20240921',
-            'branch' => '405',
+            'branch' => 'MOODLE_405_STABLE',
             'maturity' => 'MATURITY_STABLE',
             'branchquote' => "'",
             'releasequote' => "'",
@@ -279,7 +298,7 @@ final class VersionInfoTest extends TestCase
     }
     public static function nextVersionFromDevelopmentProvider(): array
     {
-        $developmentVersion = [
+        $version = [
             'integerversion' => 2024092301,
             'decimalversion' => '00',
             'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
@@ -292,8 +311,26 @@ final class VersionInfoTest extends TestCase
         ];
 
         return [
+            'On-sync version from major' => [
+                $version,
+                [
+                    'branch' => 'MOODLE_405_STABLE',
+                    'type' => 'on-sync',
+                    'rc' => '',
+                    'date' => '20240926',
+                    'isdevbranch' => true,
+                ],
+                [
+                    'integerversion' => 2024092301,
+                    'decimalversion' => '01',
+                    'release' => '5.0dev',
+                    'build' => '20240926',
+                    'branchquote' => "'",
+                    'releasequote' => "'",
+                ],
+            ],
             'Weekly version from development' => [
-                $developmentVersion,
+                $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
                     'type' => 'weekly',
@@ -313,7 +350,7 @@ final class VersionInfoTest extends TestCase
             ],
             'Minor version from development' => [
                 // Note: Development versions do not get minor. We treat it as a synonym for weekly.
-                $developmentVersion,
+                $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
                     'type' => 'minor',
@@ -332,7 +369,7 @@ final class VersionInfoTest extends TestCase
                 ],
             ],
             'Beta version from development' => [
-                $developmentVersion,
+                $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
                     'type' => 'beta',
@@ -351,7 +388,7 @@ final class VersionInfoTest extends TestCase
                 ],
             ],
             'RC version from development' => [
-                $developmentVersion,
+                $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
                     'type' => 'rc',
@@ -390,7 +427,7 @@ final class VersionInfoTest extends TestCase
             //     ],
             // ],
             'Major version from development' => [
-                $developmentVersion,
+                $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
                     'type' => 'major',
@@ -408,25 +445,7 @@ final class VersionInfoTest extends TestCase
                     'maturity' => 'MATURITY_STABLE',
                 ],
             ],
-            'Back to dev from development' => [
-                $developmentVersion,
-                [
-                    'branch' => 'MOODLE_500_STABLE',
-                    'type' => 'back-to-dev',
-                    'rc' => '',
-                    'date' => '20240923',
-                    'isdevbranch' => true,
-                ],
-                [
-                    'integerversion' => 2024092301,
-                    'decimalversion' => '00',
-                    'release' => '5.0dev',
-                    'build' => '20240923',
-                    'branchquote' => "'",
-                    'releasequote' => "'",
-                    'maturity' => 'MATURITY_ALPHA',
-                ],
-            ],
+
         ];
     }
 
@@ -525,15 +544,88 @@ final class VersionInfoTest extends TestCase
         ];
     }
 
+    #[DataProvider('invalidNextVersionMigrationsProvider')]
+    public function testGetNextVersionInvalidTransition(
+        array $currentVersionArgs,
+        array $nextVersionArgs,
+    ): void {
+        $version = new VersionInfo(...$currentVersionArgs);
+
+        $this->expectException(\Exception::class);
+        $version->getNextVersion(...$nextVersionArgs);
+    }
+
+
+    public static function invalidNextVersionMigrationsProvider(): array
+    {
+        $developmentVersion = [
+            'integerversion' => 2024092301,
+            'decimalversion' => '00',
+            'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
+            'release' => '5.0dev',
+            'build' => '20240921',
+            'branch' => '500',
+            'maturity' => 'MATURITY_ALPHA',
+            'branchquote' => "'",
+            'releasequote' => "'",
+        ];
+        $majorVersion = [
+            'integerversion' => 2024092300,
+            'decimalversion' => '00',
+            'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
+            'release' => '4.5',
+            'build' => '20240921',
+            'branch' => 'MOODLE_405_STABLE',
+            'maturity' => 'MATURITY_STABLE',
+            'branchquote' => "'",
+            'releasequote' => "'",
+        ];
+
+        return [
+            'Back to dev from development' => [
+                $developmentVersion,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'back-to-dev',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+            ],
+            'Back to dev from major with incorrect release info' => [
+                $majorVersion,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'back-to-dev',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+            ],
+        ];
+    }
+
     #[DataProvider('versionFileProvider')]
-    public function testFromVersionFile(
+    public function testFromVersionContent(
         string $versionFileName,
-        string $branch,
         array $expectations,
     ): void
     {
         $versionFileContent = file_get_contents($versionFileName);
-        $version = VersionInfo::fromVersionFile($versionFileContent, $branch);
+        $version = VersionInfo::fromVersionContent($versionFileContent);
+
+        foreach ($expectations as $property => $expectedValue) {
+            self::assertSame($expectedValue, $version->{$property});
+        }
+    }
+
+    #[DataProvider('versionFileProvider')]
+    public function testFromVersionFile(
+        string $versionFileName,
+        array $expectations,
+    ): void
+    {
+        $version = VersionInfo::fromVersionFile($versionFileName);
 
         foreach ($expectations as $property => $expectedValue) {
             self::assertSame($expectedValue, $version->{$property});
@@ -545,89 +637,112 @@ final class VersionInfoTest extends TestCase
         return [
             '4.3.0' => [
                 dirname(__DIR__) . '/fixtures/versions/4.3.0.php',
-                'MOODLE_403_STABLE',
                 [
                     'integerversion' => 2023100900,
                     'decimalversion' => '00',
                     'release' => '4.3',
                     'build' => '20231009',
-                    'branch' => '403',
+                    'branch' => 403,
                     'maturity' => 'MATURITY_STABLE',
                 ],
             ],
             '4.3.2' => [
                 dirname(__DIR__) . '/fixtures/versions/4.3.2.php',
-                'MOODLE_403_STABLE',
                 [
                     'integerversion' => 2023100902,
                     'decimalversion' => '00',
                     'release' => '4.3.2',
                     'build' => '20231222',
-                    'branch' => '403',
+                    'branch' => 403,
                     'maturity' => 'MATURITY_STABLE',
                 ],
             ],
             '4.4.0-beta' => [
                 dirname(__DIR__) . '/fixtures/versions/4.4.0-beta.php',
-                'MOODLE_404_STABLE',
                 [
                     'integerversion' => 2024041200,
                     'decimalversion' => '01',
                     'release' => '4.4beta',
                     'build' => '20240412',
-                    'branch' => '404',
+                    'branch' => 404,
                     'maturity' => 'MATURITY_BETA',
                 ],
             ],
             '4.4.0-rc1' => [
                 dirname(__DIR__) . '/fixtures/versions/4.4.0-rc1.php',
-                'MOODLE_404_STABLE',
                 [
                     'integerversion' => 2024041600,
                     'decimalversion' => '00',
                     'release' => '4.4rc1',
                     'build' => '20240416',
-                    'branch' => '404',
+                    'branch' => 404,
                     'maturity' => 'MATURITY_RC',
                 ],
             ],
             '4.4.0' => [
                 dirname(__DIR__) . '/fixtures/versions/4.4.0.php',
-                'MOODLE_404_STABLE',
                 [
                     'integerversion' => 2024042200,
                     'decimalversion' => '00',
                     'release' => '4.4',
                     'build' => '20240422',
-                    'branch' => '404',
+                    'branch' => 404,
                     'maturity' => 'MATURITY_STABLE',
                 ],
             ],
         ];
     }
 
-    #[DataProvider('invalidVersionFileProvider')]
-    public function testFromVersionFileInvalid(
-        string $versionFileName,
-        string $branch,
+    #[DataProvider('invalidVersionContentProvider')]
+    public function testFromVersionContentInvalid(
+        string $versionFileContent,
         string $expectedExceptionMessage,
     ): void {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $versionFileContent = file_get_contents($versionFileName);
-        VersionInfo::fromVersionFile($versionFileContent, $branch);
+        VersionInfo::fromVersionContent($versionFileContent);
     }
 
-    public static function invalidVersionFileProvider(): array
+    public static function invalidVersionContentProvider(): array
     {
         return [
             'Invalid version file' => [
-                dirname(__DIR__) . '/fixtures/versions/invalidVersion.php',
-                'MOODLE_404_STABLE',
+                <<<EOF
+                \$version  = 20240422.00; // Comment here.
+                \$release  = '4.4 (Build: 20240422)';
+                \$branch   = '404';
+                \$maturity = MATURITY_STABLE;
+                EOF,
                 'Could not determine version.',
+            ],
+            'Invalid release file' => [
+                <<<EOF
+                \$version  = 2024042200.00; // Comment here.
+                \$release  = '4.4 (Builds: 20240422)';
+                \$branch   = '404';
+                \$maturity = MATURITY_STABLE;
+                EOF,
+                'Could not determine the release.',
+            ],
+            'Invalid branch file' => [
+                <<<EOF
+                \$version  = 2024042200.00; // Comment here.
+                \$release  = '4.4 (Build: 20240422)';
+                \$branch   = 'main';
+                \$maturity = MATURITY_STABLE;
+                EOF,
+                'Could not determine branch.',
+            ],
+            'Invalid maturity file' => [
+                <<<EOF
+                \$version  = 2024042200.00; // Comment here.
+                \$release  = '4.4 (Build: 20240422)';
+                \$branch   = '404';
+                \$maturity = MATURITY_stable;
+                EOF,
+                'Could not determine maturity.',
             ],
         ];
     }
-
 }

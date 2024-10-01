@@ -161,9 +161,9 @@ final class HelperTest extends TestCase
     public static function isBranchNameValidProvider(): array
     {
         return [
-            'main' => ['main', true],
             'master' => ['master', false],
             'MOODLE_19_STABLE' => ['MOODLE_19_STABLE', false],
+            'main' => ['main', true],
             'MOODLE_401_STABLE' => ['MOODLE_401_STABLE', true],
             'MOODLE_500_STABLE' => ['MOODLE_500_STABLE', true],
             'MOODLE_500_STABLE in parallel develoipment' => ['MOODLE_500_STABLE', true],
@@ -262,26 +262,24 @@ final class HelperTest extends TestCase
     #[DataProvider('versionFileProvider')]
     public function testIsVersionFileValid(
         string $content,
-        string $branch,
         bool $expected,
     ): void {
         $this->assertEquals(
             $expected,
-            Helper::isVersionFileValid($content, $branch),
+            Helper::isVersionFileValid($content),
         );
     }
 
     #[DataProvider('versionFileProvider')]
     public function testRequireVersionFileValid(
         string $content,
-        string $branch,
         bool $expected,
     ): void {
         if ($expected) {
-            $this->assertNull(Helper::requireVersionFileValid($content, $branch));
+            $this->assertNull(Helper::requireVersionFileValid($content));
         } else {
             $this->expectException(\Exception::class);
-            Helper::requireVersionFileValid($content, $branch);
+            Helper::requireVersionFileValid($content);
         }
     }
 
@@ -298,7 +296,6 @@ final class HelperTest extends TestCase
                     \$branch   = '405';                     // This version's branch.
                     \$maturity = MATURITY_BETA;             // This version's maturity level.
                 EOF,
-                'branch' => 'MOODLE_405_STABLE',
                 'expected' => true,
             ],
             'Missing version' => [
@@ -307,7 +304,6 @@ final class HelperTest extends TestCase
                     \$branch   = '405';                     // This version's branch.
                     \$maturity = MATURITY_BETA;             // This version's maturity level.
                 EOF,
-                'branch' => 'MOODLE_405_STABLE',
                 'expected' => false,
             ],
             'Missing release' => [
@@ -316,7 +312,6 @@ final class HelperTest extends TestCase
                     \$branch   = '405';                     // This version's branch.
                     \$maturity = MATURITY_BETA;             // This version's maturity level.
                 EOF,
-                'branch' => 'MOODLE_405_STABLE',
                 'expected' => false,
             ],
             'Missing branch' => [
@@ -325,7 +320,6 @@ final class HelperTest extends TestCase
                     \$release  = '4.5beta (Build: 20240928)'; // Human-friendly version name
                     \$maturity = MATURITY_BETA;             // This version's maturity level.
                 EOF,
-                'branch' => 'MOODLE_405_STABLE',
                 'expected' => false,
             ],
             'Missing maturity' => [
@@ -334,8 +328,90 @@ final class HelperTest extends TestCase
                     \$release  = '4.5beta (Build: 20240928)'; // Human-friendly version name
                     \$branch   = '405';                     // This version's branch.
                 EOF,
-                'branch' => 'MOODLE_405_STABLE',
                 'expected' => false,
+            ],
+        ];
+    }
+
+    #[DataProvider('getNextBranchNumberProvider')]
+    public function testGetNextBranchNumber(
+        int $current,
+        int $expected,
+    ): void {
+        $this->assertSame(
+            $expected,
+            Helper::getNextBranchNumber($current),
+        );
+    }
+
+    public static function getNextBranchNumberProvider(): array
+    {
+        return [
+            '404' => [404, 405],
+            '405' => [405, 500],
+            '500' => [500, 501],
+            '501' => [501, 502],
+            '502' => [502, 503],
+            '503' => [503, 600],
+        ];
+    }
+
+    #[DataProvider('validOptionProvider')]
+    public function testGetOption(
+        array $options,
+        string $long,
+        string $short,
+        mixed $expected,
+    ): void {
+        $this->assertSame(
+            $expected,
+            Helper::getOption($options, $short, $long),
+        );
+    }
+    public static function validOptionProvider(): array
+    {
+        return [
+            [
+                'options' => ['long' => 'value', 'other' => 'other'],
+                'long' => 'long',
+                'short' => 'l',
+                'expected' => 'value',
+            ],
+            [
+                'options' => ['long' => 'value', 'other' => '9999'],
+                'long' => 'other',
+                'short' => 'o',
+                'expected' => '9999',
+            ],
+        ];
+    }
+
+    #[DataProvider('invalidOptionProvider')]
+    public function testInvalidGetOption(
+        array $options,
+        string $long,
+        string $short,
+        string $expected,
+    ): void {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($expected);
+        Helper::getOption($options, $short, $long);
+    }
+
+    public static function invalidOptionProvider(): array
+    {
+        return [
+            [
+                'options' => ['long' => 'value', 'l' => 'other'],
+                'long' => 'long',
+                'short' => 'l',
+                'expected' => 'Option -l|--long specified more than once.',
+            ],
+            [
+                'options' => ['long' => 'value', 'other' => '9999'],
+                'long' => 'asdf',
+                'short' => 'a',
+                'expected' => 'Required option -a|--asdf must be provided.',
             ],
         ];
     }

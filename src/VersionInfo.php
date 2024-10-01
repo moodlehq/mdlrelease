@@ -26,21 +26,48 @@ use Exception;
  */
 class VersionInfo
 {
+    /** @var int The name of the branch either in integer form, or MOODLE_(\d+)_STABLE form */
+    public readonly int $branch;
+
+    /**
+     * Construct a new instance of the VersionInfo class.
+     *
+     * @param int $integerversion The integer version number.
+     * @param string $decimalversion Part of the version number after the dot.
+     * @param string $comment The comment to use for the version.
+     * @param string $release The release name
+     * @param string $build The build number
+     * @param int|string $branch The branch number or name
+     * @param string $maturity The maturity of the branch
+     * @param string $branchquote The quote used for the branch
+     * @param string $releasequote The quote used for the release
+     */
     public function __construct(
         public readonly int $integerversion,
         public readonly string $decimalversion,
         public readonly string $comment,
         public readonly string $release,
         public readonly string $build,
-        public readonly string $branch,
+        int|string $branch,
         public readonly string $maturity,
         public readonly string $branchquote,
         public readonly string $releasequote,
     ) {
+        if (is_string($branch)) {
+            $branch = preg_replace('#^MOODLE_(\d+)_STABLE$#', '$1', $branch);
+        }
+        $this->branch = $branch;
     }
 
-    public static function fromVersionFile(string $versionfile, string $branch): self {
-        Helper::requireVersionFileValid($versionfile, $branch);
+    /**
+     * Create a new VersionInfo from the content of a version.php file.
+     *
+     * @param string $versionfile The content of the file
+     * @throws \Exception
+     * @return self
+     */
+    public static function fromVersionContent(string $versionfile): self {
+        Helper::requireVersionFileValid($versionfile);
 
         if (!preg_match('#^ *\$version *= *(?P<integer>\d{10})\.(?P<decimal>\d{2})\d?[^\/]*(?P<comment>/[^\n]*)#m', $versionfile, $matches)) {
             throw new Exception('Could not determine version.', __LINE__);
@@ -79,6 +106,31 @@ class VersionInfo
         );
     }
 
+    /**
+     * Create a new VersionInfo from the path to a version.php file
+     *
+     * @param string $path The path to the file
+     * @throws \Exception
+     * @return self
+     */
+    public static function fromVersionFile(string $path): self {
+        Helper::requirePathValid($path);
+        $versionfile = file_get_contents($path);
+
+        return self::fromVersionContent($versionfile);
+    }
+
+    /**
+     * Get the VersionInfo instance for the Moodle version that follows this one.
+     *
+     * @param string $branch The branch name
+     * @param string $type The release type
+     * @param string $rc The release candidate number
+     * @param bool $isdevbranch Whether this is a development branch
+     * @param mixed $date The date to use for the version
+     * @throws \Exception
+     * @return VersionInfo
+     */
     public function getNextVersion(
         string $branch,
         string $type,
@@ -179,22 +231,29 @@ class VersionInfo
             } else if ($type === 'on-sync') {
                 $decimalversion++;
             } else if ($type === 'back-to-dev') {
-                if (strpos($release, 'dev') === false) { // Ensure it's not a "dev" version already.
-                    // Must be immediately after a major release. Bump comment, release and maturity.
-                    $comment = '// YYYYMMDD      = weekly release date of this DEV branch.';
-                    // Normalise a little bit the release, getting rid of everything after the numerical part.
-                    $release = preg_replace('/^([0-9.]+).*$/', '\1', $release);
-                    // Split the major and minor parts of the release for further process.
-                    list($releasemajor, $releaseminor) = explode('.', $release);
-                    $release = $releasemajor . '.' . (++$releaseminor); // Increment to next dev version.
-                    $release = $release . 'dev';
-                    // The branch is the major followed by 2-chars minor.
-                    $branch = $releasemajor . str_pad($releaseminor, 2, '0', STR_PAD_LEFT);
-                    $maturity = 'MATURITY_ALPHA';
-                    if (empty($date)) { // If no date has been forced, back-to-dev have same build date than majors.
-                        if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
-                            $build = date('Ymd', strtotime('next Monday'));
-                        }
+                // We perform back-to-dev on the `main` branch only.
+                if (strpos($release, 'dev') !== false) { // Ensure it's not a "dev" version already.
+                    throw new Exception('Back-to-dev is only allowed on non-dev branches.', __LINE__);
+                }
+                // Must be immediately after a major release. Bump comment, release and maturity.
+                $comment = '// YYYYMMDD      = weekly release date of this DEV branch.';
+
+                if ($branch !== 'main') {
+                    throw new Exception('Back-to-dev is only allowed on the main branch.', __LINE__);
+                }
+
+                $branch = Helper::getNextBranchNumber($this->branch);
+
+                // This require knowledge of our branching scheme.
+                $releasemajor = (int) substr($branch, 0, 1);
+                $releaseminor = (int) substr($branch, 2, 1);
+
+                $release = "{$releasemajor}.{$releaseminor}dev";
+
+                $maturity = 'MATURITY_ALPHA';
+                if (empty($date)) { // If no date has been forced, back-to-dev have same build date than majors.
+                    if ((int)date('N') !== 1) { // If today is not Monday, calculate next one.
+                        $build = date('Ymd', strtotime('next Monday'));
                     }
                 }
             } else if ($type === 'major') {
@@ -230,6 +289,10 @@ class VersionInfo
             $decimalversion = '0'.$decimalversion;
         }
 
+        if ($branch === 'main') {
+            $branch = $this->branch;
+        }
+
         return new self(
             integerversion: $integerversion,
             decimalversion: $decimalversion,
@@ -241,5 +304,32 @@ class VersionInfo
             branchquote: $this->branchquote,
             releasequote: $this->releasequote,
         );
+    }
+
+    /**
+     * Generate the content of the version.php file based on the standard template.
+     *
+     * @return string
+     */
+    public function generateVersionFile(): string {
+        $versionFile = file_get_contents(__DIR__ . '/templates/version.php.tpl');
+
+        $replacements = [
+            'INTEGERVERSION' => $this->integerversion,
+            'DECIMALVERSION' => $this->decimalversion,
+            'COMMENT' => $this->comment,
+            'RELEASE' => $this->release,
+            'BUILD' => $this->build,
+            'BRANCH' => $this->branch,
+            'MATURITY' => sprintf("%-20s", "{$this->maturity};"),
+        ];
+
+        $versionFile = str_replace(
+            search: array_keys($replacements),
+            replace: array_values($replacements),
+            subject: $versionFile,
+        );
+
+        return $versionFile;
     }
 }
