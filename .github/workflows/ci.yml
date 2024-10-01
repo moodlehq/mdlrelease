@@ -1,5 +1,5 @@
 name: CI Tests
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   PHPUnit:
@@ -23,8 +23,20 @@ jobs:
 
       - uses: php-actions/composer@v6 # or alternative dependency management
 
+
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --coverage-clover ./coverage.xml
+        env:
+          XDEBUG_MODE: coverage
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
+
+
   cs:
     name: Coding standards
     runs-on: ubuntu-latest
