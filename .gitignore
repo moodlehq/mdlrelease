@@ -8,3 +8,10 @@
 /cvsmoodle21/
 /cvsmoodle22/
 /cvsmoodle23/
+/vendor/
+.phpunit.result.cache
+.phpunit.cache
+coverage
+coverage.txt
+.phpcs-cache
+coverage.xml

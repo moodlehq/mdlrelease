@@ -1,0 +1,62 @@
+name: CI Tests
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  PHPUnit:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        php:
+          - 8.2
+          - 8.3
+          - 8.4
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - uses: php-actions/composer@v6 # or alternative dependency management
+
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --coverage-clover ./coverage.xml
+        env:
+          XDEBUG_MODE: coverage
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
+
+
+  cs:
+    name: Coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: cs2pr, phpcs
+          coverage: none
+
+      - uses: php-actions/composer@v6 # or alternative dependency management
+
+      - name: PHP CodeSniffer
+        run: phpcs -q --no-colors --report=checkstyle | cs2pr
+
+      - uses: php-actions/phpstan@v3
+        with:
+          path: src/
+          level: 9

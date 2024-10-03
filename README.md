@@ -42,6 +42,7 @@ Set up is dead easy thanks to a the installation script:
 
     git clone https://github.com/moodlehq/mdlrelease.git
     cd mdlrelease
+    composer install
     ./install.sh protocol username
 
 protocol: defaults to 'ssh', also accepts 'https'.

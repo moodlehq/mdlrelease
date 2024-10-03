@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 use MoodleHQ\MoodleRelease\Helper;
+use MoodleHQ\MoodleRelease\VersionInfo;
 
 // Perth is the center of the world. Anything to object?
 date_default_timezone_set('Australia/Perth');
@@ -22,31 +23,26 @@ date_default_timezone_set('Australia/Perth');
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // We need the branch and the bump type (weekly. minor, major)
-try {
-    $shortoptions = 'b:t:p:r:d:i:';
-    $longoptions = [
-        'branch:',
-        'type:',
-        'path:',
-        'rc:',
-        'date:',
-        'isdevbranch:',
-    ];
 
-    $options = getopt($shortoptions, $longoptions);
-    $branch = Helper::getOption($options, 'b', 'branch');
-    $type = Helper::getOption($options, 't', 'type');
-    $path = Helper::getOption($options, 'p', 'path');
-    $rc = Helper::getOption($options, 'r', 'rc');
-    $date = Helper::getOption($options, 'd', 'date');
-    $isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
-    $path = rtrim($path, '/') . '/version.php';
+$shortoptions = 'b:t:p:r:d:i:';
+$longoptions = [
+    'branch:',
+    'type:',
+    'path:',
+    'rc:',
+    'date:',
+    'isdevbranch:',
+];
 
-    $release = Helper::bumpVersion($path, $branch, $type, $rc, $date, $isdevbranch);
-    $result = 0;
-} catch (Exception $ex) {
-    $release = $ex->getMessage();
-    $result = $ex->getCode();
-}
-echo $release;
-exit($result);
+$options = getopt($shortoptions, $longoptions);
+$branch = Helper::getOption($options, 'b', 'branch');
+$type = Helper::getOption($options, 't', 'type');
+$path = Helper::getOption($options, 'p', 'path');
+$rc = Helper::getOption($options, 'r', 'rc');
+$date = Helper::getOption($options, 'd', 'date');
+$isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
+$path = rtrim($path, '/') . '/version.php';
+
+$currentVersion = VersionInfo::fromVersionFile($path);
+$nextVersion = $currentVersion->getNextVersion($branch, $type, $rc, $date, $isdevbranch);
+echo $nextVersion->release;
