@@ -7,10 +7,10 @@
 DEVBRANCHES=('main')
 
 # Current stable branches. (Later versions first)
-STABLEBRANCHES=('MOODLE_404_STABLE' 'MOODLE_403_STABLE')
+STABLEBRANCHES=('MOODLE_405_STABLE' 'MOODLE_404_STABLE')
 
 # Current security branches. (Later versions first)
-SECURITYBRANCHES=('MOODLE_402_STABLE' 'MOODLE_401_STABLE')
+SECURITYBRANCHES=('MOODLE_403_STABLE' 'MOODLE_401_STABLE')
 
 # UTC time when the publishing will be done. Keep this in sync with the downloads publishing time.
 PUBLISHING_TIME='00:50:00'
