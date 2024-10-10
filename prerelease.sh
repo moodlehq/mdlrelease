@@ -256,7 +256,7 @@ generate_upgrade_notes() {
             output "      ${R}Error running npm ci. Details:${N} $(<"${tmpfile}")"
         output "    - Generating upgrade notes"
 
-        local release=`php ${mydir}/bumpversions.php -b "$branch" -t "$type" -p "$pwd" -r "$rc" -d "$date" -i "$isdevbranch"`
+        local release=`php ${mydir}/get_next_version_number.php -b "$branch" -t "$type" -p "$pwd" -r "$rc" -d "$date" -i "$isdevbranch"`
 
         if [ $type == "major" ] || [ $type == "minor" ]; then
             .grunt/upgradenotes.mjs release -d "${release}" > "${tmpfile}" 2>&1 || \

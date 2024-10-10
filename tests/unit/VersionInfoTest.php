@@ -31,6 +31,7 @@ final class VersionInfoTest extends TestCase
     #[DataProvider('nextVersionFromWeeklyProvider')]
     #[DataProvider('nextVersionFromDevelopmentProvider')]
     #[DataProvider('nextVersionFromBetaProvider')]
+    #[DataProvider('nextVersionFromRCProvider')]
     public function testGetNextVersion(
         array $currentVersionArgs,
         array $nextVersionArgs,
@@ -524,6 +525,62 @@ final class VersionInfoTest extends TestCase
                 ],
             ],
             'Major version from beta' => [
+                $version,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'major',
+                    'rc' => '',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+                [
+                    'integerversion' => 2024092300,
+                    'decimalversion' => '00',
+                    'release' => '5.0',
+                    'build' => '20240923',
+                    'branchquote' => "'",
+                    'releasequote' => "'",
+                    'maturity' => 'MATURITY_STABLE',
+                ],
+            ],
+        ];
+    }
+
+    public static function nextVersionFromRCProvider(): array
+    {
+        $version = [
+            'integerversion' => 2024092301,
+            'decimalversion' => 0,
+            'comment' => '// 20240923      = branching date YYYYMMDD - do not modify!',
+            'release' => '5.0rc1',
+            'build' => '20240921',
+            'branch' => '500',
+            'maturity' => 'MATURITY_RC',
+            'branchquote' => "'",
+            'releasequote' => "'",
+        ];
+
+        return [
+            'RC version from RC' => [
+                $version,
+                [
+                    'branch' => 'MOODLE_500_STABLE',
+                    'type' => 'rc',
+                    'rc' => '2',
+                    'date' => '20240923',
+                    'isdevbranch' => true,
+                ],
+                [
+                    'integerversion' => date('Ymd') * 100,
+                    'decimalversion' => '00',
+                    'release' => '5.0rc2',
+                    'build' => '20240923',
+                    'branchquote' => "'",
+                    'releasequote' => "'",
+                    'maturity' => 'MATURITY_RC',
+                ],
+            ],
+            'Major version from RC' => [
                 $version,
                 [
                     'branch' => 'MOODLE_500_STABLE',
