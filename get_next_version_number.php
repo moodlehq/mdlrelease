@@ -44,5 +44,11 @@ $isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
 $path = rtrim($path, '/') . '/version.php';
 
 $currentVersion = VersionInfo::fromVersionFile($path);
-$nextVersion = $currentVersion->getNextVersion($branch, $type, $rc, $date, $isdevbranch);
+$nextVersion = $currentVersion->getNextVersion(
+    branch: $branch,
+    type: $type,
+    rc: $rc,
+    isdevbranch: $isdevbranch,
+    date: $date,
+);
 echo $nextVersion->release;
