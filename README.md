@@ -134,7 +134,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
 **5. Push to public repository**
 
@@ -166,7 +166,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public. Once verified and passing, **push tags** following the commands provided by **prerelease.sh**.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public. Once verified and passing, **push tags** following the commands provided by **prerelease.sh**.
 
 **5. Push to public repository**
 
@@ -209,7 +209,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
 **5. Push to public repository**
 
@@ -254,7 +254,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
 **5. Push to public repository**
 
@@ -339,7 +339,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
 **5. Push to public repository**
 
@@ -388,7 +388,7 @@ Use the command provided by **prerelease.sh** to push these last changes to the 
 
 **4. Confirm that all is green**
 
-http://integration.moodle.org jobs chain will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
+http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
 **5. Push to public repository**
 
@@ -464,7 +464,7 @@ Note: If there is any problem with the job, still it's possible to proceed using
 
 **4. Let the world know.**
 
-Note: Only under normal integration periods. Aka, **not under continuous integration**. Unless there is something relevant enough and agreed to be shared.
+Note: During the continuous integration period, where we usually release twice a week, we do this on the week's second release, generally on Fridays.
 
 Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... **always** checking the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for both general and [policy issues](https://tracker.moodle.org/browse/MDLSITE-6092) to be shared or proposed, together with other interesting topics worth commenting and thanks suggestions.
 
