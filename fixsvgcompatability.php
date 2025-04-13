@@ -162,10 +162,10 @@ function theme_base_recurse_svgs($base, $sub, $filecallback, $blacklist) {
  * Copied from lib/clilib.php 20/09/2013
  *
  * @param array $longoptions array of --style options ex:('verbose'=>false)
- * @param array $shortmapping array describing mapping of short to long style options ex:('h'=>'help', 'v'=>'verbose')
+ * @param array|null $shortmapping array describing mapping of short to long style options ex:('h'=>'help', 'v'=>'verbose')
  * @return array array of arrays, options, unrecognised as optionlongname=>value
  */
-function cli_get_params(array $longoptions, array $shortmapping=null) {
+function cli_get_params(array $longoptions, ?array $shortmapping=null) {
     $shortmapping = (array)$shortmapping;
     $options      = array();
     $unrecognized = array();
