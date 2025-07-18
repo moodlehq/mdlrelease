@@ -118,7 +118,12 @@ bump_version() {
         output "  - ${R}Failed to bump version file [$outcome].${N}"
         _pushup=false
     else
-        git add version.php
+        versionpath=version.php
+        if [ ! -f $versionpath ]; then
+          versionpath=public/version.php
+        fi
+
+        git add $versionpath
         if git_staged_changes ; then
             if $weekly ; then
                 git commit --quiet -m "weekly release $release"

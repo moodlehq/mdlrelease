@@ -40,7 +40,9 @@ try {
     $rc = Helper::getOption($options, 'r', 'rc');
     $date = Helper::getOption($options, 'd', 'date');
     $isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
-    $path = rtrim($path, '/') . '/version.php';
+
+    // Find the version.php.
+    $path = Helper::getVersionPath($path);
 
     $release = Helper::bumpVersion($path, $branch, $type, $rc, $date, $isdevbranch);
     $result = 0;
