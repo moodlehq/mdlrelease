@@ -30,7 +30,7 @@ class Helper
     /**
      * Bump the version.
      *
-     * @param  string $path        The path to the versio file
+     * @param  string $path        The path to the version file
      * @param  string $branch      The branch name to set
      * @param  string $type        The type of release
      * @param  string $rc          If a release candidate, the RC number
@@ -58,6 +58,30 @@ class Helper
         file_put_contents($path, $newVersionInfo->generateVersionFile());
 
         return $newVersionInfo->release;
+    }
+
+    /**
+     * Get the path to the version file.
+     *
+     * @param string $path Path to the Moodle root
+     * @return string Path to version.php
+     * @throws \ValueError if no version.php could be found
+     */
+    public static function getVersionPath(
+        string $path,
+    ): string {
+        $possibles = [
+            rtrim($path, '/') . '/public/version.php',
+            rtrim($path, '/') . '/version.php',
+        ];
+
+        foreach ($possibles as $possible) {
+            if (file_exists($possible)) {
+                return $possible;
+            }
+        }
+
+        throw new \ValueError("Unable to find a version.php in {$path}");
     }
 
     /**

@@ -420,4 +420,74 @@ final class HelperTest extends TestCase
             ],
         ];
     }
+
+    #[DataProvider('getVersionPathProvider')]
+    public function testGetVersionPath(
+        array $structure,
+        string $path,
+        ?string $expected,
+    ): void {
+        $root = vfsStream::setup('root', structure: $structure);
+
+        if ($expected === null) {
+            $this->expectException(\ValueError::class);
+            $this->expectExceptionMessage("Unable to find a version.php in {$path}");
+            Helper::getVersionPath($path);
+        } else {
+            $this->assertSame($expected, Helper::getVersionPath($path));
+        }
+    }
+
+    public static function getVersionPathProvider(): \Generator
+    {
+        yield 'Valid path' => [
+            'structure' => [
+                'version.php' => '<?php // Version file content.',
+            ],
+            'path' => vfsStream::url('root'),
+            'expected' => vfsStream::url('root/version.php'),
+        ];
+
+        yield 'Valid path with trailing slash' => [
+            'structure' => [
+                'version.php' => '<?php // Version file content.',
+            ],
+            'path' => vfsStream::url('root/'),
+            'expected' => vfsStream::url('root/version.php'),
+        ];
+
+        yield 'Valid path in public' => [
+            'structure' => [
+                'public' => [
+                    'version.php' => '<?php // Version file content.',
+                ],
+            ],
+            'path' => vfsStream::url('root'),
+            'expected' => vfsStream::url('root/public/version.php'),
+        ];
+
+        yield 'Valid path in public with trailing slash' => [
+            'structure' => [
+                'public' => [
+                    'version.php' => '<?php // Version file content.',
+                ],
+            ],
+            'path' => vfsStream::url('root/'),
+            'expected' => vfsStream::url('root/public/version.php'),
+        ];
+
+        yield 'Invalid path' => [
+            'structure' => [],
+            'path' => vfsStream::url('root'),
+            'expected' => null,
+        ];
+
+        yield 'Invalid path in public' => [
+            'structure' => [
+                'public' => [],
+            ],
+            'path' => vfsStream::url('root'),
+            'expected' => null,
+        ];
+    }
 }

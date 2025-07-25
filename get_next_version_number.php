@@ -41,7 +41,9 @@ $path = Helper::getOption($options, 'p', 'path');
 $rc = Helper::getOption($options, 'r', 'rc');
 $date = Helper::getOption($options, 'd', 'date');
 $isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
-$path = rtrim($path, '/') . '/version.php';
+
+// Find the version.php.
+$path = Helper::getVersionPath($path);
 
 $currentVersion = VersionInfo::fromVersionFile($path);
 $nextVersion = $currentVersion->getNextVersion(
