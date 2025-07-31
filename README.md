@@ -128,19 +128,23 @@ Note that weekly rolls involve, exclusively, supported branches. Always. No dist
 
 Only exception is when, after agreement, it has been decided to force something to land into unsupported branches and configuration is altered to cause that (for example environment.xml changes case).
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed.
 
@@ -160,19 +164,23 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository. **Don't push tags** at this stage.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public. Once verified and passing, **push tags** following the commands provided by **prerelease.sh**.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed. Then, continue with the [Moodle release process](https://docs.moodle.org/dev/Release_process#Releasing) for major versions.
 
@@ -203,19 +211,23 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed.
 
@@ -248,19 +260,23 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed.
 
@@ -279,23 +295,27 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Update the mdlrelease scripts**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Update the mdlrelease scripts**
 
 Add support for the new branch in install.sh, prerelease.sh, and release.sh
 
-**4. Prepare the current integration server**
+**5. Prepare the current integration server**
 
 Create a new repo, view and jobs (cloning from main) in the Jenkins servers, so the new branch becomes tested by 1st time.
 
-**5. Double check everything.**
+**6. Double check everything.**
 
 Verify integration.git looks 100% perfect before continuing
 
-**6. Push to the public repositories**
+**7. Push to the public repositories**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**8. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed. Then, continue with the [Moodle release process](https://docs.moodle.org/dev/Release_process#Releasing) for major versions.
 
@@ -333,19 +353,23 @@ there is an optional argument *-p* which if specified pushes the updated branche
 
 **2. Review the branches very carefully.**
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed.
 
@@ -379,22 +403,25 @@ Note that the **last week of on-sync**, it's better to perform a normal main rel
 
 **IMPORTANT:** If this is the **last week of on-sync**, don't forget to disable the [Continuous queues manager job](https://ci.moodle.org/view/Tracker/job/TR%20-%20Manage%20queues%20on%20continuous/) right now to prevent it to continue processing issues once on-sync is finished.
 
-
 **2. Review the branches very carefully.**
 
-**3. Push changes to the integration repository**
+**3. Open gates to the integration repository**
+
+Navigate to the Moodle Repository Force-Push Interface and click the `Open Gates` button to authorize the script to push changes to the integration repository.
+
+**4. Push changes to the integration repository**
 
 Use the command provided by **prerelease.sh** to push these last changes to the integration repository.
 
-**4. Confirm that all is green**
+**5. Confirm that all is green**
 
 http://ci.moodle.org Integration post-commit jobs will start once last version bump is pushed to integration. Wait until all tests finish to confirm that all branches are ready to be public.
 
-**5. Push to public repository**
+**6. Push to public repository**
 
 Spread changes in integration to moodle.git and mirrors using ./release.sh (you may need, on releases, to comment some branches if not releasing all them together).
 
-**6. Complete remaining tasks**
+**7. Complete remaining tasks**
 
 Follow the [After the release](#after-the-release) steps where needed.
 
