@@ -479,7 +479,7 @@ Run the [Close tested issues](https://ci.moodle.org/view/Tracker/job/TR%20-%20Cl
 
 Note: If there is any problem with the job, still it's possible to proceed using Tracker's bulk actions (transitioning to closed). If using this, you can temporarily disable the autowatch user preference to avoid autowatching all those issues.
 
-Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" label](https://tracker.moodle.org/issues/?filter=14804). They may need resetting or moving associated MDLQA issues. There is a widget about this in the integration Dashboard too.
+Don't forget to review any [closed issue having "mdlqa" or "mdlqa_conversion" label](https://moodle.atlassian.net/issues/?filter=10407). They may need resetting or moving associated MDLQA issues. There is a widget about this in the integration Dashboard too.
 
 **3. Spam the tracker.**
 
@@ -493,7 +493,7 @@ Note: If there is any problem with the job, still it's possible to proceed using
 
 Note: During the continuous integration period, where we usually release twice a week, we do this on the week's second release, generally on Fridays.
 
-Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... **always** checking the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for both general and [policy issues](https://tracker.moodle.org/browse/MDLSITE-6092) to be shared or proposed, together with other interesting topics worth commenting and thanks suggestions.
+Add one entry to the ["Integration, exposed"](https://moodle.org/mod/forum/view.php?f=1153) forum, commenting about numbers, major ones, special thanks... **always** checking the ["Integration exposed ideas"](https://docs.google.com/a/moodle.com/document/d/14hjHA_SrO2RRIUmJs9Fv23dV-O5FsHM5PT931Qe8tsQ/edit?usp=sharing) document for both general and [policy issues](https://moodle.atlassian.net/browse/MDLSITE-6092) to be shared or proposed, together with other interesting topics worth commenting and thanks suggestions.
 
 Pre-release options
 -------------------
