@@ -28,31 +28,31 @@ use Exception;
 class VersionInfo
 {
     /** @var string Weekly version */
-    const VERSION_WEEKLY = 'weekly';
+    public const VERSION_WEEKLY = 'weekly';
 
     /** @var string A Minor version (x.y.Z) */
-    const VERSION_MINOR = 'minor';
+    public const VERSION_MINOR = 'minor';
 
     /**
      * @var string
      *
      * On-demand version used during the continuous integration period leading up to a major release.
      */
-    const VERSION_ON_DEMAND = 'on-demand';
+    public const VERSION_ON_DEMAND = 'on-demand';
 
     /**
      * @var string
      *
      * A Beta version released just before a major release.
      */
-    const VERSION_BETA = 'beta';
+    public const VERSION_BETA = 'beta';
 
     /**
      * @var string
      *
      * Release Candidate version used during the continuous integration period leading up to a major release.
      */
-    const VERSION_RC = 'rc';
+    public const VERSION_RC = 'rc';
 
     /**
      * @var string
@@ -61,14 +61,14 @@ class VersionInfo
      *
      * This is the only time the branch number changes, and the release number is reset to x.y.0.
      */
-    const VERSION_MAJOR = 'major';
+    public const VERSION_MAJOR = 'major';
 
     /**
      * @var string
      *
      * An on-sync release used during the 1-2 weeks immediately following a major release.
      */
-    const VERSION_ON_SYNC = 'on-sync';
+    public const VERSION_ON_SYNC = 'on-sync';
 
     /**
      * @var string
@@ -76,7 +76,7 @@ class VersionInfo
      * A back-to-dev release used to create a new development branch immediately after a major release.
      * This is the first release on the new branch.
      */
-    const VERSION_BACK_TO_DEV = 'back-to-dev';
+    public const VERSION_BACK_TO_DEV = 'back-to-dev';
 
     /** @var int The name of the branch either in integer form, or MOODLE_(\d+)_STABLE form */
     public readonly int $branch;

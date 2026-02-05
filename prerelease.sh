@@ -522,6 +522,13 @@ if $_showhelp ; then
     show_help
 fi
 
+# Before actually processing the script, lets check that the dependencies are good.
+composer validate
+if [[ $? -ge 1 ]] ; then
+    output "${R}There are problems with the composer.json file. Please fix them before running this script.${N}"
+    exit 1
+fi
+
 # Before anything else, let's check if, right now, it's a good time to run this script.
 
 # Calculate a few timestamps (unix seconds since epoch).
