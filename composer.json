@@ -25,5 +25,9 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "require": {
+        "symfony/process": "^7.4",
+        "symfony/filesystem": "^7.4"
     }
 }

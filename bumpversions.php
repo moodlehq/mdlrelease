@@ -41,10 +41,12 @@ try {
     $date = Helper::getOption($options, 'd', 'date');
     $isdevbranch = (bool) Helper::getOption($options, 'i', 'isdevbranch');
 
-    // Find the version.php.
-    $path = Helper::getVersionPath($path);
+    $version = Helper::bumpVersion($path, $branch, $type, $rc, $date, $isdevbranch);
+    $release = $version->release;
 
-    $release = Helper::bumpVersion($path, $branch, $type, $rc, $date, $isdevbranch);
+    // Load the composer.json file to get the current configuration.
+    Helper::bumpComposerProvides($path, $version);
+
     $result = 0;
 } catch (Exception $ex) {
     $release = $ex->getMessage();
