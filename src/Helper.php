@@ -30,14 +30,14 @@ class Helper
     /**
      * Bump the version.
      *
-     * @param  string $path        The path to the version file
+     * @param  string $path        The path to the Moodle repository
      * @param  string $branch      The branch name to set
      * @param  string $type        The type of release
      * @param  string $rc          If a release candidate, the RC number
      * @param  string $date        The date to use for the version
      * @param  bool   $isdevbranch Whether this is a developmentbranch
      * @throws Exception
-     * @return string
+     * @return VersionInfo
      */
     public static function bumpVersion(
         string $path,
@@ -46,18 +46,86 @@ class Helper
         string $rc,
         string $date,
         bool $isdevbranch,
-    ): string {
+    ): VersionInfo {
         // Require that the new branch name is valid.
         self::requireBranchNameValid($branch);
         self::requireTypeValid($type);
-        self::requirePathValid($path);
 
-        $currentVersionInfo = VersionInfo::fromVersionFile($path);
+        // Calculate the path to the version.php file and ensure it is valid.
+        $versionPath = self::getVersionPath($path);
+        self::requirePathValid($versionPath);
+
+        $currentVersionInfo = VersionInfo::fromVersionFile($versionPath);
         $newVersionInfo = $currentVersionInfo->getNextVersion($branch, $type, $rc, $isdevbranch, $date);
 
-        file_put_contents($path, $newVersionInfo->generateVersionFile());
+        file_put_contents($versionPath, $newVersionInfo->generateVersionFile());
 
-        return $newVersionInfo->release;
+        return $newVersionInfo;
+    }
+
+    public static function bumpComposerProvides(
+        string $path,
+        VersionInfo $newVersionInfo,
+    ): void {
+        $composerPath = rtrim($path, '/') . '/composer.json';
+        if (!file_exists($composerPath)) {
+            return;
+        }
+
+        $jsonContent = file_get_contents($composerPath);
+        if ($jsonContent === false) {
+            throw new \Exception('Failed to read composer.json file.', __LINE__);
+        }
+
+        /** @var array<string, mixed> */
+        $composer = json_decode($jsonContent, true, flags: JSON_OBJECT_AS_ARRAY);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Failed to parse composer.json file: ' . json_last_error_msg(), __LINE__);
+        }
+
+        if (!isset($composer['provide']) || !is_array($composer['provide'])) {
+            return;
+        }
+
+        if (!isset($composer['provide']['moodle/lms'])) {
+            return;
+        }
+
+        $newVersion = sprintf(
+            "%d.%d",
+            $newVersionInfo->seriesVersion,
+            $newVersionInfo->majorVersion,
+        );
+
+        if ($newVersion === $composer['provide']['moodle/lms']) {
+            // No change needed.
+            return;
+        }
+
+        $composer['provide']['moodle/lms'] = $newVersion;
+
+        file_put_contents($composerPath, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+
+        // Also need to run a composer update to regenerate the composer.lock file.
+        // By specifying a bogus package we only update the checksum and metadata fields
+        // and not any actual dependencies.
+
+        $process = new \Symfony\Component\Process\Process([
+            'composer',
+            'update',
+            '--no-dev',
+            '--no-scripts',
+            '--no-plugins',
+            '--no-autoloader',
+            '--no-interaction',
+            '--quiet',
+            'moodle/non-existent-package',
+        ], $path);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new Exception('Failed to update composer.lock file: ' . $process->getErrorOutput(), __LINE__);
+        }
     }
 
     /**

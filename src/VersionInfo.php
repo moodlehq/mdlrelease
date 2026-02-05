@@ -27,11 +27,71 @@ use Exception;
  */
 class VersionInfo
 {
+    /** @var string Weekly version */
+    public const VERSION_WEEKLY = 'weekly';
+
+    /** @var string A Minor version (x.y.Z) */
+    public const VERSION_MINOR = 'minor';
+
+    /**
+     * @var string
+     *
+     * On-demand version used during the continuous integration period leading up to a major release.
+     */
+    public const VERSION_ON_DEMAND = 'on-demand';
+
+    /**
+     * @var string
+     *
+     * A Beta version released just before a major release.
+     */
+    public const VERSION_BETA = 'beta';
+
+    /**
+     * @var string
+     *
+     * Release Candidate version used during the continuous integration period leading up to a major release.
+     */
+    public const VERSION_RC = 'rc';
+
+    /**
+     * @var string
+     *
+     * A new Major release of Moodle.
+     *
+     * This is the only time the branch number changes, and the release number is reset to x.y.0.
+     */
+    public const VERSION_MAJOR = 'major';
+
+    /**
+     * @var string
+     *
+     * An on-sync release used during the 1-2 weeks immediately following a major release.
+     */
+    public const VERSION_ON_SYNC = 'on-sync';
+
+    /**
+     * @var string
+     *
+     * A back-to-dev release used to create a new development branch immediately after a major release.
+     * This is the first release on the new branch.
+     */
+    public const VERSION_BACK_TO_DEV = 'back-to-dev';
+
     /** @var int The name of the branch either in integer form, or MOODLE_(\d+)_STABLE form */
     public readonly int $branch;
 
     /** @var string The integer version number */
     public readonly string $decimalversion;
+
+    /** @var int The series version number */
+    public readonly int $seriesVersion;
+
+    /** @var int The major version number */
+    public readonly int $majorVersion;
+
+    /** @var int The minor version number */
+    public readonly int $minorVersion;
 
     /**
      * Construct a new instance of the VersionInfo class.
@@ -63,6 +123,27 @@ class VersionInfo
         $this->branch = (int) $branch;
 
         $this->decimalversion = sprintf("%02d", $decimalversion);
+
+        // Extract major, minor and series version from the release name.
+        if (
+            preg_match(
+                '#^(?<seriesVersion>\d+)\.(?<majorVersion>\d+)(dev|beta\d?|rc\d?)?\+?$#',
+                $release,
+                $matches,
+            ) === 1
+        ) {
+            $this->seriesVersion = (int) $matches['seriesVersion'];
+            $this->majorVersion = (int) $matches['majorVersion'];
+            $this->minorVersion = 0;
+        } elseif (
+            preg_match('#^(?<seriesVersion>\d+)\.(?<majorVersion>\d+)\.(?<minorVersion>\d+)#', $release, $matches) === 1
+        ) {
+            $this->seriesVersion = (int) $matches['seriesVersion'];
+            $this->majorVersion = (int) $matches['majorVersion'];
+            $this->minorVersion = (int) $matches['minorVersion'];
+        } else {
+            throw new Exception('Could not determine major, minor and series version from the release name.', __LINE__);
+        }
     }
 
     /**
@@ -164,7 +245,7 @@ class VersionInfo
 
         if ($isstable) {
             // It's a stable branch.
-            if ($type === 'weekly') {
+            if ($type === self::VERSION_WEEKLY) {
                 // It's a stable branch. We need to bump the minor version and add a + if this was the first
                 // weekly release after a major or minor release.
                 if (strpos($release, '+') === false) {
@@ -174,7 +255,7 @@ class VersionInfo
 
                 $decimalversion++;
                 $maturity = 'MATURITY_STABLE';
-            } elseif ($type === 'minor' || $type === 'major') {
+            } elseif ($type === self::VERSION_MINOR || $type === self::VERSION_MAJOR) {
                 // If it's minor fine, it's if major then stable gets a minor release.
                 // 2.6+ => 2.6.1
                 // 2.6.12+ => 2.6.13
@@ -201,7 +282,7 @@ class VersionInfo
             }
         } else {
             // Ok it's a development branch.
-            if ($type === 'weekly' || $type === 'minor') {
+            if ($type === self::VERSION_WEEKLY || $type === self::VERSION_MINOR) {
                 // If it's weekly, ok.
                 // If it's minor the dev branch doesn't get a minor release so really it's a weekly anyway.
                 // It's a dev branch. We need to bump the version.
@@ -223,7 +304,7 @@ class VersionInfo
                     'versionint' => $integerversion,
                     'versiondec' => $decimalversion,
                 ] = Helper::getValidatedVersionNumber($integerversion, $decimalversion);
-            } elseif ($type === 'beta') {
+            } elseif ($type === self::VERSION_BETA) {
                 $release = preg_replace('#^(\d+.\d+) *(dev|beta)\+?#', '$1', $release);
                 $branch = $branchcurrent; // Branch doesn't change in beta releases ever.
                 $release .= 'beta';
@@ -232,7 +313,7 @@ class VersionInfo
                     'versiondec' => $decimalversion,
                 ] = Helper::getValidatedVersionNumber($integerversion, $decimalversion);
                 $maturity = 'MATURITY_BETA';
-            } elseif ($type === 'rc') {
+            } elseif ($type === self::VERSION_RC) {
                 $release = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d)\+?#', '$1', $release);
                 $branch = $branchcurrent; // Branch doesn't change in rc releases ever.
                 $release .= 'rc' . $rc;
@@ -241,7 +322,7 @@ class VersionInfo
                     'versiondec' => $decimalversion,
                 ] = Helper::getValidatedVersionNumber($integerversion, $decimalversion);
                 $maturity = 'MATURITY_RC';
-            } elseif ($type === 'on-demand') {
+            } elseif ($type === self::VERSION_ON_DEMAND) {
                 // Add the + if missing (normally applies to post betas & rcs only,
                 // but it's not wrong to generalize it to any on-demand).
                 if (strpos($release, '+') === false) {
@@ -252,9 +333,9 @@ class VersionInfo
                     'versionint' => $integerversion,
                     'versiondec' => $decimalversion,
                 ] = Helper::getValidatedVersionNumber($integerversion, $decimalversion);
-            } elseif ($type === 'on-sync') {
+            } elseif ($type === self::VERSION_ON_SYNC) {
                 $decimalversion++;
-            } elseif ($type === 'back-to-dev') {
+            } elseif ($type === self::VERSION_BACK_TO_DEV) {
                 // We perform back-to-dev on the `main` branch only.
                 if (strpos($release, 'dev') !== false) { // Ensure it's not a "dev" version already.
                     throw new Exception('Back-to-dev is only allowed on non-dev branches.', __LINE__);
@@ -280,7 +361,7 @@ class VersionInfo
                         $build = date('Ymd', strtotime('next Monday'));
                     }
                 }
-            } elseif ($type === 'major') {
+            } elseif ($type === self::VERSION_MAJOR) {
                 // Awesome major release!
                 $release = preg_replace('#^(\d+.\d+) *(dev|beta|rc\d+)\+?#', '$1', $release);
                 $branch = $branchcurrent; // Branch doesn't change in major releases ever.
@@ -345,6 +426,7 @@ class VersionInfo
             throw new Exception('Could not read the version template file.', __LINE__);
         }
 
+        /** @var array<string, string> */
         $replacements = [
             'INTEGERVERSION' => $this->integerversion,
             'DECIMALVERSION' => $this->decimalversion,
