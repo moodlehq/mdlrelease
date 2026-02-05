@@ -84,6 +84,15 @@ class VersionInfo
     /** @var string The integer version number */
     public readonly string $decimalversion;
 
+    /** @var int The series version number */
+    public readonly int $seriesVersion;
+
+    /** @var int The major version number */
+    public readonly int $majorVersion;
+
+    /** @var int The minor version number */
+    public readonly int $minorVersion;
+
     /**
      * Construct a new instance of the VersionInfo class.
      *
@@ -114,6 +123,27 @@ class VersionInfo
         $this->branch = (int) $branch;
 
         $this->decimalversion = sprintf("%02d", $decimalversion);
+
+        // Extract major, minor and series version from the release name.
+        if (
+            preg_match(
+                '#^(?<seriesVersion>\d+)\.(?<majorVersion>\d+)(dev|beta\d?|rc\d?)?\+?$#',
+                $release,
+                $matches,
+            ) === 1
+        ) {
+            $this->seriesVersion = (int) $matches['seriesVersion'];
+            $this->majorVersion = (int) $matches['majorVersion'];
+            $this->minorVersion = 0;
+        } elseif (
+            preg_match('#^(?<seriesVersion>\d+)\.(?<majorVersion>\d+)\.(?<minorVersion>\d+)#', $release, $matches) === 1
+        ) {
+            $this->seriesVersion = (int) $matches['seriesVersion'];
+            $this->majorVersion = (int) $matches['majorVersion'];
+            $this->minorVersion = (int) $matches['minorVersion'];
+        } else {
+            throw new Exception('Could not determine major, minor and series version from the release name.', __LINE__);
+        }
     }
 
     /**

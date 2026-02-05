@@ -76,6 +76,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240926',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 0,
                 ],
             ],
             'Minor version from major' => [
@@ -94,6 +97,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 1,
                 ],
             ],
             'Major version from major' => [
@@ -113,6 +119,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 1,
                 ],
             ],
             'Back to development version from major' => [
@@ -132,6 +141,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
         ];
@@ -168,6 +180,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240926',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 1,
                 ],
             ],
             'Minor version from minor' => [
@@ -186,6 +201,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 2,
                 ],
             ],
             'Major version from minor' => [
@@ -204,6 +222,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 2,
                 ],
             ],
         ];
@@ -239,6 +260,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240926',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 1,
                 ],
             ],
             'Minor version from weekly' => [
@@ -257,6 +281,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 2,
                 ],
             ],
             'Major version from weekly' => [
@@ -275,6 +302,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240923',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 4,
+                    'majorVersion' => 5,
+                    'minorVersion' => 2,
                 ],
             ],
         ];
@@ -310,6 +340,9 @@ final class VersionInfoTest extends TestCase
                     'build' => '20240926',
                     'branchquote' => "'",
                     'releasequote' => "'",
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Weekly version from development' => [
@@ -329,6 +362,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_ALPHA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Minor version from development' => [
@@ -349,6 +385,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_ALPHA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Beta version from development' => [
@@ -368,6 +407,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_BETA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'RC version from development' => [
@@ -387,6 +429,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_RC',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             // 'On-Demand from development' => [
@@ -407,6 +452,9 @@ final class VersionInfoTest extends TestCase
             //         'branchquote' => "'",
             //         'releasequote' => "'",
             //         'maturity' => 'MATURITY_ALPHA', // No change.
+            //         'seriesVersion' => 5,
+            //         'majorVersion' => 0,
+            //         'minorVersion' => 0,
             //     ],
             // ],
             'Major version from development' => [
@@ -426,6 +474,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_STABLE',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
 
@@ -464,6 +515,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_BETA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Weekly version from beta' => [
@@ -483,6 +537,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_BETA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'RC version from beta' => [
@@ -502,6 +559,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_RC',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'On-Demand from beta' => [
@@ -522,6 +582,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_BETA',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Major version from beta' => [
@@ -541,6 +604,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_STABLE',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
         ];
@@ -578,6 +644,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_RC',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
             'Major version from RC' => [
@@ -597,6 +666,9 @@ final class VersionInfoTest extends TestCase
                     'branchquote' => "'",
                     'releasequote' => "'",
                     'maturity' => 'MATURITY_STABLE',
+                    'seriesVersion' => 5,
+                    'majorVersion' => 0,
+                    'minorVersion' => 0,
                 ],
             ],
         ];
