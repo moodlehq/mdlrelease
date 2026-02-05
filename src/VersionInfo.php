@@ -426,6 +426,7 @@ class VersionInfo
             throw new Exception('Could not read the version template file.', __LINE__);
         }
 
+        /** @var array<string, string> */
         $replacements = [
             'INTEGERVERSION' => $this->integerversion,
             'DECIMALVERSION' => $this->decimalversion,
