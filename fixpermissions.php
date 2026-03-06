@@ -84,17 +84,20 @@ $executables = array(
 
 // find out full names of the executables
 foreach ($executables as $relname) {
-    $realpath = realpath("$sourcedir/$relname");
-    if ($realpath !== false) {
-        $executables[$realpath] = $relname;
-    } else {
+    $realpath = realpath("$sourcedir/public/$relname");
+
+    // If the path doesn't exist, it may be a legacy branch that doesn't use the 'public/' prefix.
+    // This fallback will be necessary until 4.5 (LTS) falls out of security support (6 Oct 2027).
+    if ($realpath === false) {
+        $realpath = realpath("$sourcedir/$relname");
+    }
+
+    if ($realpath === false) {
         echo "Can not find real path for $relname in git repository\n";
         exit(1);
     }
-    if (!file_exists($realpath)) {
-        echo "Can not find executable file $realpath in git repository\n";
-        exit(1);
-    }
+
+    $executables[$realpath] = $relname;
 }
 
 // These files may not exist in all the branches, so we are adding them now, after
