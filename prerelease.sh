@@ -276,6 +276,29 @@ generate_upgrade_notes() {
     fi
 }
 
+update_packages() {
+    cd ${mydir}/gitmirror
+
+    # We are going to use a temporal file to capture stdout and stderr, in case something fails.
+    tmpfile=$(mktemp) || \
+        { output "    ${R}Failed to create temp file.${N}"; exit 1; }
+
+    output "    - Installing NodeJS modules"
+    nvm use > "${tmpfile}" 2>&1 || \
+        { output "      ${R}Error running nvm. Details:${N} $(<"${tmpfile}")"; rm -f "${tmpfile}"; exit 1; }
+    npm ci --no-progress > "${tmpfile}" 2>&1 || \
+        { output "      ${R}Error running npm ci. Details:${N} $(<"${tmpfile}")"; rm -f "${tmpfile}"; exit 1; }
+
+    output "    - Updating @moodlehq/design-system"
+    npm update @moodlehq/design-system --no-audit --no-fund > "${tmpfile}" 2>&1 || \
+        { output "      ${R}Error running npm update. Details:${N} $(<"${tmpfile}")"; rm -f "${tmpfile}"; exit 1; }
+
+    output "    - Running npm run update-packages"
+    npm run update-packages > "${tmpfile}" 2>&1 || \
+        { output "      ${R}Error running npm run update-packages. Details:${N} $(<"${tmpfile}")"; rm -f "${tmpfile}"; exit 1; }
+    rm -f "${tmpfile}"
+}
+
 show_help() {
     bold=`tput bold`
     normal=`tput sgr0`
@@ -704,11 +727,16 @@ for branch in ${branches[@]};
     fixsvg=true
     mergestrings=true
     upgradenotes=true
+    updatepackages=false
 
     # Determine if it's a development branch.
     isdevbranch=
     if in_array "$branch" "${DEVBRANCHES[@]}"; then
         isdevbranch=1
+        # Update the Moodle Design System package on development branches, weekly releases only.
+        if [ "$_type" == "weekly" ]; then
+            updatepackages=true
+        fi
     fi
 
     # Check that we do actually want to process this branch.
@@ -801,6 +829,27 @@ for branch in ${branches[@]};
             # Make sure everything is clean again.
             all_clean
             output "    ${Y}Permissions fixed as required.${N}"
+        fi
+    fi
+
+    # Now update the npm packages (Moodle Design System).
+    if $updatepackages ; then
+        output "  - Updating Moodle Design System package..."
+        update_packages
+        # npm may touch files without changing their content, which makes diff-files report false
+        # positives until the index stat info is refreshed.
+        git update-index -q --refresh
+        if git_unstaged_changes ; then
+            # Add any modified files.
+            git add -A
+            if git_staged_changes ; then
+                git commit --quiet -m "NOBUG: Update Moodle Design System package"
+                output "    ${Y}Package updated as required.${N}"
+            fi
+            # Make sure everything is clean again.
+            all_clean
+        else
+            output "    ${Y}Package already up to date, nothing to commit.${N}"
         fi
     fi
 
